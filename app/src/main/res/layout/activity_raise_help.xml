@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.jobs.RaiseHelp"
+    android:background="@color/white">
+
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/common_toolbar"/>
+    
+    <TextView
+        android:id="@+id/orderid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/srid"
+        app:layout_constraintEnd_toStartOf="@id/tv_orderid"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:textSize="@dimen/_13ssp"
+        android:textColor="@color/color_94AFB6"
+        android:fontFamily="@font/kameron_regular"
+        android:text="Order ID :"/>
+    <TextView
+        android:id="@+id/tv_orderid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/orderid"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:textSize="@dimen/_12ssp"
+        android:textColor="@color/color_344054"
+        android:fontFamily="@font/inter_medium"
+        android:text="215621"/>
+    <TextView
+        android:id="@+id/srid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/include_toolbar"
+        android:layout_marginTop="@dimen/_20sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:textSize="@dimen/_13ssp"
+        android:textColor="@color/color_94AFB6"
+        android:fontFamily="@font/kameron_regular"
+        android:text="SR ID :"/>
+    <TextView
+        android:id="@+id/tv_srid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/srid"
+        app:layout_constraintStart_toEndOf="@id/srid"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:textSize="@dimen/_12ssp"
+        android:textColor="@color/color_primary"
+        android:fontFamily="@font/inter_medium"
+        android:text="5141"/>
+
+    <TextView
+        android:id="@+id/customername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/scheduletime"
+        android:layout_marginTop="@dimen/_8sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:textSize="@dimen/_13ssp"
+        android:textColor="@color/color_94AFB6"
+        android:fontFamily="@font/kameron_regular"
+        android:text="Customer Name :"/>
+    <TextView
+        android:id="@+id/tv_customername"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/customername"
+        app:layout_constraintStart_toEndOf="@id/customername"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:textSize="@dimen/_11ssp"
+        android:textColor="@color/color_344054"
+        android:fontFamily="@font/inter_medium"
+        android:text="Vishal Rathaur"/>
+    <TextView
+        android:id="@+id/scheduletime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/orderid"
+        android:layout_marginTop="@dimen/_8sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:textSize="@dimen/_13ssp"
+        android:textColor="@color/color_94AFB6"
+        android:fontFamily="@font/kameron_regular"
+        android:text="Service Time :"/>
+    <TextView
+        android:id="@+id/tv_scheduletime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/scheduletime"
+        app:layout_constraintStart_toEndOf="@id/scheduletime"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:textSize="@dimen/_11ssp"
+        android:textColor="@color/color_344054"
+        android:fontFamily="@font/inter_medium"
+        android:text="4:30 PM | 2025-10-26"/>
+    <TextView
+        android:id="@+id/contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tv_customername"
+        android:layout_marginTop="@dimen/_8sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:textSize="@dimen/_13ssp"
+        android:textColor="@color/color_94AFB6"
+        android:fontFamily="@font/kameron_regular"
+        android:text="Contact No :"/>
+    <TextView
+        android:id="@+id/tv_contact"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/contact"
+        app:layout_constraintStart_toEndOf="@id/contact"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:textSize="@dimen/_11ssp"
+        android:textColor="@color/color_344054"
+        android:fontFamily="@font/inter_medium"
+        android:text="+91 9179518784"/>
+
+    <TextView
+        android:id="@+id/address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/contact"
+        android:layout_marginTop="@dimen/_8sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:textSize="@dimen/_13ssp"
+        android:textColor="@color/color_94AFB6"
+        android:fontFamily="@font/kameron_regular"
+        android:text="Address :"/>
+    <TextView
+        android:id="@+id/tv_address"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/address"
+        app:layout_constraintStart_toEndOf="@id/address"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:textSize="@dimen/_11ssp"
+        android:textColor="@color/color_344054"
+        android:fontFamily="@font/inter_medium"
+        android:text="19th Cross road, HSR Layout Bengaluru Karnataka"/>
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_4sdp"
+        app:layout_constraintTop_toBottomOf="@id/tv_address"
+        android:background="@color/gray_line_color"
+        android:layout_marginTop="@dimen/_20sdp"
+        />
+
+    <TextView
+        android:id="@+id/tv_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Please select your issue type or describe it below."
+        android:textSize="@dimen/_12ssp"
+        android:textColor="@color/color_757575"
+        app:layout_constraintTop_toBottomOf="@id/view"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
+        android:layout_marginTop="@dimen/_20sdp" />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:hint="Select issue type"
+        android:background="@drawable/transparent_back_5sdp"
+        app:layout_constraintTop_toBottomOf="@id/tv_desc"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
+        android:paddingStart="@dimen/_12sdp"
+        android:paddingEnd="@dimen/_12sdp"
+        android:paddingTop="@dimen/_8sdp"
+        android:paddingBottom="@dimen/_10sdp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:clickable="true"
+        android:textSize="@dimen/_12ssp"
+        android:completionThreshold="0"
+        android:drawableEnd="@drawable/down_arrow"
+        android:inputType="none" />
+
+    <EditText
+        android:id="@+id/etOtherReason"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="Describe your issue..."
+        android:visibility="gone"
+        android:textSize="@dimen/_12ssp"
+        android:background="@drawable/transparent_back_5sdp"
+        app:layout_constraintTop_toBottomOf="@id/autoCompleteType"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
+        android:paddingStart="@dimen/_12sdp"
+        android:paddingEnd="@dimen/_12sdp"
+        android:paddingTop="@dimen/_8sdp"
+        android:paddingBottom="@dimen/_10sdp"
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:gravity="top|start"/>
+    <Button
+        android:id="@+id/btnSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:backgroundTint="@color/color_primary"
+        app:layout_constraintTop_toBottomOf="@id/etOtherReason"
+        android:background="@drawable/curve_shape_background"
+        android:textColor="@color/white"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

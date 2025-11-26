@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="color_primary">#31975C</color>
+    <color name="purple">#8A6FC5</color>
+    <color name="color_primary_light">#DAEBE1</color>
+    <color name="color_primary_dark">#31975C</color>
+    <color name="colorPrimaryDark">#31975C</color>
+    <color name="disable_btn">#BAE6CD</color>
+    <color name="nav_selector">#31975C</color>
+    <color name="color_90C01F">#90C01F</color>
+    <color name="red">#E61F4E</color>
+    <color name="light_red">#F9E6EA</color>
+    <color name="green">#34c759</color>
+    <color name="green_light">#EBFAEF</color>
+    <color name="color_66000000">#66000000</color>
+    <color name="color_757575">#757575</color>
+    <color name="color_249370">#249370</color>
+    <color name="LightGray_Color">#e7eeff</color>
+    <color name="red_logout">#EB5757</color>
+    <color name="red_logout_light">#F8EEEE</color>
+    <color name="light_purple">#F0EEF6</color>
+    <color name="orange">#E87B1F</color>
+    <color name="light_orange">#F9EFE5</color>
+    <color name="skybule">#06A6ED</color>
+    <color name="light_skyblue">#CAECFC</color>
+    <color name="parrotgreen">#9BCB2E</color>
+    <color name="light_parrotgreen">#E7F3D1</color>
+    <color name="color_2170B4">#2170B4</color>
+    <color name="light_CFDEEE">#CFDEEE</color>
+    <color name="blue">#59D3CF</color>
+    <color name="light_blue">#D3F3F2</color>
+    <color name="color_F2F3F5">#F2F3F5</color>
+    <color name="leafegreen">#1BB581</color>
+    <color name="light_leafegreen">#C9E8DE</color>
+    <color name="dark_gray">#6B757B</color>
+    <color name="medium_gray">#A4A3A3</color>
+    <color name="btnapply">#f5f5f5</color>
+    <color name="light_gray">#E2E2E2</color>
+    <color name="activity_bg">#F3F9FC</color>
+<!--    F0F2F8-->
+    <color name="transparent">#1E6B757B</color>
+    <color name="ub__transparent">#00000000</color>
+    <color name="color_344054">#344054</color>
+    <color name="color181818">#181818</color>
+    <color name="gray_border">#dbd8d8</color>
+    <color name="unselect_icon">#B3BBC0</color>
+    <color name="select_icon">#2668F4</color>
+    <color name="Blackcolor">#263238</color>
+    <color name="downblack_color">#56636C</color>
+    <color name="right_icon_color">#A5ACB8</color>
+    <color name="gray_line_color">#F0F0F0</color>
+    <color name="circle_bakground">#EBF0FB</color>
+    <color name="text_black">#de000000</color>
+    <color name="job_stroke_color">#C4D2F0</color>
+    <color name="bk_dark">#141528</color>
+    <color name="bk_dark_card">#1A2033</color>
+    <color name="color_94AFB6">#94AFB6</color>
+
+    <!--swipe button color-->
+    <color name="swipebtn_translucent_white">#33ffffff</color>
+    <color name="swipebtn_disabled_grey">#939393</color>
+
+    <color name="progress_indicator_color">#FF6200EE</color>
+    <color name="progress_track_color">#33000000</color> <!-- 20% black -->
+
+
+</resources>

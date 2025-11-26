@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+
+<!--    <cache-path name="shared_images" path=""/>-->
+
+    <!-- For sharing images from cache -->
+    <cache-path
+        name="cache"
+        path="" />
+
+    <cache-path
+        name="images"
+        path="." />
+
+
+    <!-- For your PDF download -->
+    <external-files-path
+        name="download"
+        path="Download/" />
+
+    <!-- Add more paths as needed -->
+</paths>
+

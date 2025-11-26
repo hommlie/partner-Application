@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.apppermissions.ActGetLocation"
+    android:background="@color/activity_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="@drawable/curve_shape_background"
+        android:backgroundTint="@color/white"
+        android:layout_marginStart="@dimen/_13sdp"
+        android:elevation="@dimen/_2sdp"
+        android:layout_marginEnd="@dimen/_13sdp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/permission_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enable Location Permission"
+            android:textSize="18sp"
+            android:textColor="@color/color_344054"
+            app:layout_constraintTop_toBottomOf="@id/phone_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center"
+            android:layout_marginTop="10dp" />
+        <ImageView
+            android:id="@+id/phone_icon"
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:src="@drawable/ic_acceptlocation"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/permission_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="0dp"
+            android:scaleType="fitXY"/>
+
+
+        <TextView
+            android:id="@+id/permission_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Please enable location permission for Hommlie Partner App from your device settings to start job\n\nBackground location access is used to get you job requests even when your app is closed and not in use."
+            android:textSize="14sp"
+            android:textColor="@color/medium_gray"
+            android:gravity="center"
+            android:letterSpacing="0.02"
+            android:lineHeight="20dp"
+            app:layout_constraintTop_toBottomOf="@id/permission_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="18dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="@dimen/_20sdp"
+            />
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:paddingTop="@dimen/_12sdp"
+        android:paddingBottom="@dimen/_10sdp"
+        android:background="#55F0EDF0">
+
+        <Button
+            android:id="@+id/allow_permission_button"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:text="Enable Location"
+            android:background="@drawable/gradient_bnt"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/color_primary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="15dp"
+            android:textAllCaps="false"
+            android:letterSpacing="0.09"
+            android:textSize="@dimen/_15ssp"
+            android:layout_marginEnd="15dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

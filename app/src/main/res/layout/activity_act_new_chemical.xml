@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.chemical.ActNewChemical"
+    android:background="@color/activity_bg">
+
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/common_toolbar"
+        />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/include_toolbar"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.card.MaterialCardView
+        android:id="@+id/mcv_search"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_12sdp"
+        app:cardBackgroundColor="@color/white"
+        app:layout_collapseParallaxMultiplier="0"
+        app:strokeWidth="0dp"
+        app:strokeColor="@color/light_gray"
+        app:cardElevation="@dimen/_2sdp"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <ImageView
+                android:id="@+id/textview_search"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:src="@drawable/ic_search_home"
+                android:tint="@color/color_344054"
+                android:layout_marginStart="@dimen/_15sdp"
+                />
+
+            <EditText
+                android:id="@+id/tv_seachText"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/view_mic"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:textSize="@dimen/_12ssp"
+                android:textColor="@color/color_344054"
+                app:layout_constraintStart_toStartOf="parent"
+                android:hint="Search chemical..."
+                android:fontFamily="@font/helvetica"
+                android:gravity="center_vertical"
+                android:paddingBottom="@dimen/_7sdp"
+                android:paddingStart="@dimen/_42sdp"
+                android:backgroundTint="@color/white"
+                android:inputType="textCapWords"
+                />
+            <View
+                android:id="@+id/view_mic"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/iv_mic"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@color/light_gray"
+                android:layout_marginTop="@dimen/_9sdp"
+                android:layout_marginBottom="@dimen/_9sdp"
+                />
+
+            <ImageView
+                android:id="@+id/iv_mic"
+                android:layout_width="@dimen/_39sdp"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_mic"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="@dimen/_1sdp"
+                app:layout_constraintTop_toTopOf="parent"
+                android:padding="@dimen/_9sdp"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:animateLayoutChanges="true"
+                app:layout_constraintTop_toBottomOf="@id/mcv_search"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/ll_act_action"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_28sdp"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginStart="@dimen/_6sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:visibility="gone"
+                android:gravity="center_vertical"
+                android:weightSum="3">
+
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/check_selectall"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_20sdp"
+                    app:layout_constraintTop_toBottomOf="@id/mcv_search"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="Select All"
+                    android:textColor="@color/color_344054"
+                    android:textSize="@dimen/_11ssp"
+                    android:fontFamily="@font/inter_medium"
+                    android:visibility="visible"
+                    android:layout_weight="1"
+                    />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/mcv_acknowledge"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_28sdp"
+                    app:cardBackgroundColor="@color/white"
+                    app:strokeWidth="0.5dp"
+                    android:layout_weight="0.95"
+                    app:cardCornerRadius="@dimen/_6sdp"
+                    android:layout_marginEnd="@dimen/_6sdp"
+                    app:strokeColor="@color/parrotgreen"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Acknowledge All"
+                        android:textColor="@color/parrotgreen"
+                        android:fontFamily="@font/plussakartasans_medium"
+                        android:textSize="@dimen/_10ssp"
+                        android:paddingBottom="@dimen/_3sdp"
+                        android:gravity="center"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/mcv_report_issue"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_28sdp"
+                    app:cardBackgroundColor="@color/white"
+                    app:strokeWidth="0.5dp"
+                    android:layout_marginStart="@dimen/_6sdp"
+                    android:layout_weight="1.05"
+                    app:cardCornerRadius="@dimen/_6sdp"
+                    app:strokeColor="@color/red_logout"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Report All"
+                        android:textColor="@color/red_logout"
+                        android:fontFamily="@font/plussakartasans_medium"
+                        android:textSize="@dimen/_10ssp"
+                        android:paddingBottom="@dimen/_3sdp"
+                        android:gravity="center"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_newchemicals"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/_10sdp"
+        app:layout_constraintTop_toBottomOf="@id/ll_act_action"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:paddingBottom="@dimen/_5sdp"
+        android:clipToPadding="false"
+        tools:listitem="@layout/row_new_chemical"/>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.leaderboard.Leaderboard"
+    android:background="@color/bk_dark">
+
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/common_toolbar"
+        />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/mcv_options"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+        app:layout_constraintTop_toBottomOf="@id/include_toolbar"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="@color/bk_dark_card"
+        app:cardElevation="0dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/bk_dark_card">
+
+            <TextView
+                android:id="@+id/tv_weekly"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="@dimen/_25sdp"
+                android:text="Weekly"
+                android:fontFamily="@font/inter_medium"
+                android:textSize="@dimen/_11ssp"
+                android:textColor="@color/white"/>
+
+            <View
+                android:id="@+id/view_weekly"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_2sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tv_weekly"
+                app:layout_constraintEnd_toEndOf="@id/tv_weekly"
+                android:background="@drawable/bk_whatsapp"
+                android:backgroundTint="@color/color_primary"
+                />
+
+            <TextView
+                android:id="@+id/tv_monthly"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:text="Monthly"
+                android:fontFamily="@font/inter_medium"
+                android:textSize="@dimen/_11ssp"
+                android:textColor="@color/white"/>
+
+            <View
+                android:id="@+id/view_monthly"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_2sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tv_monthly"
+                app:layout_constraintEnd_toEndOf="@id/tv_monthly"
+                android:background="@drawable/bk_whatsapp"
+                android:backgroundTint="@color/color_primary"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/tv_yearly"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="@dimen/_25sdp"
+                android:text="Yearly "
+                android:fontFamily="@font/inter_medium"
+                android:textSize="@dimen/_11ssp"
+                android:textColor="@color/white"/>
+
+            <View
+                android:id="@+id/view_yearly"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_2sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tv_yearly"
+                app:layout_constraintEnd_toEndOf="@id/tv_yearly"
+                android:background="@drawable/bk_whatsapp"
+                android:backgroundTint="@color/color_primary"
+                android:visibility="gone"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_first"
+        android:layout_width="@dimen/_90sdp"
+        android:layout_height="@dimen/_130sdp"
+        app:layout_constraintTop_toBottomOf="@id/mcv_options"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/_100sdp"
+        android:background="@drawable/bg_top_round"
+        android:backgroundTint="#22273F">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_second"
+        android:layout_width="@dimen/_80sdp"
+        android:layout_height="@dimen/_90sdp"
+        app:layout_constraintBottom_toBottomOf="@id/cl_first"
+        app:layout_constraintEnd_toStartOf="@id/cl_first"
+        android:layout_marginTop="@dimen/_100sdp"
+        android:background="@drawable/bg_top_round"
+        android:backgroundTint="@color/bk_dark_card">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_third"
+        android:layout_width="@dimen/_80sdp"
+        android:layout_height="@dimen/_90sdp"
+        app:layout_constraintBottom_toBottomOf="@id/cl_first"
+        app:layout_constraintStart_toEndOf="@id/cl_first"
+        android:layout_marginTop="@dimen/_100sdp"
+        android:background="@drawable/bg_top_round"
+        android:backgroundTint="@color/bk_dark_card">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Under\nDevelopment"
+        android:fontFamily="@font/inter_medium"
+        android:textSize="@dimen/_16ssp"
+        android:textColor="@color/white"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

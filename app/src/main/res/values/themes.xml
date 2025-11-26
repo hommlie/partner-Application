@@ -1,0 +1,79 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+         <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryVariant">@color/color_primary</item>
+        <item name="colorOnPrimary">@color/color_primary</item>
+
+
+        <!-- Force light mode -->
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:statusBarColor">@color/color_primary</item> <!-- or your custom color -->
+        <item name="android:navigationBarColor">@color/white</item> <!-- optional -->
+        <!-- For status bar icon visibility (works with API 23+) -->
+        <item name="android:windowLightStatusBar">false</item>
+
+
+    </style>
+
+    <style name="AppCompatAlertDialogStyleBig" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+        <item name="android:windowAnimationStyle">@style/AnimationDialogWindow</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.8</item>
+    </style>
+
+    <style name="AnimationDialogWindow">
+        <item name="android:windowEnterAnimation">@anim/dialog_in</item>
+        <item name="android:windowExitAnimation">@anim/dialog_out</item>
+    </style>
+
+    <style name="logout_button">
+        <item name="android:layout_height">@dimen/_30sdp</item>
+        <item name="android:layout_width">@dimen/_50sdp</item>
+        <item name="android:background">@drawable/bg_button_10sdp</item>
+        <item name="android:textSize">@dimen/_10ssp</item>
+    </style>
+
+    <style name="Theme.MyApplication" parent="Base.Theme.MyApplication" />
+
+    <style name="Theme.Splash" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+
+<!--    <style name="PoppinsSemiBold">-->
+<!--        <item name="fontPath">fonts/plusjakartasans_semi_bold.ttf</item>-->
+<!--    </style>-->
+
+
+
+    <style name="DialogCustomTheme" parent="android:Theme.Holo.Dialog.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+    </style>
+
+
+
+    <style name="Theme.MyCustomTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Ensure the app layout is not drawn under the status bar -->
+<!--        <item name="android:windowTranslucentStatus">true</item>-->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:fitsSystemWindows">false</item>
+<!--                <item name="android:forceDarkAllowed">false</item>-->
+
+        <!--        &lt;!&ndash; Ensure status bar icons are visible based on the mode &ndash;&gt;-->
+        <!--        <item name="android:windowLightStatusBar">false</item>-->
+    </style>
+
+    <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetTransparent</item>
+    </style>
+
+    <style name="BottomSheetTransparent" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+</resources>

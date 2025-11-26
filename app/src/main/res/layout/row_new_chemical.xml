@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/mcv_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:layout_marginBottom="@dimen/_7sdp"
+        app:cardElevation="@dimen/_1sdp"
+        app:cardBackgroundColor="@color/white"
+        app:strokeWidth="0dp"
+        app:cardCornerRadius="@dimen/_6sdp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:padding="@dimen/_15sdp">
+
+
+            <TextView
+                android:id="@+id/tv_sno"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="wrap_content"
+                android:text="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:textSize="@dimen/_10ssp"
+                android:fontFamily="@font/inter_bold"
+
+                />
+            <TextView
+                android:id="@+id/tv_chemical_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Phynyl"
+                app:layout_constraintStart_toEndOf="@id/tv_sno"
+                app:layout_constraintEnd_toStartOf="@id/iv_arrow"
+                android:layout_marginEnd="@dimen/_10sdp"
+                app:layout_constraintTop_toTopOf="parent"
+                android:textSize="@dimen/_10ssp"
+                android:fontFamily="@font/inter_bold"
+                android:layout_marginStart="@dimen/_10sdp"
+                />
+
+            <ImageView
+                android:id="@+id/iv_arrow"
+                android:layout_width="@dimen/_18sdp"
+                android:layout_height="@dimen/_18sdp"
+                android:src="@drawable/ic_downarrow"
+                app:layout_constraintEnd_toStartOf="@id/checkbox"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginEnd="@dimen/_10sdp"
+                />
+
+            <androidx.appcompat.widget.AppCompatCheckBox
+                android:id="@+id/checkbox"
+                android:layout_width="@dimen/_22sdp"
+                android:layout_height="@dimen/_15sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"
+                />
+
+
+            <LinearLayout
+                android:id="@+id/ll_fulldetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:animateLayoutChanges="true"
+                app:layout_constraintTop_toBottomOf="@id/tv_sno"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:visibility="visible">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_2sdp"
+                    android:background="@drawable/dash_line"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:weightSum="2">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.4"
+                        android:text="📂  Category   :"
+                        android:textSize="@dimen/_10ssp"
+                        android:fontFamily="@font/plusjakartasans_semi_bold"
+                        android:textColor="@color/color_344054"/>
+                    <TextView
+                        android:id="@+id/tv_category"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.6"
+                        android:text=""
+                        android:textSize="@dimen/_10ssp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:weightSum="2">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.4"
+                        android:text="📦  Quantity     :"
+                        android:textSize="@dimen/_10ssp"
+                        android:fontFamily="@font/plusjakartasans_semi_bold"
+                        android:textColor="@color/color_344054"/>
+                    <TextView
+                        android:id="@+id/tv_quantity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.6"
+                        android:text="2 Ltr"
+                        android:textSize="@dimen/_10ssp"/>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:weightSum="2">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.4"
+                        android:text="🏷️  Batch no.   :"
+                        android:textSize="@dimen/_10ssp"
+                        android:fontFamily="@font/plusjakartasans_semi_bold"
+                        android:textColor="@color/color_344054"/>
+                    <TextView
+                        android:id="@+id/tv_batchno"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.6"
+                        android:text="-"
+                        android:textSize="@dimen/_10ssp"/>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:weightSum="2">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.4"
+                        android:text="📅   Given            :"
+                        android:textSize="@dimen/_10ssp"
+                        android:fontFamily="@font/plusjakartasans_semi_bold"
+                        android:textColor="@color/color_344054"/>
+                    <TextView
+                        android:id="@+id/tv_given"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.6"
+                        android:text="12 July"
+                        android:textSize="@dimen/_10ssp"/>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:weightSum="2">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.4"
+                        android:text="⏳  Expiry            :"
+                        android:textSize="@dimen/_10ssp"
+                        android:fontFamily="@font/plusjakartasans_semi_bold"
+                        android:textColor="@color/color_344054"/>
+                    <TextView
+                        android:id="@+id/tv_expiry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.6"
+                        android:text="20 Aug"
+                        android:textSize="@dimen/_10ssp"/>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:weightSum="2">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.4"
+                        android:text="📄  Remarks     :"
+                        android:textSize="@dimen/_10ssp"
+                        android:fontFamily="@font/plusjakartasans_semi_bold"
+                        android:textColor="@color/color_344054"/>
+                    <TextView
+                        android:id="@+id/tv_remarks"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.6"
+                        android:text="Use in well-ventilated areas"
+                        android:textSize="@dimen/_10ssp"/>
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/view_action"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1sdp"
+                    android:background="@drawable/dash_rectangle"
+                    android:backgroundTint="@color/light_gray"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    />
+
+                <LinearLayout
+                    android:id="@+id/ll_action"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:weightSum="2">
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/mcv_acknowledge"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_30sdp"
+                        app:cardBackgroundColor="@color/white"
+                        app:strokeWidth="0.5dp"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="@dimen/_6sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        app:strokeColor="@color/parrotgreen"
+                        >
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Acknowledge"
+                            android:textColor="@color/parrotgreen"
+                            android:fontFamily="@font/plussakartasans_medium"
+                            android:textSize="@dimen/_11ssp"
+                            android:paddingBottom="@dimen/_3sdp"
+                            android:gravity="center"/>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/mcv_report_issue"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_30sdp"
+                        app:cardBackgroundColor="@color/white"
+                        app:strokeWidth="0.5dp"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="@dimen/_6sdp"
+                        app:strokeColor="@color/red_logout"
+                        >
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Report Issue"
+                            android:textColor="@color/red_logout"
+                            android:fontFamily="@font/plussakartasans_medium"
+                            android:textSize="@dimen/_11ssp"
+                            android:paddingBottom="@dimen/_3sdp"
+                            android:gravity="center"/>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

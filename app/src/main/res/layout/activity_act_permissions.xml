@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.apppermissions.ActPermissions"
+    android:background="@color/white">
+
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/common_toolbar"
+        android:visibility="gone"/>
+
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_70sdp"
+        android:text="Grant Permissions"
+        android:textSize="20sp"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/_20sdp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/include_toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/color_primary_light"
+        android:layout_marginTop="0dp" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        android:layout_marginStart="@dimen/_13sdp"
+        android:layout_marginEnd="@dimen/_13sdp"
+        android:layout_marginTop="@dimen/_30sdp"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
+        android:visibility="gone"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingTop="@dimen/_14sdp"
+            android:paddingBottom="@dimen/_14sdp"
+            android:background="@drawable/gradient_bnt"
+            >
+
+            <ImageView
+                android:id="@+id/iv_drawover"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/ic_circle"
+                android:backgroundTint="@color/circle_bakground"
+                android:padding="@dimen/_7sdp"
+                android:src="@drawable/ic_displayoverp"
+                android:contentDescription="Permission Icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_drawover_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Draw over application"
+                android:textColor="@color/color_344054"
+                android:textSize="13sp"
+                app:layout_constraintStart_toEndOf="@id/iv_drawover"
+                android:layout_marginEnd="@dimen/_20sdp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/radio_drawover"
+                android:layout_marginStart="@dimen/_13sdp" />
+
+            <!-- Description -->
+            <TextView
+                android:id="@+id/tv_drawover_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Get incoming ride request while the app is in background"
+                android:textSize="12sp"
+                android:textColor="@color/medium_gray"
+                app:layout_constraintStart_toStartOf="@id/tv_drawover_title"
+                app:layout_constraintTop_toBottomOf="@id/tv_drawover_title"
+                android:layout_marginTop="@dimen/_3sdp"
+                app:layout_constraintEnd_toEndOf="@id/tv_drawover_title" />
+
+            <ImageView
+                android:id="@+id/radio_drawover"
+                android:layout_width="@dimen/_16sdp"
+                android:layout_height="@dimen/_16sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/ic_circle"
+                android:layout_marginEnd="@dimen/_8sdp"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/card1"
+        android:layout_marginStart="@dimen/_13sdp"
+        android:layout_marginEnd="@dimen/_13sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingTop="@dimen/_14sdp"
+            android:paddingBottom="@dimen/_14sdp"
+            android:background="@drawable/gradient_bnt"
+            >
+
+            <ImageView
+                android:id="@+id/iv_Autostart"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_location_p"
+                android:background="@drawable/ic_circle"
+                android:backgroundTint="@color/circle_bakground"
+                android:padding="@dimen/_7sdp"
+                android:contentDescription="Permission Icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_Autostart_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Background Location"
+                android:textColor="@color/color_344054"
+                android:textSize="13sp"
+                app:layout_constraintStart_toEndOf="@id/iv_Autostart"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginEnd="@dimen/_20sdp"
+                app:layout_constraintEnd_toStartOf="@id/radio_button_Autostart"
+                android:layout_marginStart="@dimen/_13sdp" />
+
+            <!-- Description -->
+            <TextView
+                android:id="@+id/tv_Autostart_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Location permission is required to find the rides near you"
+                android:textSize="12sp"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:textColor="@color/medium_gray"
+                app:layout_constraintStart_toStartOf="@id/tv_Autostart_title"
+                app:layout_constraintTop_toBottomOf="@id/tv_Autostart_title"
+                app:layout_constraintEnd_toEndOf="@id/tv_Autostart_title" />
+
+            <ImageView
+                android:id="@+id/radio_button_Autostart"
+                android:layout_width="@dimen/_16sdp"
+                android:layout_height="@dimen/_16sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/ic_circle"
+                android:layout_marginEnd="@dimen/_8sdp"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/card2"
+        android:layout_marginStart="@dimen/_13sdp"
+        android:layout_marginEnd="@dimen/_13sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingTop="@dimen/_14sdp"
+            android:paddingBottom="@dimen/_14sdp"
+            android:background="@drawable/gradient_bnt"
+            >
+
+            <ImageView
+                android:id="@+id/iv_Battery"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_batteryp"
+                android:contentDescription="Permission Icon"
+                android:background="@drawable/ic_circle"
+                android:backgroundTint="@color/circle_bakground"
+                android:padding="@dimen/_7sdp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_Battery_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Battery Optimization"
+                android:textColor="@color/color_344054"
+                android:textSize="13sp"
+                app:layout_constraintStart_toEndOf="@id/iv_Battery"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginEnd="@dimen/_20sdp"
+                app:layout_constraintEnd_toStartOf="@id/radio_button_Battery"
+                android:layout_marginStart="@dimen/_13sdp" />
+
+            <!-- Description -->
+            <TextView
+                android:id="@+id/tv_Battery_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Recommended, enables the app to run in background for longer"
+                android:textSize="12sp"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:textColor="@color/medium_gray"
+                app:layout_constraintStart_toStartOf="@id/tv_Battery_title"
+                app:layout_constraintTop_toBottomOf="@id/tv_Battery_title"
+                app:layout_constraintEnd_toEndOf="@id/tv_Battery_title" />
+
+            <ImageView
+                android:id="@+id/radio_button_Battery"
+                android:layout_width="@dimen/_16sdp"
+                android:layout_height="@dimen/_16sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/ic_circle"
+                android:layout_marginEnd="@dimen/_8sdp"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/card3"
+        android:layout_marginStart="@dimen/_13sdp"
+        android:layout_marginEnd="@dimen/_13sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingTop="@dimen/_14sdp"
+            android:paddingBottom="@dimen/_14sdp"
+            android:background="@drawable/gradient_bnt"
+            >
+
+            <ImageView
+                android:id="@+id/iv_Notification"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_notificationp"
+                android:contentDescription="Permission Icon"
+                android:background="@drawable/ic_circle"
+                android:backgroundTint="@color/circle_bakground"
+                android:padding="@dimen/_7sdp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_Notification_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Notification Access"
+                android:textColor="@color/color_344054"
+                android:textSize="13sp"
+                app:layout_constraintStart_toEndOf="@id/iv_Notification"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginEnd="@dimen/_20sdp"
+                app:layout_constraintEnd_toStartOf="@id/radio_button_Notification"
+                android:layout_marginStart="@dimen/_13sdp" />
+
+            <!-- Description -->
+            <TextView
+                android:id="@+id/tv_Notification_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Recommended, ensure that you never miss out on messages"
+                android:textSize="12sp"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:textColor="@color/medium_gray"
+                app:layout_constraintStart_toStartOf="@id/tv_Notification_title"
+                app:layout_constraintTop_toBottomOf="@id/tv_Notification_title"
+                app:layout_constraintEnd_toEndOf="@id/tv_Notification_title" />
+
+            <ImageView
+                android:id="@+id/radio_button_Notification"
+                android:layout_width="@dimen/_16sdp"
+                android:layout_height="@dimen/_16sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/ic_circle"
+                android:layout_marginEnd="@dimen/_8sdp"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/btn_continue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/gradient_bnt"
+        android:backgroundTint="@color/disable_btn"
+        android:layout_marginStart="@dimen/_13sdp"
+        android:layout_marginEnd="@dimen/_13sdp"
+        android:layout_marginBottom="@dimen/_13sdp"
+        android:textSize="@dimen/_16sdp"
+        android:text="Continue"
+        android:textAllCaps="false"
+        android:letterSpacing="0.05"
+        android:textColor="@color/white"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:enabled="false"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

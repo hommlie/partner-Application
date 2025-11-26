@@ -1,0 +1,46 @@
+# Gradle
+.gradle/
+build/
+*/build/
+
+# Local configuration
+local.properties
+
+# Android Studio
+*.iml
+.idea/
+!.idea/codeStyles
+
+# Generated files
+bin/
+gen/
+out/
+
+# Logs
+*.log
+
+# NDK
+obj/
+
+# Captures
+captures/
+
+# IntelliJ specific
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+
+# macOS
+.DS_Store
+
+# External Native Build
+.externalNativeBuild
+.cxx
+
+# App bundles and APKs
+*.apk
+*.aab
+*.ap_
+*.aar
+

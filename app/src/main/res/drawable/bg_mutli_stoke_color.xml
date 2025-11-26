@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background: white with full rounded corners -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/white"/>
+            <corners android:radius="@dimen/_8sdp"/>
+        </shape>
+    </item>
+
+    <!-- Top & Bottom (Blue strokes) -->
+    <item android:left="1dp" android:right="1dp">
+        <shape android:shape="rectangle">
+            <stroke android:width="1dp" android:color="@color/blue"/>
+            <solid android:color="@android:color/transparent"/>
+            <corners android:radius="@dimen/_8sdp"/>
+        </shape>
+    </item>
+
+    <!-- Left & Right (Purple strokes) -->
+    <item android:top="1dp" android:bottom="1dp">
+        <shape android:shape="rectangle">
+            <stroke android:width="1dp" android:color="@color/purple"/>
+            <solid android:color="@android:color/transparent"/>
+            <corners android:radius="@dimen/_8sdp"/>
+        </shape>
+    </item>
+
+</layer-list>
+

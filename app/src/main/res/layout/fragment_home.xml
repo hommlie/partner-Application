@@ -1,0 +1,983 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.home.Home"
+    android:background="@color/activity_bg">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_editprofile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="0dp"
+        android:background="@color/activity_bg"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_top"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_135sdp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/color_primary">
+            <TextView
+                android:id="@+id/tv_greeting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Earn with Hommlie"
+                android:textSize="@dimen/_13ssp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/inter_medium"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_12sdp"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/mcv_top"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_140sdp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            app:cardCornerRadius="@dimen/_8sdp"
+            android:layout_marginTop="@dimen/_43sdp"
+            android:background="@color/white"
+            >
+            <View
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_2sdp"
+                app:layout_constraintTop_toBottomOf="@id/mcv_empimage"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_17sdp"
+                android:background="@drawable/dash_line"
+                android:backgroundTint="@color/light_gray"
+                />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/mcv_empimage"
+                android:layout_width="@dimen/_50sdp"
+                android:layout_height="@dimen/_50sdp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginStart="@dimen/_12sdp"
+                app:cardCornerRadius="@dimen/_30sdp"
+                app:strokeWidth="0dp"
+                app:cardElevation="1dp">
+                <ImageView
+                    android:id="@+id/iv_empimage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/tv1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:text="Mr. Vishal"
+                app:layout_constraintEnd_toStartOf="@id/mcv_punch"
+                app:layout_constraintStart_toEndOf="@id/mcv_empimage"
+                app:layout_constraintTop_toTopOf="@id/mcv_empimage"
+                app:layout_constraintBottom_toTopOf="@id/tv2"
+                android:fontFamily="@font/inter_bold"
+                android:textSize="@dimen/_12ssp"
+                android:textColor="@color/color_primary"
+                />
+
+            <TextView
+                android:id="@+id/tv2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:text="Distance : 0 Km"
+                android:fontFamily="@font/inter_medium"
+                android:textSize="@dimen/_11ssp"
+                app:layout_constraintEnd_toStartOf="@id/mcv_punch"
+                app:layout_constraintStart_toEndOf="@id/mcv_empimage"
+                app:layout_constraintTop_toBottomOf="@id/tv1"
+                app:layout_constraintBottom_toTopOf="@id/tv_last_swipe"
+                />
+
+            <TextView
+                android:id="@+id/tv_last_swipe"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:text="Last Swipe :"
+                android:textSize="@dimen/_10ssp"
+                android:textColor="@color/color_66000000"
+                app:layout_constraintEnd_toStartOf="@id/mcv_punch"
+                app:layout_constraintStart_toEndOf="@id/mcv_empimage"
+                app:layout_constraintTop_toBottomOf="@id/tv2"
+                app:layout_constraintBottom_toBottomOf="@id/mcv_empimage"/>
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottieAnimationView"
+                android:layout_width="@dimen/_80sdp"
+                android:layout_height="@dimen/_82sdp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_gravity="center"
+                app:lottie_rawRes="@raw/fingerprint_scanning"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true" />
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/mcv_punch"
+                android:layout_width="@dimen/_50sdp"
+                android:layout_height="@dimen/_50sdp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginStart="@dimen/_12sdp"
+                app:cardCornerRadius="@dimen/_6sdp"
+                app:strokeWidth="0.5dp"
+                app:cardBackgroundColor="@color/white"
+                android:elevation="0dp"
+                app:cardElevation="0dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    <ImageView
+                        android:id="@+id/iv_punch"
+                        android:layout_width="@dimen/_25sdp"
+                        android:layout_height="@dimen/_25sdp"
+                        android:src="@drawable/ic_punch"
+                        android:tint="@color/orange"
+                        />
+                    <TextView
+                        android:id="@+id/tv_punch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Punch In"
+                        android:textColor="@color/orange"
+                        android:layout_marginTop="@dimen/_1sdp"
+                        android:fontFamily="@font/inter_medium"
+                        android:textSize="@dimen/_9ssp"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@id/view"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:weightSum="3"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/ll_totaljob"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_button_10sdp"
+                    android:backgroundTint="@color/white"
+                    android:layout_margin="@dimen/_3sdp"
+                    android:gravity="center"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Jobs"
+                        android:textColor="@color/color_66000000"
+                        android:textSize="@dimen/_10ssp"/>
+
+                    <TextView
+                        android:id="@+id/tv_totalJob"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:singleLine="true"
+                        android:textColor="@color/color_344054"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:fontFamily="@font/inter_bold"
+                        android:textSize="@dimen/_12ssp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_pendingjob"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_button_10sdp"
+                    android:backgroundTint="@color/white"
+                    android:layout_margin="@dimen/_3sdp"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pending Jobs"
+                        android:textColor="@color/color_66000000"
+                        android:textSize="@dimen/_10ssp"/>
+
+                    <TextView
+                        android:id="@+id/tv_pendingjob"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:singleLine="true"
+                        android:textColor="@color/color_344054"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:fontFamily="@font/inter_bold"
+                        android:textSize="@dimen/_12ssp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_completedjob"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_button_10sdp"
+                    android:backgroundTint="@color/white"
+                    android:layout_margin="@dimen/_3sdp"
+                    android:gravity="center"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Completed"
+                        android:textColor="@color/color_66000000"
+                        android:textSize="@dimen/_10ssp"/>
+
+                    <TextView
+                        android:id="@+id/tv_completedjob"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:textColor="@color/color_344054"
+                        android:text="0"
+                        android:fontFamily="@font/inter_bold"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:textSize="@dimen/_12ssp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+<!--        <Button-->
+<!--            android:id="@+id/btn_startlocation"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="@dimen/_40sdp"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:textSize="@dimen/_13ssp"-->
+<!--            android:text="Start Location"-->
+<!--            android:background="@drawable/bg_button_10sdp"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/btn_registration"-->
+<!--            android:layout_marginTop="@dimen/_10sdp"-->
+<!--            android:layout_marginStart="@dimen/_12sdp"-->
+<!--            android:layout_marginEnd="@dimen/_5sdp"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintEnd_toStartOf="@id/btn_stoplocation"-->
+<!--            android:layout_marginBottom="@dimen/_10sdp"-->
+<!--            />-->
+<!--        <Button-->
+<!--            android:id="@+id/btn_stoplocation"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="@dimen/_40sdp"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:textSize="@dimen/_13ssp"-->
+<!--            android:text="Stop Location"-->
+<!--            android:background="@drawable/bg_button_10sdp"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/btn_registration"-->
+<!--            android:layout_marginTop="@dimen/_10sdp"-->
+<!--            android:layout_marginStart="@dimen/_5sdp"-->
+<!--            android:layout_marginEnd="@dimen/_12sdp"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toEndOf="@id/btn_startlocation"-->
+<!--            android:layout_marginBottom="@dimen/_10sdp"-->
+<!--            />-->
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mcv_onsiteorder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/mcv_top"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:elevation="0dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardElevation="0dp"
+            app:strokeWidth="0.7dp"
+            android:visibility="gone"
+            app:strokeColor="@color/purple"
+            app:cardCornerRadius="@dimen/_10sdp"
+            >
+            <LinearLayout
+                android:id="@+id/cl_parentcl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/_11sdp"
+                android:paddingEnd="@dimen/_11sdp"
+                android:paddingBottom="@dimen/_11sdp"
+                android:paddingTop="@dimen/_11sdp"
+                android:weightSum="3"
+                android:orientation="horizontal"
+                >
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+                    <TextView
+                        android:id="@+id/tv_trackOrder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:text="  Inprogress"
+                        android:drawableStart="@drawable/ic_dot"
+                        android:drawableTint="#7D38EB"
+                        android:layout_marginTop="0dp"
+                        android:textColor="#7D38EB"
+                        android:textSize="@dimen/_9ssp"
+                        android:background="@drawable/bk_call"
+                        android:backgroundTint="#ECE9FC"
+                        android:fontFamily="@font/inter_medium"
+                        android:paddingStart="@dimen/_9sdp"
+                        android:paddingEnd="@dimen/_9sdp"
+                        android:paddingTop="@dimen/_3sdp"
+                        android:paddingBottom="@dimen/_3sdp"
+                        android:gravity="center"
+                        />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/tv_trackOrder"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginEnd="@dimen/_3sdp"
+                            >
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Customer Name"
+                                android:singleLine="true"
+                                android:textColor="#66000000"
+                                android:textSize="@dimen/_9ssp"
+                                android:layout_marginTop="@dimen/_2sdp"
+                                />
+                            <TextView
+                                android:id="@+id/tv_customername"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Vishal Rathaur"
+                                android:singleLine="true"
+                                android:textColor="@color/color_344054"
+                                android:layout_marginTop="@dimen/_5sdp"
+                                android:textSize="@dimen/_10ssp"
+                                android:fontFamily="@font/inter_bold"
+                                />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="@dimen/_3sdp"
+                            android:layout_marginEnd="0dp"
+                            >
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Contact"
+                                android:textColor="#66000000"
+                                android:singleLine="true"
+                                android:textSize="@dimen/_9ssp"
+                                android:layout_marginTop="@dimen/_2sdp"
+                                />
+                            <TextView
+                                android:id="@+id/tv_customercontact"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="9179518784"
+                                android:textColor="@color/color_344054"
+                                android:textSize="@dimen/_10ssp"
+                                android:singleLine="true"
+                                android:layout_marginTop="@dimen/_5sdp"
+                                android:fontFamily="@font/inter_bold"
+                                />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="@dimen/_1sdp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/_6sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:background="#F2F3F5"
+                    />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2">
+                    <TextView
+                        android:id="@+id/tv_startedat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:text="Started at"
+                        android:layout_marginTop="0dp"
+                        android:textSize="@dimen/_10ssp"
+                        android:fontFamily="@font/inter_medium"
+                        android:gravity="center"
+                        />
+                    <ImageView
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_15sdp"
+                        android:src="@drawable/back"
+                        android:tint="@color/right_icon_color"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        />
+                    <TextView
+                        android:id="@+id/tv_startedtime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="02:20 PM"
+                        android:singleLine="true"
+                        app:layout_constraintTop_toBottomOf="@id/tv_startedat"
+                        app:layout_constraintBottom_toTopOf="@id/tv_starteddate"
+                        android:textColor="@color/color_344054"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:textSize="@dimen/_15ssp"
+                        android:fontFamily="@font/inter_bold"
+                        />
+                    <TextView
+                        android:id="@+id/tv_starteddate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="16 Jul, 2025"
+                        android:singleLine="true"
+                        app:layout_constraintTop_toBottomOf="@id/tv_startedtime"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:textColor="#66000000"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:textSize="@dimen/_9ssp"
+                        android:fontFamily="@font/inter_medium"
+                        />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mcv_jobs"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_6sdp"
+            app:cardElevation="@dimen/_3sdp"
+            android:elevation="@dimen/_3sdp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="@dimen/_10sdp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/mcv_other"
+            app:layout_constraintTop_toBottomOf="@id/mcv_onsiteorder">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/_25sdp"
+                    android:layout_height="@dimen/_25sdp"
+                    android:src="@drawable/ic_whatsapp"
+
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color_344054"
+                    android:text="Your Today's\nJob"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:fontFamily="@font/inter_bold"
+                    android:textSize="@dimen/_11ssp"
+                    />
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mcv_other"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginStart="@dimen/_6sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            app:cardElevation="@dimen/_3sdp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/mcv_jobs"
+            app:layout_constraintTop_toBottomOf="@id/mcv_onsiteorder">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/_25sdp"
+                    android:layout_height="@dimen/_25sdp"
+                    android:src="@drawable/ic_whatsapp"
+
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color_344054"
+                    android:text="Contact Us"
+                    android:gravity="center"
+                    android:lines="2"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:fontFamily="@font/inter_bold"
+                    android:textSize="@dimen/_11ssp"
+                    />
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mcv_options"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            app:cardElevation="@dimen/_1sdp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="@dimen/_10sdp"
+            app:layout_constraintTop_toBottomOf="@id/mcv_jobs">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_srt_options"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                tools:listitem="@layout/row_home_options"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                />
+
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/tv_yourtime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/mcv_options"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="@dimen/_13sdp"
+            android:text="Your Time &amp; Attendance"
+            android:textColor="@color/color_344054"
+            android:textSize="@dimen/_12ssp"
+            android:fontFamily="@font/plusjakartasans_semi_bold"
+            android:layout_marginTop="@dimen/_20sdp"
+            />
+        <TextView
+            android:id="@+id/tv_viewall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/tv_yourtime"
+            app:layout_constraintBottom_toBottomOf="@id/tv_yourtime"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:text="View All"
+            android:textColor="@color/purple"
+            android:textSize="@dimen/_11ssp"
+            android:fontFamily="@font/inter_medium"
+            />
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mcv_yourtime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tv_yourtime"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            app:cardElevation="@dimen/_1sdp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="@dimen/_10sdp">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:padding="@dimen/_15sdp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/mcv_clock"
+                    android:layout_width="@dimen/_35sdp"
+                    android:layout_height="@dimen/_35sdp"
+                    app:cardElevation="0dp"
+                    android:elevation="0dp"
+                    app:strokeColor="@color/skybule"
+                    app:cardBackgroundColor="@color/light_skyblue"
+                    app:cardCornerRadius="@dimen/_20sdp"
+                    app:strokeWidth="0dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    >
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_clock"
+                        android:padding="@dimen/_8sdp"
+                        android:tint="@color/color_344054"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:id="@+id/tv_total_absence_incurrentmonth"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Absence in this month"
+                    android:singleLine="true"
+                    android:textSize="@dimen/_10ssp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    app:layout_constraintTop_toBottomOf="@id/mcv_clock"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/mcv_apply_leave"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    />
+                <TextView
+                    android:id="@+id/tv_total_leave_available"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Half Day"
+                    android:singleLine="true"
+                    android:textSize="@dimen/_10ssp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_total_absence_incurrentmonth"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/mcv_apply_leave"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_kmtravelled"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Travelled Today's"
+                    android:singleLine="true"
+                    android:textSize="@dimen/_10ssp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_total_leave_available"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/mcv_apply_leave"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/mcv_apply_leave"
+                    android:layout_width="@dimen/_88sdp"
+                    android:layout_height="@dimen/_25sdp"
+                    app:cardElevation="0dp"
+                    android:elevation="0dp"
+                    app:strokeColor="@color/select_icon"
+                    app:cardBackgroundColor="#E9EFFD"
+                    app:cardCornerRadius="@dimen/_20sdp"
+                    app:strokeWidth="0.8dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:visibility="gone"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textSize="@dimen/_10ssp"
+                        android:text="Apply Leave"
+                        android:gravity="center"
+                        android:textColor="@color/select_icon"
+                        />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/mcv_apply_regularize"
+                    android:layout_width="@dimen/_88sdp"
+                    android:layout_height="@dimen/_25sdp"
+                    app:cardElevation="0dp"
+                    android:elevation="0dp"
+                    app:strokeColor="@color/leafegreen"
+                    app:cardBackgroundColor="#EBFBF6"
+                    app:cardCornerRadius="@dimen/_20sdp"
+                    app:strokeWidth="0.8dp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    app:layout_constraintTop_toBottomOf="@id/mcv_apply_leave"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:visibility="gone"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textSize="@dimen/_10ssp"
+                        android:text="Apply Regularize"
+                        android:gravity="center"
+                        android:textColor="@color/leafegreen"
+                        />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/mcv_apply_outdoor"
+                    android:layout_width="@dimen/_88sdp"
+                    android:layout_height="@dimen/_25sdp"
+                    app:cardElevation="0dp"
+                    android:elevation="0dp"
+                    app:strokeColor="@color/orange"
+                    app:cardBackgroundColor="#FFF8F1"
+                    app:cardCornerRadius="@dimen/_20sdp"
+                    app:strokeWidth="0.8dp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    app:layout_constraintTop_toBottomOf="@id/mcv_apply_regularize"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:visibility="gone"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textSize="@dimen/_10ssp"
+                        android:text="Apply Outdoor"
+                        android:gravity="center"
+                        android:textColor="@color/orange"
+                        />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:id="@+id/tv_spenthrs"
+                    android:layout_width="@dimen/_75sdp"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="--:--"
+                    android:textSize="@dimen/_15ssp"
+                    android:textColor="@color/color_344054"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:fontFamily="@font/inter_bold"
+                    app:layout_constraintStart_toEndOf="@id/mcv_clock"
+                    app:layout_constraintTop_toTopOf="@id/mcv_clock"
+                    app:layout_constraintBottom_toTopOf="@id/tv_spenttoday"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="hrs"
+                    android:textSize="@dimen/_15ssp"
+                    android:textColor="@color/color_344054"
+                    android:layout_marginStart="@dimen/_1sdp"
+                    android:fontFamily="@font/inter_bold"
+                    app:layout_constraintStart_toEndOf="@id/tv_spenthrs"
+                    app:layout_constraintTop_toTopOf="@id/mcv_clock"
+                    app:layout_constraintBottom_toTopOf="@id/tv_spenttoday"
+                    />
+                <TextView
+                    android:id="@+id/tv_spenttoday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="Spent Today"
+                    android:textSize="@dimen/_9ssp"
+                    app:layout_constraintStart_toStartOf="@id/tv_spenthrs"
+                    app:layout_constraintTop_toBottomOf="@id/tv_spenthrs"
+                    app:layout_constraintBottom_toBottomOf="@id/mcv_clock"
+                    />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+
+
+        <TextView
+            android:id="@+id/tv_reward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/mcv_yourtime"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="@dimen/_13sdp"
+            android:text="Rewards &amp; Recognitions"
+            android:textColor="@color/color_344054"
+            android:textSize="@dimen/_12ssp"
+            android:fontFamily="@font/plusjakartasans_semi_bold"
+            android:layout_marginTop="@dimen/_20sdp"
+            />
+        <TextView
+            android:id="@+id/tv_rewardviewall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/tv_reward"
+            app:layout_constraintBottom_toBottomOf="@id/tv_reward"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:text="View All"
+            android:textColor="@color/purple"
+            android:visibility="gone"
+            android:textSize="@dimen/_11ssp"
+            android:fontFamily="@font/inter_medium"
+            />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mcv_reward"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_100sdp"
+            app:layout_constraintTop_toBottomOf="@id/tv_reward"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            app:cardElevation="@dimen/_1sdp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="@dimen/_10sdp">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_reward"
+                android:scaleType="centerCrop"/>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <TextView
+            android:id="@+id/tv_referearn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/mcv_reward"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="@dimen/_13sdp"
+            android:text="Refer &amp; Earn"
+            android:textColor="@color/color_344054"
+            android:textSize="@dimen/_12ssp"
+            android:fontFamily="@font/plusjakartasans_semi_bold"
+            android:layout_marginTop="@dimen/_20sdp"
+            />
+        <TextView
+            android:id="@+id/tv_referearn_viewall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/tv_referearn"
+            app:layout_constraintBottom_toBottomOf="@id/tv_referearn"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:text="View All"
+            android:textColor="@color/purple"
+            android:textSize="@dimen/_12ssp"
+            android:fontFamily="@font/sfprodisplay_medium"
+            android:visibility="gone"
+            />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mcv_referal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_100sdp"
+            app:layout_constraintTop_toBottomOf="@id/tv_referearn"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            app:cardElevation="@dimen/_1sdp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="@dimen/_20sdp"
+            app:cardCornerRadius="@dimen/_10sdp">
+
+            <ImageView
+                android:id="@+id/iv_refer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                />
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+        <View
+            android:id="@+id/view_statusbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/color_primary"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+ </FrameLayout>

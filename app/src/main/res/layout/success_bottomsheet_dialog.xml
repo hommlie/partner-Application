@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/dialog_bg"
+    android:padding="@dimen/_8sdp"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/iv_close"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:src="@drawable/ic_close"
+        android:layout_marginTop="@dimen/_8sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        app:tint="@color/Blackcolor" />
+
+
+
+    <ImageView
+        android:id="@+id/ivTrueCheckMark"
+        android:src="@drawable/ic_selfiee"
+        android:layout_width="@dimen/_80sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/_10sdp"
+        app:layout_constraintTop_toBottomOf="@id/tvSuccess"
+        android:layout_height="@dimen/_80sdp"/>
+
+    <TextView
+        android:id="@+id/tvSuccess"
+        android:layout_width="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="0dp"
+        android:text="Upload Selfie"
+        android:textColor="@color/colorPrimaryDark"
+        android:paddingBottom="@dimen/_3sdp"
+        android:fontFamily="@font/plusjakartasans_semi_bold"
+        android:textSize="22sp"
+        android:layout_height="wrap_content"/>
+    
+
+        <TextView
+            android:id="@+id/tvSuccessDescription"
+            android:textColor="@color/Blackcolor"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/ivTrueCheckMark"
+            android:text="It is mandatory to upload selfie\nbefore going On-Site."
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="5dp"
+            android:layout_height="wrap_content"/>
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/tvSuccessDescription"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:layout_height="wrap_content">
+
+
+        <Button
+            android:id="@+id/btncontinueshopping"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:text="More Services"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:visibility="gone"
+            app:backgroundTint="@color/colorPrimaryDark"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_button_10sdp"/>
+
+        <Button
+            android:id="@+id/btn_takeselfie"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:text="Take Selfie"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:paddingBottom="@dimen/_3sdp"
+            android:fontFamily="@font/plusjakartasans_semi_bold"
+            android:textSize="16sp"
+            android:layout_marginStart="4dp"
+            android:visibility="visible"
+            android:elevation="@dimen/_2sdp"
+            android:layout_margin="@dimen/_4sdp"
+            android:background="@drawable/bg_button_10sdp"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
