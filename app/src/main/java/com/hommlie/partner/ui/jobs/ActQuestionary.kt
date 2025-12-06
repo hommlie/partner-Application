@@ -97,8 +97,10 @@ class ActQuestionary : AppCompatActivity() {
 
 
         if (orderStatus=="2"){
+            orderStatus = "3"
             setupToolbar(toolbarView, "Pre Inspection", this, R.color.transparent, R.color.black)
         }else if (orderStatus=="3"){
+            orderStatus = "4"
             setupToolbar(toolbarView, "Post Inspection", this, R.color.transparent, R.color.black)
         }
 
@@ -183,10 +185,10 @@ class ActQuestionary : AppCompatActivity() {
                             viewModel.resetUIState()
 
                             // IF no question found to skipping the current task
-                            if (orderStatus=="2"){
+                            if (orderStatus=="3"){
                                 JobDetails.isonsiteAnswersubmit.value="1"
                             }
-                            if (orderStatus=="3"){
+                            if (orderStatus=="4"){
                                 JobDetails.isOnCompleteAnswersubmit.value="1"
                             }
 
@@ -219,11 +221,11 @@ class ActQuestionary : AppCompatActivity() {
                         is UIState.Success->{
                             ProgressDialogUtil.dismiss()
                             viewModel.resetUISubmitAnswer()
-                            if (orderStatus=="2"){
+                            if (orderStatus=="3"){
                                 JobDetails.isonsiteAnswersubmit.value="1"
                                 CommonMethods.getToast(this@ActQuestionary,"Answers submitted successfully.")
                             }
-                            if (orderStatus=="3"){
+                            if (orderStatus=="4"){
                                 JobDetails.isOnCompleteAnswersubmit.value="1"
                                 CommonMethods.getToast(this@ActQuestionary,"Answers submitted successfully.")
                             }

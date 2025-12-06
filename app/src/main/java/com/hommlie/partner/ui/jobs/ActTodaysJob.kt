@@ -1,4 +1,4 @@
-package com.hommlie.partner.ui.jobs
+package com.hommlie.partner
 
 import android.app.DatePickerDialog
 import android.content.Intent
@@ -6,34 +6,36 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import com.hommlie.partner.R
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.WindowCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.databinding.ActivityActTodaysJobBinding
 import com.hommlie.partner.model.NewOrderData
+import com.hommlie.partner.ui.jobs.JobDetails
+import com.hommlie.partner.ui.jobs.JobsViewModel
+import com.hommlie.partner.ui.jobs.NewJobsAdapter
+import com.hommlie.partner.ui.jobs.RaiseHelp
 import com.hommlie.partner.utils.CommonMethods
 import com.hommlie.partner.utils.CommonMethods.toFormattedDate_ddmmmyyyy
 import com.hommlie.partner.utils.PrefKeys
 import com.hommlie.partner.utils.ProgressDialogUtil
 import com.hommlie.partner.utils.SharePreference
 import com.hommlie.partner.utils.setupToolbar
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.util.Calendar
-import javax.inject.Inject
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class ActTodaysJob : AppCompatActivity() {
@@ -44,8 +46,8 @@ class ActTodaysJob : AppCompatActivity() {
     lateinit var sharePreference: SharePreference
 
     private val viewModel: JobsViewModel by viewModels()
-    private val allJobsList = mutableListOf<NewOrderData>()
 
+    private val allJobsList = mutableListOf<NewOrderData>()
     private lateinit var adapter: NewJobsAdapter
 
     private val hashMapNewJob = HashMap<String, String>()
@@ -56,10 +58,13 @@ class ActTodaysJob : AppCompatActivity() {
     private var title = ""
     private var parentDate = ""
 
-    // Track API completions for “All Jobs”
+    // Flags & temp storage used for merging multi-call results
+    private var newJobLoaded = false
     private var pendingLoaded = false
     private var completedLoaded = false
     private val tempAllList = mutableListOf<NewOrderData>()
+
+    private var currentType = JobType.PENDING
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +81,7 @@ class ActTodaysJob : AppCompatActivity() {
         title = intent.getStringExtra("title") ?: "Today's Pending Jobs"
         parentDate = CommonMethods.getCurrentDateFormatted()
 
-        setupToolbar(binding.includeToolbar.root, title, this, R.color.activity_bg, R.color.black)
+        setupToolbar(binding.includeToolbar.root, title, this, R.color.white, R.color.black)
         setupInsets()
         setupRecyclerView()
         setupSwipeRefresh()
@@ -87,7 +92,7 @@ class ActTodaysJob : AppCompatActivity() {
         setupDatePicker()
     }
 
-    //  System Bar Setup
+    // --- UI setup helpers ---
     private fun setupInsets() {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             WindowCompat.getInsetsController(window, window.decorView)?.apply {
@@ -97,12 +102,16 @@ class ActTodaysJob : AppCompatActivity() {
         }
     }
 
-    //  Setup RecyclerView + Adapter
     private fun setupRecyclerView() {
         adapter = NewJobsAdapter(
             onCheckOrders = { clickedJobData ->
-                viewModel.checkOrders(hashMapPendingJob)
-                observeHasOrder(clickedJobData)
+                if (clickedJobData.orderStatus == "3") {
+                    startJobDetails(clickedJobData)
+                } else {
+                    // check if technician has other orders
+                    viewModel.checkOrders(hashMapPendingJob)
+                    observeHasOrder(clickedJobData) // this will navigate on success=false
+                }
             },
             onClick_raiseHelp = { clickedJobData ->
                 val json = Gson().toJson(clickedJobData)
@@ -116,22 +125,20 @@ class ActTodaysJob : AppCompatActivity() {
         binding.rvJobs.adapter = adapter
     }
 
-    //  Swipe to Refresh
     private fun setupSwipeRefresh() {
         binding.swipeRefresh.setOnRefreshListener {
             when (title) {
-                "Today's Completed Jobs" -> viewModel.getNewJobs(hashMapCompletedJob)
-                "Today's Pending Jobs" -> viewModel.getNewJobs(hashMapNewJob)
-                else -> loadAllJobs()
+                "Today's Completed Jobs" -> loadJobs(JobType.COMPLETED)
+                "Today's Pending Jobs" -> loadJobs(JobType.PENDING)
+                else -> loadJobs(JobType.ALL)
             }
         }
     }
 
-    //  Prepare API parameters
     private fun prepareHashMaps() {
         hashMapNewJob.apply {
             put("user_id", userId)
-            put("order_status", "2") // Pending
+            put("order_status", "2") // New/pending
             put("date", CommonMethods.getCurrentDateFormatted())
         }
         hashMapPendingJob.apply {
@@ -144,15 +151,13 @@ class ActTodaysJob : AppCompatActivity() {
         }
     }
 
-    //  Observe Job Data
+    // --- Observers ---
     private fun observeNewJobsData() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.jobsUIState.collect { state ->
+                viewModel.jobsUIState.collectLatest { state ->
                     when (state) {
-                        is UIState.Loading -> {
-                            ProgressDialogUtil.showLoadingProgress(this@ActTodaysJob, lifecycleScope)
-                        }
+                        is UIState.Loading -> ProgressDialogUtil.showLoadingProgress(this@ActTodaysJob, lifecycleScope)
 
                         is UIState.Success -> {
                             ProgressDialogUtil.dismiss()
@@ -175,40 +180,82 @@ class ActTodaysJob : AppCompatActivity() {
         }
     }
 
-
-
-    //  Handle Job Success Response
+    // --- Job response handling ---
     private fun handleJobResponse(newList: List<NewOrderData>) {
-        when (title) {
-            "Today's Completed Jobs",
-            "Today's Pending Jobs" -> {
-                allJobsList.clear()
-                allJobsList.addAll(newList)
+        when (currentType) {
+            JobType.COMPLETED -> {
+                allJobsList.apply {
+                    clear()
+                    addAll(newList)
+                }
                 updateUI()
             }
 
-            else -> {
-                //  All Jobs case (Pending + Completed)
-                if (!pendingLoaded) {
-                    pendingLoaded = true
-                    tempAllList.addAll(newList)
-                    Log.d("ActTodaysJob", "Pending data loaded: ${newList.size}")
-                } else if (!completedLoaded) {
-                    completedLoaded = true
-                    tempAllList.addAll(newList)
-                    Log.d("ActTodaysJob", "Completed data loaded: ${newList.size}")
-                }
+            JobType.PENDING -> handlePendingSequence(newList)
 
-                checkIfBothLoaded()
-            }
+            JobType.ALL -> handleAllSequence(newList)
         }
     }
 
-    //  Handle API Error (including No Data case)
+    private fun handlePendingSequence(newList: List<NewOrderData>) {
+        // Sequence: pending (order_status=3) first then new (order_status=2)
+        if (!pendingLoaded) {
+            pendingLoaded = true
+            tempAllList.addAll(newList)
+            // not final yet — wait for new jobs
+            return
+        }
+
+        if (!newJobLoaded) {
+            newJobLoaded = true
+            tempAllList.addAll(newList)
+        }
+
+        // both arrived → finalize
+        if (pendingLoaded && newJobLoaded) {
+            allJobsList.apply {
+                clear()
+                addAll(tempAllList.distinctBy { it.orderId })
+            }
+            updateUI()
+            // reset for next time
+            resetFlags(JobType.PENDING)
+        }
+    }
+
+    private fun handleAllSequence(newList: List<NewOrderData>) {
+        // Sequence: pending -> new -> completed
+        when {
+            !pendingLoaded -> {
+                pendingLoaded = true
+                tempAllList.addAll(newList)
+                return
+            }
+
+            !newJobLoaded -> {
+                newJobLoaded = true
+                tempAllList.addAll(newList)
+                return
+            }
+
+            !completedLoaded -> {
+                completedLoaded = true
+                tempAllList.addAll(newList)
+            }
+        }
+
+        if (pendingLoaded && newJobLoaded && completedLoaded) {
+            allJobsList.apply {
+                clear()
+                addAll(tempAllList.distinctBy { it.orderId })
+            }
+            updateUI()
+            resetFlags(JobType.ALL)
+        }
+    }
+
     private fun handleJobError(message: String) {
-        if (message.equals("User Not Found", true) ||
-            message.equals("Employee Not Found", true)
-        ) {
+        if (message.equals("User Not Found", true) || message.equals("Employee Not Found", true)) {
             Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
             CommonMethods.logOut(sharePreference, this)
             return
@@ -216,84 +263,96 @@ class ActTodaysJob : AppCompatActivity() {
 
         Log.w("ActTodaysJob", "Error: $message")
 
-        //  If All Jobs mode, mark whichever failed as loaded
-        if (title != "Today's Completed Jobs" && title != "Today's Pending Jobs") {
-            if (!pendingLoaded) {
-                pendingLoaded = true
-                Log.w("ActTodaysJob", "Pending API failed or empty")
-            } else if (!completedLoaded) {
-                completedLoaded = true
-                Log.w("ActTodaysJob", "Completed API failed or empty")
+        when (currentType) {
+            JobType.COMPLETED -> {
+                allJobsList.clear()
+                updateUI()
             }
-            checkIfBothLoaded()
-        } else {
-            allJobsList.clear()
-            updateUI()
+
+            JobType.PENDING -> {
+                if (!pendingLoaded) pendingLoaded = true
+                else if (!newJobLoaded) newJobLoaded = true
+                // finalize if both marked
+                if (pendingLoaded && newJobLoaded) {
+                    allJobsList.apply {
+                        clear()
+                        addAll(tempAllList.distinctBy { it.orderId })
+                    }
+                    updateUI()
+                    resetFlags(JobType.PENDING)
+                }
+            }
+
+            JobType.ALL -> {
+                if (!pendingLoaded) pendingLoaded = true
+                else if (!newJobLoaded) newJobLoaded = true
+                else if (!completedLoaded) completedLoaded = true
+
+                if (pendingLoaded && newJobLoaded && completedLoaded) {
+                    allJobsList.apply {
+                        clear()
+                        addAll(tempAllList.distinctBy { it.orderId })
+                    }
+                    updateUI()
+                    resetFlags(JobType.ALL)
+                }
+            }
         }
     }
 
-    //  Helper to finalize merging once both APIs have responded
-    private fun checkIfBothLoaded() {
-        if (pendingLoaded && completedLoaded) {
-            allJobsList.clear()
-            allJobsList.addAll(tempAllList.distinctBy { it.orderId })
-            updateUI()
-
-            // Reset flags for next time
-            pendingLoaded = false
-            completedLoaded = false
-            tempAllList.clear()
-
-            Log.d("ActTodaysJob", "Both APIs processed → Final list size: ${allJobsList.size}")
-        }
+    // --- Utilities ---
+    private fun resetFlags(type: JobType) {
+        newJobLoaded = false
+        pendingLoaded = false
+        tempAllList.clear()
+        if (type == JobType.ALL) completedLoaded = false
     }
 
-    //  Update UI
     private fun updateUI() {
-        adapter.submitList(ArrayList(allJobsList))
+        adapter.submitList(allJobsList.toList())
         binding.tvNumber.text = allJobsList.size.toString()
 
-        if (allJobsList.isEmpty()) {
-            binding.tvNodata.visibility = View.VISIBLE
-            binding.rvJobs.visibility = View.GONE
-        } else {
-            binding.tvNodata.visibility = View.GONE
-            binding.rvJobs.visibility = View.VISIBLE
-        }
+        val empty = allJobsList.isEmpty()
+        binding.tvNodata.visibility = if (empty) View.VISIBLE else View.GONE
+        binding.rvJobs.visibility = if (empty) View.GONE else View.VISIBLE
     }
 
+    private fun startJobDetails(item: NewOrderData) {
+        val json = Gson().toJson(item)
+        startActivity(Intent(this@ActTodaysJob, JobDetails::class.java).apply {
+            putExtra("job_data", json)
+        })
+    }
 
-
-    //  Observe Has Order
+    // Called when adapter item triggers checkOrders; kept separate so navigation happens from here
     private fun observeHasOrder(clickedJobData: NewOrderData) {
         lifecycleScope.launch {
-            viewModel.hasOrdersUiState.collect { state ->
-                when (state) {
-                    is UIState.Idle -> Unit
-                    is UIState.Loading -> ProgressDialogUtil.showLoadingProgress(this@ActTodaysJob, lifecycleScope)
-                    is UIState.Success -> {
-                        viewModel.resetCheckOrder()
-                        ProgressDialogUtil.dismiss()
-                        if (state.data) {
-                            Toast.makeText(this@ActTodaysJob, "Please finish the current job", Toast.LENGTH_SHORT).show()
-                        } else {
-                            val json = Gson().toJson(clickedJobData)
-                            startActivity(Intent(this@ActTodaysJob, JobDetails::class.java).apply {
-                                putExtra("job_data", json)
-                            })
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.hasOrdersUiState.collect { state ->
+                    when (state) {
+                        is UIState.Loading -> ProgressDialogUtil.showLoadingProgress(this@ActTodaysJob, lifecycleScope)
+                        is UIState.Success -> {
+                            viewModel.resetCheckOrder()
+                            ProgressDialogUtil.dismiss()
+                            if (state.data) {
+                                Toast.makeText(this@ActTodaysJob, "Please finish the current job", Toast.LENGTH_SHORT).show()
+                            } else {
+                                startJobDetails(clickedJobData)
+                            }
                         }
-                    }
-                    is UIState.Error -> {
-                        viewModel.resetCheckOrder()
-                        ProgressDialogUtil.dismiss()
-                        Toast.makeText(this@ActTodaysJob, state.message, Toast.LENGTH_SHORT).show()
+                        is UIState.Error -> {
+                            viewModel.resetCheckOrder()
+                            ProgressDialogUtil.dismiss()
+                            Toast.makeText(this@ActTodaysJob, state.message, Toast.LENGTH_SHORT).show()
+                        }
+                        is UIState.Idle -> Unit
                     }
                 }
             }
         }
     }
 
-    //  Date picker for Completed Jobs
+    // Date-picker (Completed jobs)
     private fun setupDatePicker() {
         binding.tvDate.setOnClickListener {
             if (!CommonMethods.isCheckNetwork(this)) {
@@ -301,7 +360,7 @@ class ActTodaysJob : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val calendar = Calendar.getInstance()
+            val calendar = java.util.Calendar.getInstance()
             DatePickerDialog(
                 this,
                 { _, year, month, day ->
@@ -311,11 +370,11 @@ class ActTodaysJob : AppCompatActivity() {
                     parentDate = date
                     binding.tvDate.text = date.toFormattedDate_ddmmmyyyy()
                     hashMapCompletedJob["date"] = date
-                    viewModel.getNewJobs(hashMapCompletedJob)
+                    loadJobs(JobType.COMPLETED)
                 },
-                calendar[Calendar.YEAR],
-                calendar[Calendar.MONTH],
-                calendar[Calendar.DAY_OF_MONTH]
+                calendar[java.util.Calendar.YEAR],
+                calendar[java.util.Calendar.MONTH],
+                calendar[java.util.Calendar.DAY_OF_MONTH]
             ).apply {
                 datePicker.maxDate = calendar.timeInMillis
                 show()
@@ -326,48 +385,57 @@ class ActTodaysJob : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        if (title == "Today's Completed Jobs") {
-            binding.clDate.visibility = View.VISIBLE
-            binding.tvDate.text = parentDate.toFormattedDate_ddmmmyyyy()
-
-            hashMapCompletedJob["date"] = parentDate
-            viewModel.getNewJobs(hashMapCompletedJob)
-
-        } else if (title == "Today's Pending Jobs") {
-            binding.clDate.visibility = View.GONE
-            viewModel.getNewJobs(hashMapNewJob)
-
-        } else {
-            // 🔄 Reset flags for All Jobs
-            binding.clDate.visibility = View.GONE
-            pendingLoaded = false
-            completedLoaded = false
-            tempAllList.clear()
-
-            lifecycleScope.launch {
-                // 1️⃣ Get Pending Jobs First
-                viewModel.getNewJobs(hashMapNewJob)
-
-                // 2️⃣ Then Completed Jobs
+        when (title) {
+            "Today's Completed Jobs" -> {
+                binding.clDate.visibility = View.VISIBLE
+                binding.tvDate.text = parentDate.toFormattedDate_ddmmmyyyy()
                 hashMapCompletedJob["date"] = parentDate
-                viewModel.getNewJobs(hashMapCompletedJob)
+                loadJobs(JobType.COMPLETED)
+            }
+
+            "Today's Pending Jobs" -> {
+                binding.clDate.visibility = View.GONE
+                loadJobs(JobType.PENDING)
+            }
+
+            else -> {
+                binding.clDate.visibility = View.GONE
+                loadJobs(JobType.ALL)
             }
         }
     }
 
+    // Main loader: we intentionally call the sequence with small delays so ViewModel emissions are easier to merge.
+    private fun loadJobs(type: JobType) {
+        currentType = type
+        resetFlags(type)
 
-    //  Sequential loading for All Jobs
-    private fun loadAllJobs() {
         lifecycleScope.launch {
-            pendingLoaded = false
-            completedLoaded = false
-            tempAllList.clear()
+            when (type) {
+                JobType.COMPLETED -> {
+                    hashMapCompletedJob["date"] = parentDate
+                    viewModel.getNewJobs(hashMapCompletedJob)
+                }
 
-            // Fetch pending → completed sequentially
-            viewModel.getNewJobs(hashMapNewJob)
-            delay(300) // small delay to ensure ViewModel emits sequentially
-            hashMapCompletedJob["date"] = parentDate
-            viewModel.getNewJobs(hashMapCompletedJob)
+                JobType.PENDING -> {
+                    // pending(3) then new(2)
+                    viewModel.getNewJobs(hashMapPendingJob)
+                    delay(250)
+                    viewModel.getNewJobs(hashMapNewJob)
+                }
+
+                JobType.ALL -> {
+                    // pending(3) -> new(2) -> completed(4)
+                    viewModel.getNewJobs(hashMapPendingJob)
+                    delay(250)
+                    viewModel.getNewJobs(hashMapNewJob)
+                    delay(250)
+                    hashMapCompletedJob["date"] = parentDate
+                    viewModel.getNewJobs(hashMapCompletedJob)
+                }
+            }
         }
     }
+
+    enum class JobType { COMPLETED, PENDING, ALL }
 }

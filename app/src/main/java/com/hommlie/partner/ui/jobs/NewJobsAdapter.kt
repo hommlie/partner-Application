@@ -3,6 +3,7 @@ package com.hommlie.partner.ui.jobs
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -80,14 +81,48 @@ private val onClick_raiseHelp: (NewOrderData) -> Unit)
                 tvTrackOrder.visibility = View.INVISIBLE
                 tvHelp.visibility = View.GONE
                 ivStamp.visibility = View.VISIBLE
+
+                tvTrackOrder.text = "Completed"
+                tvTrackOrder.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.color_primary))
+                tvTrackOrder.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.context,R.color.green_light))
+
                 trackCard.strokeColor = ContextCompat.getColor(holder.itemView.context, R.color.parrotgreen)
-            } else {
+            }else if (job.orderStatus == "3") {
                 holder.itemView.isEnabled = true
                 cl2.visibility = View.VISIBLE
                 viewNav.visibility = View.VISIBLE
                 tvHelp.visibility = View.VISIBLE
                 tvTrackOrder.visibility = View.VISIBLE
                 ivStamp.visibility = View.GONE
+
+                tvTrackOrder.text = "On-Site"
+                tvTrackOrder.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.purple))
+                tvTrackOrder.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.context,R.color.light_orange))
+
+                trackCard.strokeColor = ContextCompat.getColor(holder.itemView.context, R.color.purple)
+            }else if (job.orderStatus == "2"){
+                holder.itemView.isEnabled = true
+                cl2.visibility = View.VISIBLE
+                viewNav.visibility = View.VISIBLE
+                tvHelp.visibility = View.VISIBLE
+                tvTrackOrder.visibility = View.VISIBLE
+                ivStamp.visibility = View.GONE
+
+                tvTrackOrder.text = "Dispatched"
+                tvTrackOrder.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.orange))
+                tvTrackOrder.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.context,R.color.light_orange))
+
+                trackCard.strokeColor = ContextCompat.getColor(holder.itemView.context, R.color.job_stroke_color)
+            } else{
+                holder.itemView.isEnabled = false
+                cl2.visibility = View.VISIBLE
+                viewNav.visibility = View.VISIBLE
+                tvHelp.visibility = View.VISIBLE
+                tvTrackOrder.visibility = View.VISIBLE
+                ivStamp.visibility = View.GONE
+
+                tvTrackOrder.text = "?"
+
                 trackCard.strokeColor = ContextCompat.getColor(holder.itemView.context, R.color.job_stroke_color)
             }
 
@@ -104,11 +139,6 @@ private val onClick_raiseHelp: (NewOrderData) -> Unit)
                     false,
                     true
                 ) {
-//                    val gson = Gson()
-//                    val json = gson.toJson(job)
-//                    val intent = Intent(holder.itemView.context , JobDetails::class.java)
-//                    intent.putExtra("job_data",json)
-//                    (holder.itemView.context).startActivity(intent)
                     onCheckOrders(job)
                 }
 
