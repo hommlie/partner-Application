@@ -1,4 +1,4 @@
-package com.hommlie.partner
+package com.hommlie.partner.ui.jobs
 
 import android.app.DatePickerDialog
 import android.content.Intent
@@ -22,6 +22,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.hommlie.partner.R
 import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.databinding.ActivityActTodaysJobBinding
 import com.hommlie.partner.model.NewOrderData
