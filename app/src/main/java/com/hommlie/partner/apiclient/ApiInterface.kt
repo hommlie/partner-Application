@@ -3,7 +3,6 @@ package com.hommlie.partner.apiclient
 import com.hommlie.partner.model.AdvanceRequests
 import com.hommlie.partner.model.AttendanceResponse
 import com.hommlie.partner.model.BankDetails
-import com.hommlie.partner.model.BreakDown
 import com.hommlie.partner.model.CheckVersionResponse
 import com.hommlie.partner.model.ChemicalsResponse
 import com.hommlie.partner.model.CmsPageResponse
@@ -18,8 +17,8 @@ import com.hommlie.partner.model.OnlineOfflineResponse
 import com.hommlie.partner.model.OrderQuestions
 import com.hommlie.partner.model.PaymentLinkResponse
 import com.hommlie.partner.model.PaymentStatus
-import com.hommlie.partner.model.PayslipResponse
 import com.hommlie.partner.model.PersonalDetails
+import com.hommlie.partner.model.SalaryBreakDown
 import com.hommlie.partner.model.SigninSignup
 import com.hommlie.partner.model.SingleResponse
 import com.hommlie.partner.model.SingleResponseForOrderThree
@@ -141,7 +140,7 @@ interface ApiInterface {
     suspend fun saveBankDetails(@Body map:HashMap<String,String>):DynamicSingleResponseWithData<BankDetails>
 
     @POST("partner/paySlip")
-    suspend fun getPaySlip(@Body map : HashMap<String,String>): DynamicSingleResponseWithData<PayslipResponse>
+    suspend fun getPaySlip(@Body map : HashMap<String,String>): DynamicSingleResponseWithData<SalaryBreakDown>
 
     @Multipart
     @POST("partner/registeration_form")

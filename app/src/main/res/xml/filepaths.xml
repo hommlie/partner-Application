@@ -18,6 +18,10 @@
         name="download"
         path="Download/" />
 
-    <!-- Add more paths as needed -->
+    <external-path
+        name="docs"
+        path="Documents/Payslips/" />
+
+
 </paths>
 

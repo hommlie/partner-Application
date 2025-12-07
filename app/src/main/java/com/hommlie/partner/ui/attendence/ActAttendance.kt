@@ -62,8 +62,8 @@ class ActAttendance : AppCompatActivity() {
     private lateinit var leavetypeRecylerView : RecyclerView
 //    private lateinit var lineChart: LineChart
 
-    private lateinit var punchActivity_adapter : PunchActivityAdapter
-    private lateinit var punchActivity_RecylerView : RecyclerView
+//    private lateinit var punchActivity_adapter : PunchActivityAdapter
+//    private lateinit var punchActivity_RecylerView : RecyclerView
     private var dateStatusMap: Map<String, String> = emptyMap()
 
 
@@ -92,12 +92,12 @@ class ActAttendance : AppCompatActivity() {
         leavetypeRecylerView.layoutManager = LinearLayoutManager(this)
         leavetypeRecylerView.adapter = adapter
 
-        punchActivity_RecylerView = binding.rvPunchtimes
+       /* punchActivity_RecylerView = binding.rvPunchtimes
         punchActivity_adapter = PunchActivityAdapter()
         punchActivity_RecylerView.layoutManager = LinearLayoutManager(this)
         punchActivity_RecylerView.setHasFixedSize(false)
         punchActivity_RecylerView.isNestedScrollingEnabled = false
-        punchActivity_RecylerView.adapter = punchActivity_adapter
+        punchActivity_RecylerView.adapter = punchActivity_adapter */
 
 
 
@@ -287,13 +287,13 @@ class ActAttendance : AppCompatActivity() {
                         }
                         is UIState.Success -> {
                             ProgressDialogUtil.dismiss()
-                            state.data.data?.let { punchList ->
+                            state.data.data?.data?.let { punchList ->
                                 if (punchList.isNotEmpty()) {
                                     // Sort by punchIn safely
                                     val sortedList = punchList.sortedBy { safeParseInstant(it.punchIn) }
 
                                     // Submit list to adapter
-                                    punchActivity_adapter.submitList(sortedList)
+//                                    punchActivity_adapter.submitList(sortedList)
 
                                     // Pick first non-null punchIn
                                     val firstPunchIn = sortedList.firstOrNull { !it.punchIn.isNullOrBlank() }?.punchIn
@@ -319,14 +319,14 @@ class ActAttendance : AppCompatActivity() {
 
                                 } else {
                                     // Empty list
-                                    punchActivity_adapter.submitList(emptyList())
+//                                    punchActivity_adapter.submitList(emptyList())
                                     binding.tvIntime.text = "--"
                                     binding.tvOuttime.text = "--"
                                     binding.tvTotaltime.text = "--"
                                 }
                             } ?: run {
                                 // Null data
-                                punchActivity_adapter.submitList(emptyList())
+//                                punchActivity_adapter.submitList(emptyList())
                                 binding.tvIntime.text = "--"
                                 binding.tvOuttime.text = "--"
                                 binding.tvTotaltime.text = "--"
@@ -345,7 +345,7 @@ class ActAttendance : AppCompatActivity() {
                                 CommonMethods.logOut(sharePreference, this@ActAttendance)
                                 return@collect
                             }
-                            punchActivity_adapter.submitList(null)
+//                            punchActivity_adapter.submitList(null)
                             binding.tvIntime.text = "--"
                             binding.tvOuttime.text = "--"
                             binding.tvTotaltime.text = "--"
@@ -443,19 +443,19 @@ class ActAttendance : AppCompatActivity() {
                             // Update summary views safely
                             binding.tvAbsent.text = summary?.absent?.toString() ?: "-"
                             binding.tvLeave.text = summary?.onLeave?.toString() ?: "-"
-                            binding.tvHalfday.text = summary?.halfDay?.toString() ?: "-"
-                            binding.tvDayworked.text = summary?.daysWorked?.toString() ?: "-"
+                            binding.tvPresent.text = summary?.daysWorked?.toString() ?: "-"
 
-                            binding.tvLatein.text = summary?.lateIn?.toString() ?: "-"
-                            binding.tvEarlyout.text = summary?.earlyOut?.toString() ?: "-"
-                            binding.tvDeficithr.text = summary?.deficitHr?.toString() ?: "-"
-                            binding.tvTotalwh.text = summary?.totalWH?.toString() ?: "-"
-                            binding.tvAvgwh.text = summary?.avgWH?.toString() ?: "-"
+//                            binding.tvDayworked.text = summary?.daysWorked?.toString() ?: "-"
+//                            binding.tvLatein.text = summary?.lateIn?.toString() ?: "-"
+//                            binding.tvEarlyout.text = summary?.earlyOut?.toString() ?: "-"
+//                            binding.tvDeficithr.text = summary?.deficitHr?.toString() ?: "-"
+//                            binding.tvTotalwh.text = summary?.totalWH?.toString() ?: "-"
+//                            binding.tvAvgwh.text = summary?.avgWH?.toString() ?: "-"
 
                             // Update calendar dots
                             val attendance = attendanceData?.attendance
                             if (!attendance.isNullOrEmpty()) {
-                                setupLineChart(binding.lineChart,attendance)
+//                                setupLineChart(binding.lineChart,attendance)
                                 val dateStatusMapping = attendance.associate { it.date to it.status }
 
                                 setupCalendarDots(attendance)
@@ -512,7 +512,7 @@ class ActAttendance : AppCompatActivity() {
 
 
 
-    @SuppressLint("SetTextI18n")
+ /*   @SuppressLint("SetTextI18n")
     private fun setupLineChart(lineChart: LineChart, attendance: List<AttendanceRecord>) {
         if (attendance.isEmpty()) return
 
@@ -597,7 +597,7 @@ class ActAttendance : AppCompatActivity() {
 
         lineChart.animateX(800, Easing.EaseInOutQuad)
         lineChart.invalidate()
-    }
+    } */
 
     private fun convertTimeToHours(time: String): Float {
         val parts = time.split(":")

@@ -91,9 +91,9 @@ class HomeViewModel  @Inject constructor(
         viewModelScope.launch {
             _dailyPuchLog.value = UIState.Loading
             try{
-                val respone =   repository.dailyPuchLog(map)  //getMockDailyPunchLogResponse()
+                val respone = repository.dailyPuchLog(map)  //getMockDailyPunchLogResponse()
 
-                if (respone.status == 1 && respone.data !=null){
+                if (respone.data !=null){
                     _dailyPuchLog.value = UIState.Success(respone)
                 }else{
                     _dailyPuchLog.value = UIState.Error(respone.message ?: "Punch logs empty")
@@ -291,35 +291,6 @@ class HomeViewModel  @Inject constructor(
         val seconds = totalSeconds % 60
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
-
-
-
-
-
-
-    fun getMockDailyPunchLogResponse(): DailyPunchLogResponse {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-
-        val targetDate = LocalDate.of(2025, 7, 24) // Mock date you're testing
-        val sessions = listOf(
-            PunchSession(
-                punchIn = targetDate.atTime(9, 0).format(formatter),
-                punchOut = targetDate.atTime(13, 0).format(formatter)
-            ),
-            PunchSession(
-                punchIn = targetDate.atTime(14, 0).format(formatter),
-                punchOut = targetDate.atTime(18, 0).format(formatter)
-            )
-            // You can add more sessions if needed for this specific date
-        )
-
-        return DailyPunchLogResponse(
-            status = 1,
-            message = "Mock data for ${targetDate}",
-            data = sessions
-        )
-    }
-
 
     fun fetchWeather(lat: Double, lng: Double, apiKey: String) {
         viewModelScope.launch {

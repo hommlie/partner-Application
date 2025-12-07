@@ -11,7 +11,15 @@ data class DailyPunchLogResponse(
     val message: String,
 
     @SerializedName("data")
-    val data: List<PunchSession>?
+    val data: DataLogs?=null
+
+)
+data class DataLogs(
+    @SerializedName("is_active")
+    val is_active: Int?,
+
+    @SerializedName("punches")
+    val data: List<PunchSession>? = null
 
 )
 

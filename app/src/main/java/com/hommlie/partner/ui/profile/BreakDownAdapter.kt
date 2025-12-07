@@ -25,8 +25,8 @@ class BreakDownAdapter(
 
     override fun onBindViewHolder(holder: BreakDownViewHolder, position: Int) {
         val item = items[position]
-        holder.tvName.text = item.name
-        holder.tvAmount.text = "\u20b9 "+item.amount
+//        holder.tvName.text = item.name
+//        holder.tvAmount.text = "\u20b9 "+item.amount
     }
 
     override fun getItemCount(): Int = items.size

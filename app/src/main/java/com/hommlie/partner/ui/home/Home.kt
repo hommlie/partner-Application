@@ -453,6 +453,8 @@ class Home : Fragment() {
                                         CommonMethods.setServiceRunning(requireContext(), false)
                                         requireContext().stopService(Intent(requireContext(), LocationService::class.java))
 
+                                        requireContext().showToast("Location tracking stopped")
+
                                         viewModel.stopTimer()
 
 //                                        val stopIntent = Intent(requireActivity(), LocationService::class.java)
@@ -820,7 +822,7 @@ class Home : Fragment() {
 //        getLastLocation("3")
 
         if (isAdded) {
-            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
+           /* if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
 
                 binding.tvPunch.text = "Punch Out"
                 binding.ivPunch.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.red_logout))
@@ -840,24 +842,25 @@ class Home : Fragment() {
 
                 binding.mcvOnsiteorder.visibility = View.GONE
 
+            } */
+            if (sharePreference.getBoolean(PrefKeys.IS_LOGGED_IN)){
+                binding.tvGreeting.text = "${CommonMethods.getGreetingMessage()} !"
+                binding.tv1.text = "Hello, ${sharePreference.getString(PrefKeys.userName).substringBefore(",")?:""}"
+            }else{
+                binding.tvGreeting.text = "Start earning with hommlie"
             }
+            Glide.with(requireContext()).load(sharePreference.getString(PrefKeys.userProfile)).placeholder(R.drawable.ic_placeholder_profile).into(binding.ivEmpimage)
+
+
+            viewModel.getUserJobData()
+
+            binding.tvLastSwipe.text = "Last Swipe : "+sharePreference.getString(PrefKeys.lastSwipe)
+            val hashMap = HashMap<String,String>()
+            hashMap["user_id"] = sharePreference.getString(PrefKeys.userId)
+            hashMap["date"] = CommonMethods.getCurrentDateFormatted()
+            viewModel.getDailyPuchLog(hashMap)
         }
-        if (sharePreference.getBoolean(PrefKeys.IS_LOGGED_IN)){
-            binding.tvGreeting.text = "${CommonMethods.getGreetingMessage()} !"
-            binding.tv1.text = "Hello, ${sharePreference.getString(PrefKeys.userName).substringBefore(",")?:""}"
-        }else{
-            binding.tvGreeting.text = "Start earning with hommlie"
-        }
-        Glide.with(requireContext()).load(sharePreference.getString(PrefKeys.userProfile)).placeholder(R.drawable.ic_placeholder_profile).into(binding.ivEmpimage)
 
-
-        viewModel.getUserJobData()
-
-        binding.tvLastSwipe.text = "Last Swipe : "+sharePreference.getString(PrefKeys.lastSwipe)
-        val hashMap = HashMap<String,String>()
-        hashMap["user_id"] = sharePreference.getString(PrefKeys.userId)
-        hashMap["date"] = CommonMethods.getCurrentDateFormatted()
-        viewModel.getDailyPuchLog(hashMap)
 
         hasShownBackgroundDeniedDialog = false
 
@@ -883,9 +886,26 @@ class Home : Fragment() {
             }
         }
 
-
-
     }
+
+    private fun updatePunchInUI() {
+        binding.tvPunch.text = "Punch In"
+        binding.ivPunch.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.green))
+        binding.tvPunch.setTextColor(ContextCompat.getColor(requireContext(), R.color.green))
+        binding.mcvPunch.strokeColor = ContextCompat.getColor(requireContext(), R.color.green)
+        binding.mcvPunch.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green_light))
+        binding.mcvOnsiteorder.visibility = View.GONE
+    }
+    private fun updatePunchOutUI() {
+        binding.tvPunch.text = "Punch Out"
+        binding.ivPunch.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.red_logout))
+        binding.tvPunch.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_logout))
+        binding.mcvPunch.strokeColor = ContextCompat.getColor(requireContext(), R.color.red_logout)
+        binding.mcvPunch.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red_logout_light))
+    }
+
+
+
 
     private fun observOnsiteJob(){
         lifecycleScope.launch {
@@ -1000,14 +1020,67 @@ class Home : Fragment() {
                         is UIState.Loading -> {
                             ProgressDialogUtil.showLoadingProgress(requireActivity(),lifecycleScope)
                         }
-                        is UIState.Success -> {
+                      /*  is UIState.Success -> {
                             ProgressDialogUtil.dismiss()
-                            state.data.data?.let {
+                            state.data.data?.data?.let {
                                 val isPunchedIn = sharePreference.getString(PrefKeys.Punch_Status) == "1"
                                 viewModel.startTimer(it,isPunchedIn)
                             }
+
+                            viewModel.resetDailyPunchState()
+                        } */
+                        is UIState.Success -> {
+                            ProgressDialogUtil.dismiss()
+
+                            val punchStatus = sharePreference.getString(PrefKeys.Punch_Status)
+                            val previousPunchedIn = punchStatus == "1"   // Pehle kya tha
+
+                            val serverData = state.data.data
+
+                            // ---- TIMER MANAGEMENT ----
+                            serverData?.data?.let { timerData ->
+                                val isPunchedInNow = serverData.is_active == 1
+                                viewModel.startTimer(timerData, isPunchedInNow)
+                            }
+
+                            // ---- STATUS MANAGEMENT ----
+                            serverData?.is_active?.let { isActive ->
+
+                                if (isActive == 1) {
+                                    // Punch IN
+                                    updatePunchOutUI()
+                                    sharePreference.setString(PrefKeys.Punch_Status, "1")
+
+//                                    if (!previousPunchedIn) {
+//                                        // Only start if previously not active
+////                                        startLocationService()
+//                                    }
+
+                                } else {
+                                    // Punch OUT
+                                    updatePunchInUI()
+                                    sharePreference.setString(PrefKeys.Punch_Status, "0")
+
+                                    if (previousPunchedIn) {
+                                        // Only stop if previously active
+
+                                        setTracking(requireContext(), false)
+                                        CommonMethods.setServiceRunning(requireContext(), false)
+                                        requireContext().stopService(Intent(requireContext(), LocationService::class.java))
+
+                                        requireContext().showToast("Location tracking stopped")
+
+                                        viewModel.stopTimer()
+                                        locationRepository.update_empOnlineStatus(false)
+
+                                    }
+                                }
+                            }
+
+                            // Reset State
                             viewModel.resetDailyPunchState()
                         }
+
                         is UIState.Error -> {
                             ProgressDialogUtil.dismiss()
 //                            CommonMethods.alertErrorOrValidationDialog(requireActivity(),state.message)

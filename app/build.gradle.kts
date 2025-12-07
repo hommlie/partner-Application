@@ -155,6 +155,13 @@ dependencies {
 
     implementation("com.github.gcacace:signature-pad:1.3.1")
 
+    implementation("com.itextpdf:itext7-core:7.2.5") {
+        exclude(group = "org.bouncycastle")
+    }
+    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
+
+    implementation("com.github.mhiew:android-pdf-viewer:3.2.0-beta.3")
+
 }
 
 

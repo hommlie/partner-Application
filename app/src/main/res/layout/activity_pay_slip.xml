@@ -5,19 +5,31 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/activity_bg"
     tools:context=".ui.profile.PaySlip">
 
     <include
         android:id="@+id/include_toolbar"
         layout="@layout/common_toolbar" />
 
+    <ImageView
+        android:id="@+id/iv_calender"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:src="@drawable/ic_calender"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        app:layout_constraintTop_toBottomOf="@id/include_toolbar">
+        app:layout_constraintTop_toBottomOf="@id/include_toolbar"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/iv_companylogo"
@@ -29,16 +41,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/iv_calender"
-            android:layout_width="@dimen/_20sdp"
-            android:layout_height="@dimen/_20sdp"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:layout_marginEnd="@dimen/_10sdp"
-            android:src="@drawable/ic_calender"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_month"
@@ -51,62 +53,28 @@
             android:textColor="@color/dark_gray"
             android:textSize="@dimen/_14ssp"
             app:layout_constraintBottom_toBottomOf="@id/iv_companylogo"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/iv_companylogo" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh"
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="@dimen/_1sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="@dimen/_7sdp"
         app:layout_constraintTop_toBottomOf="@id/cl1">
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/tv_notransactionfound"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:text="Pay Slip not available\nfor this month"
-            android:fontFamily="@font/inter_medium"
-            android:textSize="@dimen/_14ssp"
-            android:textColor="@color/color_primary"
-            android:visibility="gone"
-            android:gravity="center"
-            />
-    <LinearLayout
-        android:id="@+id/ll_pdf"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
-
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/progressBar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_3sdp"
-            android:indeterminate="true"
-            android:visibility="gone"
-            app:trackColor="@color/progress_track_color"
-            app:indicatorColor="@color/progress_indicator_color"/>
 
 
-        <ImageView
-            android:id="@+id/pdfPage"
+        <com.github.barteksc.pdfviewer.PDFView
+            android:id="@+id/pdfView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/_8sdp"
-            android:layout_marginBottom="@dimen/_12sdp"
-            android:layout_weight="1"
-            android:scaleType="fitCenter" />
+            app:layout_constraintBottom_toTopOf="@id/btnDownload"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"/>
 
 
         <TextView
@@ -121,178 +89,25 @@
             android:fontFamily="@font/inter_medium"
             android:gravity="center"
             android:text="Download PDF"
-            android:visibility="gone"
             android:textColor="@color/white"
-            android:textSize="@dimen/_12ssp" />
-    </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            android:textSize="@dimen/_12ssp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!--    <androidx.core.widget.NestedScrollView-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="0dp"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/include_toolbar"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        android:visibility="gone"-->
-    <!--        >-->
-    <!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="wrap_content">-->
-
-    <!--    <com.google.android.material.card.MaterialCardView-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginStart="@dimen/_12sdp"-->
-    <!--        android:layout_marginEnd="@dimen/_12sdp"-->
-    <!--        android:layout_marginTop="@dimen/_15sdp"-->
-    <!--        app:cardCornerRadius="@dimen/_8sdp"-->
-    <!--        app:layout_constraintTop_toTopOf="parent"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        android:layout_marginBottom="@dimen/_20sdp"-->
-    <!--        app:cardBackgroundColor="@color/white"-->
-    <!--        app:strokeWidth="0dp"-->
-    <!--        app:cardElevation="@dimen/_2sdp"-->
-    <!--        >-->
-    <!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:background="@color/white">-->
-
-    <!--            <ImageView-->
-    <!--                android:id="@+id/iv_companylogo"-->
-    <!--                android:layout_width="@dimen/_30sdp"-->
-    <!--                android:layout_height="@dimen/_30sdp"-->
-    <!--                app:layout_constraintTop_toTopOf="parent"-->
-    <!--                app:layout_constraintStart_toStartOf="parent"-->
-    <!--                android:layout_marginTop="@dimen/_15sdp"-->
-    <!--                android:layout_marginStart="@dimen/_10sdp"-->
-    <!--                android:src="@drawable/app_logo"-->
-    <!--                />-->
-    <!--            <ImageView-->
-    <!--                android:id="@+id/iv_calender"-->
-    <!--                android:layout_width="@dimen/_20sdp"-->
-    <!--                android:layout_height="@dimen/_20sdp"-->
-    <!--                app:layout_constraintTop_toTopOf="parent"-->
-    <!--                app:layout_constraintEnd_toEndOf="parent"-->
-    <!--                android:layout_marginTop="@dimen/_15sdp"-->
-    <!--                android:layout_marginStart="@dimen/_10sdp"-->
-    <!--                android:layout_marginEnd="@dimen/_10sdp"-->
-    <!--                android:src="@drawable/ic_calender"-->
-    <!--                />-->
-    <!--            <TextView-->
-    <!--                android:layout_width="wrap_content"-->
-    <!--                android:layout_height="wrap_content"-->
-    <!--                android:text="Pay Slip"-->
-    <!--                android:fontFamily="@font/inter_bold"-->
-    <!--                android:textColor="@color/black"-->
-    <!--                android:textSize="@dimen/_14ssp"-->
-    <!--                app:layout_constraintStart_toEndOf="@id/iv_companylogo"-->
-    <!--                android:layout_marginStart="@dimen/_10sdp"-->
-    <!--                app:layout_constraintTop_toTopOf="@id/iv_companylogo"-->
-    <!--                app:layout_constraintBottom_toBottomOf="@id/iv_companylogo"/>-->
-
-    <!--            <TextView-->
-    <!--                android:id="@+id/tv_month"-->
-    <!--                android:layout_width="wrap_content"-->
-    <!--                android:layout_height="wrap_content"-->
-    <!--                android:text="July 2025"-->
-    <!--                android:textColor="@color/dark_gray"-->
-    <!--                android:fontFamily="@font/inter_medium"-->
-    <!--                android:textSize="@dimen/_14ssp"-->
-    <!--                app:layout_constraintStart_toStartOf="parent"-->
-    <!--                android:layout_marginStart="@dimen/_10sdp"-->
-    <!--                android:layout_marginTop="@dimen/_10sdp"-->
-    <!--                app:layout_constraintTop_toBottomOf="@id/iv_companylogo"/>-->
-
-    <!--            <TextView-->
-    <!--                android:id="@+id/tv_salaybreakdown"-->
-    <!--                android:layout_width="wrap_content"-->
-    <!--                android:layout_height="wrap_content"-->
-    <!--                android:text="Salary Breakdown"-->
-    <!--                android:textColor="@color/text_black"-->
-    <!--                android:fontFamily="@font/inter_medium"-->
-    <!--                android:textSize="@dimen/_14ssp"-->
-    <!--                app:layout_constraintStart_toStartOf="parent"-->
-    <!--                android:layout_marginStart="@dimen/_10sdp"-->
-    <!--                android:layout_marginTop="@dimen/_20sdp"-->
-    <!--                app:layout_constraintTop_toBottomOf="@id/tv_month"/>-->
-    <!--            <androidx.recyclerview.widget.RecyclerView-->
-    <!--                android:id="@+id/rv_salary_breakdown"-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="wrap_content"-->
-    <!--                tools:listitem="@layout/row_salaybreakdown"-->
-    <!--                android:layout_marginTop="@dimen/_15sdp"-->
-    <!--                android:overScrollMode="never"-->
-    <!--                android:nestedScrollingEnabled="false"-->
-    <!--                app:layout_constraintTop_toBottomOf="@id/tv_salaybreakdown"/>-->
-
-    <!--            <TextView-->
-    <!--                android:id="@+id/tv_deductionbreakdown"-->
-    <!--                android:layout_width="wrap_content"-->
-    <!--                android:layout_height="wrap_content"-->
-    <!--                android:text="Deductions"-->
-    <!--                android:textColor="@color/text_black"-->
-    <!--                android:fontFamily="@font/inter_medium"-->
-    <!--                android:textSize="@dimen/_14ssp"-->
-    <!--                app:layout_constraintStart_toStartOf="parent"-->
-    <!--                android:layout_marginStart="@dimen/_10sdp"-->
-    <!--                android:layout_marginTop="@dimen/_13sdp"-->
-    <!--                app:layout_constraintTop_toBottomOf="@id/rv_salary_breakdown"/>-->
-    <!--            <androidx.recyclerview.widget.RecyclerView-->
-    <!--                android:id="@+id/rv_deduction_breakdown"-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="wrap_content"-->
-    <!--                android:layout_marginTop="@dimen/_15sdp"-->
-    <!--                android:overScrollMode="never"-->
-    <!--                tools:listitem="@layout/row_salaybreakdown"-->
-    <!--                android:nestedScrollingEnabled="false"-->
-    <!--                app:layout_constraintTop_toBottomOf="@id/tv_deductionbreakdown"/>-->
-
-    <!--            <TextView-->
-    <!--                android:layout_width="wrap_content"-->
-    <!--                android:layout_height="wrap_content"-->
-    <!--                android:text="Net Pay"-->
-    <!--                android:textColor="@color/text_black"-->
-    <!--                android:fontFamily="@font/inter_medium"-->
-    <!--                android:textSize="@dimen/_14ssp"-->
-    <!--                app:layout_constraintStart_toStartOf="parent"-->
-    <!--                android:layout_marginStart="@dimen/_10sdp"-->
-    <!--                android:layout_marginTop="@dimen/_10sdp"-->
-    <!--                app:layout_constraintTop_toBottomOf="@id/rv_deduction_breakdown"/>-->
-    <!--            <TextView-->
-    <!--                android:id="@+id/tv_netpay"-->
-    <!--                android:layout_width="wrap_content"-->
-    <!--                android:layout_height="wrap_content"-->
-    <!--                android:text="$ 0"-->
-    <!--                android:textColor="@color/text_black"-->
-    <!--                android:fontFamily="@font/inter_medium"-->
-    <!--                android:textSize="@dimen/_14ssp"-->
-    <!--                app:layout_constraintEnd_toEndOf="parent"-->
-    <!--                android:layout_marginStart="@dimen/_10sdp"-->
-    <!--                android:layout_marginEnd="@dimen/_10sdp"-->
-    <!--                android:layout_marginTop="@dimen/_10sdp"-->
-    <!--                app:layout_constraintTop_toBottomOf="@id/rv_deduction_breakdown"/>-->
-
-    <!--            <Button-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="@dimen/_38sdp"-->
-    <!--                app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--                app:layout_constraintTop_toBottomOf="@id/tv_netpay"-->
-    <!--                android:background="@drawable/bg_button_10sdp"-->
-    <!--                android:text="Download"-->
-    <!--                android:textColor="@color/white"-->
-    <!--                android:textSize="@dimen/_12ssp"-->
-    <!--                android:layout_marginStart="@dimen/_10sdp"-->
-    <!--                android:layout_marginEnd="@dimen/_10sdp"-->
-    <!--                android:layout_marginBottom="@dimen/_15sdp"-->
-    <!--                android:layout_marginTop="@dimen/_24sdp"-->
-    <!--                android:fontFamily="@font/inter_medium"/>-->
-    <!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
-    <!--    </com.google.android.material.card.MaterialCardView>-->
-
-
-    <!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
-    <!--    </androidx.core.widget.NestedScrollView>-->
-
+        <TextView
+            android:id="@+id/tv_notransactionfound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_medium"
+            android:gravity="center"
+            android:text="Pay Slip not available\nfor this month"
+            android:textColor="@color/color_primary"
+            android:textSize="@dimen/_14ssp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

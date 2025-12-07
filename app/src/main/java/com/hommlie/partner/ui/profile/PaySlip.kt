@@ -32,15 +32,20 @@ import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
 import android.app.DownloadManager
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.net.Uri
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import androidx.activity.enableEdgeToEdge
+import androidx.core.content.FileProvider
+import com.hommlie.partner.model.SalaryBreakDown
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
@@ -56,11 +61,6 @@ class PaySlip : AppCompatActivity() {
     @Inject
     lateinit var sharePreference: SharePreference
 
-    private lateinit var rvSalayBreakDown : RecyclerView
-    private lateinit var rvDeductionBreakDown : RecyclerView
-
-    private lateinit var salaryAdapter: BreakDownAdapter
-    private lateinit var deductionAdapter: BreakDownAdapter
     private var hashmap = HashMap<String,String>()
 
     private var pdfFile: File? = null
@@ -90,7 +90,7 @@ class PaySlip : AppCompatActivity() {
         }
 
         val toolbarView = binding.root.findViewById<View>(R.id.include_toolbar)
-        setupToolbar(toolbarView, "Pay Slip", this, R.color.white, R.color.black)
+        setupToolbar(toolbarView, "Pay Slip", this, R.color.ub__transparent, R.color.black)
 
         hashmap["user_id"] = sharePreference.getString(PrefKeys.userId)
         hashmap["month"] = CommonMethods.getCurrentMonthNumber().toString()
@@ -128,16 +128,16 @@ class PaySlip : AppCompatActivity() {
             }
         }
 
-        binding.swipeRefresh.setOnRefreshListener {
-            binding.swipeRefresh.isRefreshing = false
-            viewModel.getPaySlip(hashmap)
+        binding.btnDownload.setOnClickListener {
+            sharePdfFile(pdfFile!!)   // OR save to downloads
         }
+
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.salaryBreakDown.collect { state ->
                     when (state) {
-                        is UIState.Idle -> { /* Do nothing */
+                        is UIState.Idle -> {
                         }
 
                         is UIState.Loading -> {
@@ -145,31 +145,26 @@ class PaySlip : AppCompatActivity() {
                             "Loading...",
                             "Please wait while we are generating your salary slip"
                         )
-                            binding.progressBar.visibility = View.VISIBLE
+
                     }
-                        is UIState.Success ->{
-//                            salaryAdapter.updateData(state.data)
+                        is UIState.Success -> {
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                generatePayslipPdf(state.data) // PDF generate in background
 
-                            state.data.link?.let { loadPdf(it) }
-
-                            binding.btnDownload.visibility = View.VISIBLE
-                            binding.llPdf.visibility = View.VISIBLE
-                            binding.tvNotransactionfound.visibility = View.GONE
-                            binding.btnDownload.setOnClickListener { state.data.link?.let { it1 ->
-                                downloadPdf(
-                                    it1
-                                )
-                            } }
-
-                            ProgressDialogUtil.dismiss()
-                            viewModel.resetSalaryBreakDownUi()
+                                withContext(Dispatchers.Main) {
+                                    ProgressDialogUtil.dismiss()   // UI update on main thread
+                                    viewModel.resetSalaryBreakDownUi()
+                                }
+                            }
                         }
+
 
                         is UIState.Error ->{
 //                            CommonMethods.alertErrorOrValidationDialog(this@PaySlip, state.message)
-                            binding.progressBar.visibility = View.GONE
-                            binding.llPdf.visibility = View.GONE
+
                             binding.tvNotransactionfound.visibility = View.VISIBLE
+                            binding.pdfView.visibility = View.GONE
+                            binding.btnDownload.visibility = View.GONE
                             ProgressDialogUtil.dismiss()
                             if (state.message.equals("User Not Found", true) ||
                                 state.message.equals("Employee Not Found", true)
@@ -263,66 +258,159 @@ class PaySlip : AppCompatActivity() {
         return cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) ?: ""
     }
 
-    private fun loadPdf(url: String) {
-        CoroutineScope(Dispatchers.IO).launch {
+    override fun onDestroy() {
+        currentPage?.close()
+        pdfRenderer?.close()
+        super.onDestroy()
+    }
+
+    private fun generatePayslipPdf(data: SalaryBreakDown) {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val client = OkHttpClient()
-                val request = Request.Builder().url(url).build()
-                val response = client.newCall(request).execute()
-                val inputStream = response.body?.byteStream()
+                val pdfGenerator = PayslipPdfGenerator(this@PaySlip)
 
-                pdfFile = File(cacheDir, "temp.pdf")
-                inputStream?.use { input ->
-                    FileOutputStream(pdfFile!!).use { output ->
-                        input.copyTo(output)
-                    }
-                }
+                // Prepare earnings map
+                val earnings = mapOf(
+                    "basic" to data.basic,
+                    "hra" to data.hra,
+                    "conveyance" to data.conveyance,
+                    "medicalAllowance" to data.medicalAllowance,
+                    "groomingAllowance" to data.groomingAllowance,
+                    "travel_allowance" to data.travel_allowance,
+                    "extra" to data.extra
+                )
 
-                val pfd = ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
-                pdfRenderer = PdfRenderer(pfd)
-                val page = pdfRenderer!!.openPage(0)
-                currentPage = page
-                val bitmap = Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
-                page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                // Prepare deductions map (add more as needed)
+                val deductions = mapOf(
+                    "advance" to data.advance
+                )
 
-                runOnUiThread {
-                    binding.progressBar.visibility = View.GONE
-                    binding.pdfPage.setImageBitmap(bitmap)
+                val payslipData = PayslipPdfGenerator.PayslipData(
+                    empName = data.emp_name,
+                    empId = data.emp_id,
+                    empPhone = data.emp_phone,
+                    aadharNo = data.aadhar_no,
+                    uinNo = data.uin_no,
+                    selectedMonth = data.selectedMonthWords,
+                    cycleStart = data.cycleStart,
+                    cycleEnd = data.cycleEnd,
+                    presentDays = data.presentDays ?: 0,
+                    paidLeaves = data.paidLeaves ?: 0,
+                    location = data.location,
+                    payDate = data.pay_date,
+                    earnings = earnings,
+                    deductions = deductions,
+                    netPay = data.net_pay ?: "0.00"
+                )
+
+                // Generate file path
+                val fileName = PayslipPdfGenerator.getPayslipFileName(
+                    data.emp_name,
+                    data.selectedMonthWords
+                )
+                val directory = PayslipPdfGenerator.getPayslipDirectory(this@PaySlip)
+                val filePath = File(directory, fileName).absolutePath
+
+                // Generate PDF
+                pdfFile = pdfGenerator.generatePayslipPdf(payslipData, filePath)
+
+                // Switch to main thread to show success
+                withContext(Dispatchers.Main) {
+//                    showPdfSuccess(pdfFile)
+                    renderPdfInsideApp(pdfFile!!)
+
                 }
 
             } catch (e: Exception) {
-                e.printStackTrace()
-                runOnUiThread {
-                    binding.progressBar.visibility = View.GONE
-                    Toast.makeText(this@PaySlip, "Failed to load PDF", Toast.LENGTH_SHORT).show()
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@PaySlip,
+                        "Failed to generate PDF: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
     }
 
-    private fun downloadPdf(url: String) {
+    private fun showPdfSuccess(pdfFile: File) {
+        AlertDialog.Builder(this)
+            .setTitle("Payslip Generated")
+            .setMessage("Payslip has been saved to:\n${pdfFile.absolutePath}")
+            .setPositiveButton("Open") { _, _ ->
+                openPdfFile(pdfFile)
+            }
+            .setNegativeButton("Share") { _, _ ->
+                sharePdfFile(pdfFile)
+            }
+            .setNeutralButton("Close", null)
+            .show()
+    }
+    private fun renderPdfInsideApp(pdfFile: File) {
         try {
-            val request = DownloadManager.Request(Uri.parse(url))
-                .setTitle("Payslip.pdf")
-                .setDescription("Downloading PDF")
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Payslip.pdf")
-                .setAllowedOverMetered(true)
-                .setAllowedOverRoaming(true)
+            val fileDescriptor = ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
+            pdfRenderer = PdfRenderer(fileDescriptor)
 
-            val dm = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            dm.enqueue(request)
-            Toast.makeText(this, "Download started", Toast.LENGTH_SHORT).show()
+            if (pdfRenderer!!.pageCount > 0) {
+                currentPage = pdfRenderer!!.openPage(0)
+
+                val bitmap = Bitmap.createBitmap(
+                    currentPage!!.width,
+                    currentPage!!.height,
+                    Bitmap.Config.ARGB_8888
+                )
+
+                currentPage!!.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+
+                binding.pdfView.visibility = View.VISIBLE
+                binding.pdfView.fromFile(pdfFile)
+                    .enableSwipe(true)
+                    .enableDoubletap(true)
+                    .spacing(10)
+                    .load()
+
+                binding.btnDownload.visibility = View.VISIBLE
+                binding.tvNotransactionfound.visibility = View.GONE
+            }
+
         } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Download failed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Preview failed: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun onDestroy() {
-        currentPage?.close()
-        pdfRenderer?.close()
-        super.onDestroy()
+    private fun openPdfFile(file: File) {
+        val uri = FileProvider.getUriForFile(
+            this,
+            "${packageName}.fileprovider",
+            file
+        )
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/pdf")
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        }
+
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(this, "No PDF viewer installed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun sharePdfFile(file: File) {
+        val uri = FileProvider.getUriForFile(
+            this,
+            "${packageName}.fileprovider",
+            file
+        )
+
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "application/pdf"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        }
+
+        startActivity(Intent.createChooser(shareIntent, "Share Payslip"))
     }
 
 }

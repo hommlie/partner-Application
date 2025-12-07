@@ -2,11 +2,10 @@ package com.hommlie.partner.repository
 
 import com.hommlie.partner.apiclient.ApiInterface
 import com.hommlie.partner.model.AttendanceResponse
-import com.hommlie.partner.model.BreakDown
 import com.hommlie.partner.model.DailyPunchLogResponse
 import com.hommlie.partner.model.DynamicSingleResponseWithData
 import com.hommlie.partner.model.LeaveTypeList
-import com.hommlie.partner.model.PayslipResponse
+import com.hommlie.partner.model.SalaryBreakDown
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,7 +24,7 @@ class AttendanceRepository @Inject constructor( private val apiService : ApiInte
         return apiService.getAttendance(map)
     }
 
-    suspend fun getPaySlip(map: HashMap<String, String>): DynamicSingleResponseWithData<PayslipResponse> {
+    suspend fun getPaySlip(map: HashMap<String, String>): DynamicSingleResponseWithData<SalaryBreakDown> {
         return apiService.getPaySlip(map)
     }
 }
