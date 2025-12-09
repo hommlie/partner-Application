@@ -280,11 +280,11 @@ class ActSplash : AppCompatActivity() {
                                     val versionCode = CommonMethods.getAppVersionCode(this@ActSplash)
                                     System.out.println("app version : "+versionCode)
                                     val currentAppVersion = state.data.versionCode
-//                                    if (currentAppVersion > versionCode) {
-//                                        binding.clUpdate.visibility = View.VISIBLE
-//                                    } else {
+                                    if (currentAppVersion > versionCode) {
+                                        binding.clUpdate.visibility = View.VISIBLE
+                                    } else {
                                         moveToNextScreen()
-//                                    }
+                                    }
                                 }else{
                                     moveToNextScreen()
                                 }
@@ -306,7 +306,5 @@ class ActSplash : AppCompatActivity() {
         super.onResume()
         viewModel.checkversion()
     }
-
-
 }
 
