@@ -84,6 +84,7 @@ private val onClick_raiseHelp: (NewOrderData) -> Unit)
 
                 tvTrackOrder.text = "Completed"
                 tvTrackOrder.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.color_primary))
+                tvJobinfo.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.color_primary))
                 tvTrackOrder.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.context,R.color.green_light))
 
                 trackCard.strokeColor = ContextCompat.getColor(holder.itemView.context, R.color.parrotgreen)
@@ -97,6 +98,7 @@ private val onClick_raiseHelp: (NewOrderData) -> Unit)
 
                 tvTrackOrder.text = "On-Site"
                 tvTrackOrder.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.purple))
+                tvJobinfo.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.purple))
                 tvTrackOrder.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.context,R.color.light_orange))
 
                 trackCard.strokeColor = ContextCompat.getColor(holder.itemView.context, R.color.purple)
@@ -110,6 +112,7 @@ private val onClick_raiseHelp: (NewOrderData) -> Unit)
 
                 tvTrackOrder.text = "Dispatched"
                 tvTrackOrder.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.orange))
+                tvJobinfo.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.orange))
                 tvTrackOrder.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.context,R.color.light_orange))
 
                 trackCard.strokeColor = ContextCompat.getColor(holder.itemView.context, R.color.job_stroke_color)

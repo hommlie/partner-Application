@@ -39,8 +39,8 @@ class PayslipPdfGenerator(private val context: Context) {
         val empName: String,
         val empId: String,
         val empPhone: String,
-        val aadharNo: String,
-        val uinNo: String?,
+        val aadharNo: String?=null,
+        val uinNo: String?=null,
         val selectedMonth: String,
         val cycleStart: String,
         val cycleEnd: String,
@@ -82,7 +82,7 @@ class PayslipPdfGenerator(private val context: Context) {
         addDashedLineSeparator(document,borderColor)
         addExactSalaryDetails(document, data)
         addDashedLineSeparator(document,borderColor)
-        addExactFooterSignatures(document)
+//        addExactFooterSignatures(document)
         addExactFooterNote(document)
 
         // If you want a second page, uncomment below
@@ -108,11 +108,6 @@ class PayslipPdfGenerator(private val context: Context) {
 
 // Solid border with custom color
             canvas.setLineWidth(1f)
-//            val colorInt = ContextCompat.getColor(context, R.color.gray_border)
-//            val r = Color.red(colorInt)
-//            val g = Color.green(colorInt)
-//            val b = Color.blue(colorInt)
-//            val myColor = DeviceRgb(r, g, b)
             canvas.setStrokeColor(borderColor)
 
 // Draw rounded rectangle
@@ -125,13 +120,6 @@ class PayslipPdfGenerator(private val context: Context) {
             )
             canvas.stroke()
 
-
-
-            // If you want dashed border instead, use this:
-            // canvas.setLineWidth(1f)
-            // canvas.setLineDash(floatArrayOf(5f, 5f))
-            // canvas.rectangle(borderRect)
-            // canvas.stroke()
         }
 
         // ---------- CLOSE DOCUMENT ----------
@@ -269,7 +257,7 @@ class PayslipPdfGenerator(private val context: Context) {
             "Employee Name:",
             data.empName,
             "Adhaar No.",
-            data.aadharNo
+            data.aadharNo?:"-"
         )
 
         // ROW 2: Employee ID | Value | UIN No. | Value

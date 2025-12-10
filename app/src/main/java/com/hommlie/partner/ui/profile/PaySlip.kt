@@ -151,10 +151,10 @@ class PaySlip : AppCompatActivity() {
                             lifecycleScope.launch(Dispatchers.IO) {
                                 generatePayslipPdf(state.data) // PDF generate in background
 
-                                withContext(Dispatchers.Main) {
-                                    ProgressDialogUtil.dismiss()   // UI update on main thread
+//                                withContext(Dispatchers.Main) {
+//                                    ProgressDialogUtil.dismiss()   // UI update on main thread
                                     viewModel.resetSalaryBreakDownUi()
-                                }
+//                                }
                             }
                         }
 
@@ -303,12 +303,25 @@ class PaySlip : AppCompatActivity() {
                     netPay = data.net_pay ?: "0.00"
                 )
 
-                // Generate file path
+//                // Generate file path
+//                val fileName = PayslipPdfGenerator.getPayslipFileName(
+//                    data.emp_name,
+//                    data.selectedMonthWords
+//                )
+//                val directory = PayslipPdfGenerator.getPayslipDirectory(this@PaySlip)
+//                val filePath = File(directory, fileName).absolutePath
                 val fileName = PayslipPdfGenerator.getPayslipFileName(
                     data.emp_name,
                     data.selectedMonthWords
                 )
-                val directory = PayslipPdfGenerator.getPayslipDirectory(this@PaySlip)
+
+                val directory = File(
+                    getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
+                    "Payslips"
+                )
+
+                if (!directory.exists()) directory.mkdirs()
+
                 val filePath = File(directory, fileName).absolutePath
 
                 // Generate PDF
@@ -318,7 +331,7 @@ class PaySlip : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
 //                    showPdfSuccess(pdfFile)
                     renderPdfInsideApp(pdfFile!!)
-
+                    ProgressDialogUtil.dismiss()
                 }
 
             } catch (e: Exception) {
