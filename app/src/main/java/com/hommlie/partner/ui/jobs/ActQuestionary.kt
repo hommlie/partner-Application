@@ -132,7 +132,6 @@ class ActQuestionary : AppCompatActivity() {
                         imageParts.add(imagePart)
                     }
                 }
-
                 val requestMap = hashMap.mapValues {
                     it.value.toRequestBody("text/plain".toMediaTypeOrNull())
                 }

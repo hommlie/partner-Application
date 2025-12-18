@@ -54,9 +54,11 @@
     <color name="circle_bakground">#EBF0FB</color>
     <color name="text_black">#de000000</color>
     <color name="job_stroke_color">#C4D2F0</color>
-    <color name="bk_dark">#141528</color>
+    <color name="bk_dark">#252728</color>
     <color name="bk_dark_card">#1A2033</color>
     <color name="color_94AFB6">#94AFB6</color>
+    <color name="color_252728">#252728</color>
+    <color name="color_536724">#536724</color>
 
     <!--swipe button color-->
     <color name="swipebtn_translucent_white">#33ffffff</color>

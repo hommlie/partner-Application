@@ -23,7 +23,8 @@
         android:layout_marginEnd="@dimen/_12sdp"
         app:strokeWidth="0dp"
         app:cardBackgroundColor="@color/bk_dark_card"
-        app:cardElevation="0dp">
+        app:cardElevation="0dp"
+        android:visibility="gone">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -109,57 +110,159 @@
     </com.google.android.material.card.MaterialCardView>
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cl_first"
-        android:layout_width="@dimen/_90sdp"
-        android:layout_height="@dimen/_130sdp"
+        android:layout_width="@dimen/_85sdp"
+        android:layout_height="@dimen/_85sdp"
         app:layout_constraintTop_toBottomOf="@id/mcv_options"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/_100sdp"
-        android:background="@drawable/bg_top_round"
-        android:backgroundTint="#22273F">
+        app:strokeColor="#363F2C"
+        app:strokeWidth="@dimen/_2sdp"
+        android:layout_marginTop="@dimen/_30sdp"
+        app:cardCornerRadius="@dimen/_45sdp">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_second"
-        android:layout_width="@dimen/_80sdp"
-        android:layout_height="@dimen/_90sdp"
-        app:layout_constraintBottom_toBottomOf="@id/cl_first"
-        app:layout_constraintEnd_toStartOf="@id/cl_first"
-        android:layout_marginTop="@dimen/_100sdp"
-        android:background="@drawable/bg_top_round"
-        android:backgroundTint="@color/bk_dark_card">
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_third"
-        android:layout_width="@dimen/_80sdp"
-        android:layout_height="@dimen/_90sdp"
-        app:layout_constraintBottom_toBottomOf="@id/cl_first"
-        app:layout_constraintStart_toEndOf="@id/cl_first"
-        android:layout_marginTop="@dimen/_100sdp"
-        android:background="@drawable/bg_top_round"
-        android:backgroundTint="@color/bk_dark_card">
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    </com.google.android.material.card.MaterialCardView>
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/tv_firstname"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Vishal Rathaur"
+        app:layout_constraintStart_toStartOf="@id/cl_first"
+        app:layout_constraintEnd_toEndOf="@id/cl_first"
+        app:layout_constraintTop_toBottomOf="@id/cl_first"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:textSize="@dimen/_11ssp"
+        android:fontFamily="@font/plusjakartasans_bold"
+        android:textColor="@color/white"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        />
+    <TextView
+        android:id="@+id/tv_firstpoint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="10 pts"
+        app:layout_constraintStart_toStartOf="@id/cl_first"
+        app:layout_constraintEnd_toEndOf="@id/cl_first"
+        app:layout_constraintTop_toBottomOf="@id/tv_firstname"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:textSize="@dimen/_11ssp"
+        android:fontFamily="@font/plusjakartasans_bold"
+        android:textColor="@color/white"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        />
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cl_second"
+        android:layout_width="@dimen/_75sdp"
+        android:layout_height="@dimen/_75sdp"
+        app:layout_constraintTop_toTopOf="@id/cl_first"
+        app:layout_constraintEnd_toStartOf="@id/cl_first"
+        app:strokeColor="#363F2C"
+        app:strokeWidth="@dimen/_2sdp"
+        android:layout_marginEnd="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_30sdp"
+        app:cardCornerRadius="@dimen/_40sdp">
+
+    </com.google.android.material.card.MaterialCardView>
+    <TextView
+        android:id="@+id/tv_secondname"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Vishal Rathaur"
+        app:layout_constraintStart_toStartOf="@id/cl_second"
+        app:layout_constraintEnd_toEndOf="@id/cl_second"
+        app:layout_constraintTop_toBottomOf="@id/cl_second"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:textSize="@dimen/_11ssp"
+        android:fontFamily="@font/plusjakartasans_bold"
+        android:textColor="@color/white"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        />
+    <TextView
+        android:id="@+id/tv_secondpoint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="10 pts"
+        app:layout_constraintStart_toStartOf="@id/cl_second"
+        app:layout_constraintEnd_toEndOf="@id/cl_second"
+        app:layout_constraintTop_toBottomOf="@id/tv_secondname"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:textSize="@dimen/_11ssp"
+        android:fontFamily="@font/plusjakartasans_bold"
+        android:textColor="@color/white"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        />
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cl_third"
+        android:layout_width="@dimen/_75sdp"
+        android:layout_height="@dimen/_75sdp"
+        app:layout_constraintTop_toTopOf="@id/cl_first"
+        app:layout_constraintStart_toEndOf="@id/cl_first"
+        android:layout_marginStart="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_30sdp"
+        app:strokeColor="#363F2C"
+        app:strokeWidth="@dimen/_2sdp"
+        app:cardCornerRadius="@dimen/_40sdp"
+        >
+
+    </com.google.android.material.card.MaterialCardView>
+    <TextView
+        android:id="@+id/tv_thirdname"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Vishal Rathaur"
+        app:layout_constraintStart_toStartOf="@id/cl_third"
+        app:layout_constraintEnd_toEndOf="@id/cl_third"
+        app:layout_constraintTop_toBottomOf="@id/cl_third"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:textSize="@dimen/_11ssp"
+        android:fontFamily="@font/plusjakartasans_bold"
+        android:textColor="@color/white"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        />
+    <TextView
+        android:id="@+id/tv_thirdpoint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="10 pts"
+        app:layout_constraintStart_toStartOf="@id/cl_third"
+        app:layout_constraintEnd_toEndOf="@id/cl_third"
+        app:layout_constraintTop_toBottomOf="@id/tv_thirdname"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:textSize="@dimen/_11ssp"
+        android:fontFamily="@font/plusjakartasans_bold"
+        android:textColor="@color/white"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_secondpoint"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="Under\nDevelopment"
-        android:fontFamily="@font/inter_medium"
-        android:textSize="@dimen/_16ssp"
-        android:textColor="@color/white"/>
+        android:background="@drawable/bg_top_round"
+        android:layout_marginTop="@dimen/_25sdp"
+        android:backgroundTint="#0A0814"
+        >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recylerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/_10sdp"
+            tools:listitem="@layout/row_leaderbaord"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

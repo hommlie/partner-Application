@@ -180,11 +180,11 @@ class HomeViewModel  @Inject constructor(
 //                name = "Reward\n& Points",
 //                iconUrl = R.drawable.ic_rewardd
 //            ),
-//            HomeOptionModel(
-//                id = "5",
-//                name = "Leader Board",
-//                iconUrl = R.drawable.ic_leaderboard
-//            ),
+            HomeOptionModel(
+                id = "5",
+                name = "Leader Board",
+                iconUrl = R.drawable.ic_leaderboard
+            ),
             HomeOptionModel(
                 id = "6",
                 name = "Refer\n& Earn",

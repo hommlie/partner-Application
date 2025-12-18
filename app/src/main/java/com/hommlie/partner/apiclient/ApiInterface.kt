@@ -11,6 +11,8 @@ import com.hommlie.partner.model.DailyPunchLogResponse
 import com.hommlie.partner.model.DynamicSingleResponseWithData
 import com.hommlie.partner.model.ExpenseHistory
 import com.hommlie.partner.model.JobSummary
+import com.hommlie.partner.model.LeaderBoardData
+import com.hommlie.partner.model.Leaderboardd
 import com.hommlie.partner.model.LeaveTypeList
 import com.hommlie.partner.model.NewOrder
 import com.hommlie.partner.model.OnlineOfflineResponse
@@ -27,6 +29,7 @@ import com.hommlie.partner.model.UserAboutDetailsData
 import com.hommlie.partner.model.VerifyOtp
 import com.hommlie.partner.model.WorkZones
 import com.hommlie.partner.model.WorkZonesData
+import com.hommlie.partner.ui.leaderboard.Leaderboard
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -194,5 +197,8 @@ interface ApiInterface {
 
     @POST("partner/addSalaryAdvance")
     suspend fun addAdvanceRequests(@Body hashMap: HashMap<String,String>) : Response<DynamicSingleResponseWithData<Any>>
+
+    @POST("partner/leaderboardCoins")
+    suspend fun getLeaderBoard(@Body hashMap: HashMap<String,String>) : Response<DynamicSingleResponseWithData<Leaderboardd>>
 
 }

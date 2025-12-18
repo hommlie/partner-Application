@@ -3,22 +3,33 @@ package com.hommlie.partner.ui.leaderboard
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.hommlie.partner.R
+import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.databinding.ActivityLeaderboardBinding
+import com.hommlie.partner.model.LeaderBoardData
+import com.hommlie.partner.utils.CommonMethods.toCapwords
+import com.hommlie.partner.utils.ProgressDialogUtil
 import com.hommlie.partner.utils.SharePreference
 import com.hommlie.partner.utils.setupToolbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class Leaderboard : AppCompatActivity() {
     private lateinit var binding : ActivityLeaderboardBinding
+    private lateinit var adapter: LeaderBoardAdapter
 
     @Inject
     lateinit var sharePreference: SharePreference
@@ -56,8 +67,35 @@ class Leaderboard : AppCompatActivity() {
 
 
         observeClicks()
+        observeLeaderBoardResposne()
+        setUpLeaderBoardRecylerView()
 
 
+    }
+
+    private fun observeLeaderBoardResposne() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.getLeaderboardUiState.collect { state ->
+                    when (state) {
+                        is UIState.Idle -> Unit
+                        is UIState.Loading -> ProgressDialogUtil.showLoadingProgress(this@Leaderboard,lifecycleScope)
+                        is UIState.Success -> {
+                            ProgressDialogUtil.dismiss()
+                            val restresponse = state.data
+
+                            setUIData(restresponse.leaderboard)
+
+                            viewModel.reset_getLeaderboardUiState()
+                        }
+                        is UIState.Error -> {
+                            ProgressDialogUtil.dismiss()
+                            viewModel.reset_getLeaderboardUiState()
+                        }
+                    }
+                }
+            }
+        }
     }
 
 
@@ -78,5 +116,68 @@ class Leaderboard : AppCompatActivity() {
             binding.viewYearly.visibility = View.VISIBLE
         }
     }
+
+    private fun setUpLeaderBoardRecylerView(){
+        adapter = LeaderBoardAdapter()
+        binding.recylerView.apply {
+            layoutManager = LinearLayoutManager(this@Leaderboard)
+            setHasFixedSize(true)
+            adapter = this@Leaderboard.adapter
+        }
+    }
+    private fun setUIData(leaderboard: List<LeaderBoardData>?) {
+
+        if (leaderboard.isNullOrEmpty()) {
+            // Optionally hide top 3 layout or show placeholder
+            adapter.submitList(emptyList())
+            return
+        }
+
+        // Safe access using getOrNull
+        val first = leaderboard.getOrNull(0)
+        val second = leaderboard.getOrNull(1)
+        val third = leaderboard.getOrNull(2)
+
+        bindTopUser(
+            first,
+            binding.tvFirstname,
+            binding.tvFirstpoint
+        )
+
+        bindTopUser(
+            second,
+            binding.tvSecondname,
+            binding.tvSecondpoint
+        )
+
+        bindTopUser(
+            third,
+            binding.tvThirdname,
+            binding.tvThirdpoint
+        )
+
+        // Submit full list to adapter
+        adapter.submitList(leaderboard)
+    }
+
+    private fun bindTopUser(
+        user: LeaderBoardData?,
+        nameView: TextView,
+        pointView: TextView
+    ) {
+        if (user == null) {
+            nameView.text = "-"
+            pointView.text = "0 pts"
+            return
+        }
+
+        nameView.text = user.emp_name
+            ?.toCapwords()
+            ?: "-"
+
+        pointView.text = "${user.total_coins ?: 0} pts"
+    }
+
+
 
 }

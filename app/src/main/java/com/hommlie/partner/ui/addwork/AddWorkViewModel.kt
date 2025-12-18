@@ -37,7 +37,6 @@ class AddWorkViewModel @Inject constructor(
     private val _saveBillUiState = MutableStateFlow<UIState<SingleResponse>>(UIState.Idle)
     val saveBillUiState: StateFlow<UIState<SingleResponse>> = _saveBillUiState
 
-
     fun saveBill(
         userId: String,
         title: String,
@@ -79,8 +78,7 @@ class AddWorkViewModel @Inject constructor(
         _saveBillUiState.value = UIState.Idle
     }
 
-    private val _expenseHistoryUiState =
-        MutableStateFlow<UIState<List<ExpenseHistory>>>(UIState.Idle)
+    private val _expenseHistoryUiState = MutableStateFlow<UIState<List<ExpenseHistory>>>(UIState.Idle)
     val expenseHistoryUiState: StateFlow<UIState<List<ExpenseHistory>>> = _expenseHistoryUiState
 
 
@@ -108,8 +106,6 @@ class AddWorkViewModel @Inject constructor(
             is ApiResult.UnknownError -> _expenseHistoryUiState.value = UIState.Error(result.message)
         }
     }
-
-
     fun reset_expenseHistoryUiState() {
         _expenseHistoryUiState.value = UIState.Idle
     }

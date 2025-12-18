@@ -16,8 +16,9 @@ android {
         applicationId = "com.hommlie.partner"
         minSdk = 26
         targetSdk = 35
-        versionCode = 13
-        versionName = "2.2"
+        ndkVersion = "26.2.11394342"
+        versionCode = 14
+        versionName = "2.3"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -48,6 +49,7 @@ android {
             enableSplit = false
         }
     }
+
 
     buildFeatures {
         viewBinding = true
@@ -158,9 +160,10 @@ dependencies {
     implementation("com.itextpdf:itext7-core:7.2.5") {
         exclude(group = "org.bouncycastle")
     }
-    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
 
     implementation("com.github.mhiew:android-pdf-viewer:3.2.0-beta.3")
+    implementation("org.slf4j:slf4j-nop:2.0.7")
+
 
 }
 

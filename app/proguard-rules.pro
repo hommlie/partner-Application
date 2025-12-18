@@ -183,6 +183,14 @@
 -dontwarn javax.annotation.**
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 
+# PDFBox Android missing JP2 (JPEG2000) decoder
+-dontwarn com.gemalto.jp2.**
+
+# SLF4J Logger binding missing
+-dontwarn org.slf4j.impl.**
+-keep class org.slf4j.** { *; }
+
+
 # -------------------------
 # Final: Application specific - be conservative for safety
 # Keep app package important parts (models, network, db, ui glue)
