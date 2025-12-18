@@ -391,8 +391,17 @@ class Home : Fragment() {
                                     val onlineStatus = data.statusCode
 
                                     sharePreference.setString(PrefKeys.Punch_Status, data.statusCode.toString())
-                                    sharePreference.setString(PrefKeys.lastSwipe,CommonMethods.getCurrentTimeDate())
-                                    binding.tvLastSwipe.text = "Last Swipe : "+sharePreference.getString(PrefKeys.lastSwipe)
+                                    sharePreference.setString(PrefKeys.lastSwipe,CommonMethods.getCurrentDateTime())
+                                    viewLifecycleOwner.lifecycleScope.launch {
+                                        val address = CommonMethods.getAddressFromLatLngSafe(
+                                            requireContext(),
+                                            latitude.toString(),
+                                            longitude.toString()
+                                        )
+                                        sharePreference.setString(PrefKeys.lastSwipeAddress,address)
+                                        binding.tvGreeting.text = "\uD83D\uDCCD "+address
+                                    }
+                                    binding.tv2.text = sharePreference.getString(PrefKeys.lastSwipe).substringBefore(" ")+"\n"+sharePreference.getString(PrefKeys.lastSwipe).substringAfter(" ")
 
                                     if (onlineStatus == 1 ){
                                         sharePreference.setInt(PrefKeys.todayOnlineId, data.attendance_id)
@@ -844,7 +853,7 @@ class Home : Fragment() {
 
             } */
             if (sharePreference.getBoolean(PrefKeys.IS_LOGGED_IN)){
-                binding.tvGreeting.text = "${CommonMethods.getGreetingMessage()} !"
+                binding.tvGreeting.text ="\uD83D\uDCCD "+sharePreference.getString(PrefKeys.lastSwipeAddress)
                 binding.tv1.text = "Hello, ${sharePreference.getString(PrefKeys.userName).substringBefore(",")?:""}"
             }else{
                 binding.tvGreeting.text = "Start earning with hommlie"
@@ -854,7 +863,8 @@ class Home : Fragment() {
 
             viewModel.getUserJobData()
 
-            binding.tvLastSwipe.text = "Last Swipe : "+sharePreference.getString(PrefKeys.lastSwipe)
+            binding.tv2.text = sharePreference.getString(PrefKeys.lastSwipe).substringBefore(" ")+"\n"+sharePreference.getString(PrefKeys.lastSwipe).substringAfter(" ")
+
             val hashMap = HashMap<String,String>()
             hashMap["user_id"] = sharePreference.getString(PrefKeys.userId)
             hashMap["date"] = CommonMethods.getCurrentDateFormatted()

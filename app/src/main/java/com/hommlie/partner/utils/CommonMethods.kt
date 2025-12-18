@@ -15,6 +15,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.drawable.ColorDrawable
+import android.location.Geocoder
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
@@ -54,6 +55,8 @@ import android.widget.FrameLayout
 import androidx.exifinterface.media.ExifInterface
 import com.google.android.material.snackbar.Snackbar
 import com.hommlie.partner.ui.login.Login
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -455,12 +458,18 @@ object CommonMethods {
         return LocalDate.now().format(formatter)
     }
 
-    fun getCurrentTimeDate(): String {
+    fun getCurrentTime(): String {
         val formatter = DateTimeFormatter.ofPattern("hh:mm:ss a", Locale.getDefault())
         return LocalDateTime.now().format(formatter).uppercase(Locale.getDefault())
     }
 
-
+    fun getCurrentDateTime(): String {
+        val formatter = DateTimeFormatter.ofPattern(
+            "dd-MM-yyyy h:mm a",
+            Locale.ENGLISH
+        )
+        return LocalDateTime.now().format(formatter)
+    }
 
     fun getCurrentDateTimeWithT(): String {
         val dateFormat = SimpleDateFormat("dd-MM-yyyy 'T' HH:mm:ss", Locale.getDefault())
@@ -920,6 +929,44 @@ object CommonMethods {
         }
     }
 
+
+    suspend fun getAddressFromLatLngSafe(
+        context: Context,
+        latitude: String,
+        longitude: String
+    ): String = withContext(Dispatchers.IO) {
+        getAddressFromLatLng(context, latitude, longitude)
+    }
+
+    private fun getAddressFromLatLng(
+        context: Context,
+        latitude: String,
+        longitude: String
+    ): String {
+
+        return try {
+            val lat = latitude.toDoubleOrNull()
+            val lng = longitude.toDoubleOrNull()
+
+            if (lat == null || lng == null) return ""
+
+            val geocoder = Geocoder(context, Locale.ENGLISH)
+            val addresses = geocoder.getFromLocation(lat, lng, 1)
+
+            if (!addresses.isNullOrEmpty()) {
+                val address = addresses[0]
+                buildString {
+                    address.subLocality?.let { append("$it, ") }
+                    address.locality?.let { append("$it, ") }
+//                    address.adminArea?.let { append("$it, ") }
+//                    address.postalCode?.let { append("$it, ") }
+//                    address.countryName?.let { append(it) }
+                }.trim().trimEnd(',')
+            } else ""
+        } catch (e: Exception) {
+            ""
+        }
+    }
 
 
 

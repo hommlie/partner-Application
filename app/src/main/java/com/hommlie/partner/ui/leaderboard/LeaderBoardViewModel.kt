@@ -8,6 +8,8 @@ import com.hommlie.partner.model.ExpenseHistory
 import com.hommlie.partner.model.LeaderBoardData
 import com.hommlie.partner.model.Leaderboardd
 import com.hommlie.partner.model.SingleResponse
+import com.hommlie.partner.utils.PrefKeys
+import com.hommlie.partner.utils.SharePreference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,10 +17,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LeaderBoardViewModel @Inject constructor(private val leaderBoardRepository: LeaderBoardRepository) : ViewModel() {
+class LeaderBoardViewModel @Inject constructor(private val sharePreference: SharePreference,private val leaderBoardRepository: LeaderBoardRepository) : ViewModel() {
 
     private val _getLeaderboardUiState = MutableStateFlow<UIState<Leaderboardd>>(UIState.Idle)
     val getLeaderboardUiState: StateFlow<UIState<Leaderboardd>> = _getLeaderboardUiState
+
+    init {
+        val hashMap = HashMap<String,String>()
+        hashMap["user_id"] = sharePreference.getString(PrefKeys.userId)
+        getLeaderBoard(hashMap)
+    }
 
 
     fun getLeaderBoard(hashMap: HashMap<String, String>) = viewModelScope.launch {

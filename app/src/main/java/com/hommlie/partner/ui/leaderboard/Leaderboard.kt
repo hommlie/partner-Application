@@ -3,6 +3,7 @@ package com.hommlie.partner.ui.leaderboard
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -14,6 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.hommlie.partner.R
 import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.databinding.ActivityLeaderboardBinding
@@ -63,7 +65,7 @@ class Leaderboard : AppCompatActivity() {
         }
 
         val toolbarView = binding.root.findViewById<View>(R.id.include_toolbar)
-        setupToolbar(toolbarView, "Leaderboard", this, R.color.bk_dark,R.color.white)
+        setupToolbar(toolbarView, "Leaderboard", this, R.color.bk_dark,R.color.white,R.color.color_536724)
 
 
         observeClicks()
@@ -128,42 +130,36 @@ class Leaderboard : AppCompatActivity() {
     private fun setUIData(leaderboard: List<LeaderBoardData>?) {
 
         if (leaderboard.isNullOrEmpty()) {
-            // Optionally hide top 3 layout or show placeholder
             adapter.submitList(emptyList())
             return
         }
 
-        // Safe access using getOrNull
+        // --- Top 3 users ---
         val first = leaderboard.getOrNull(0)
         val second = leaderboard.getOrNull(1)
         val third = leaderboard.getOrNull(2)
 
-        bindTopUser(
-            first,
-            binding.tvFirstname,
-            binding.tvFirstpoint
-        )
+        bindTopUser(first, binding.tvFirstname, binding.tvFirstpoint,binding.ivFirstProfile)
+        bindTopUser(second, binding.tvSecondname, binding.tvSecondpoint,binding.ivSecondProfile)
+        bindTopUser(third, binding.tvThirdname, binding.tvThirdpoint,binding.ivThirdProfile)
 
-        bindTopUser(
-            second,
-            binding.tvSecondname,
-            binding.tvSecondpoint
-        )
+        // --- RecyclerView logic ---
+        val remainingList =
+            if (leaderboard.size > 3) {
+                leaderboard.subList(3, leaderboard.size) // 4th to last
+            } else {
+                emptyList() // agar sirf 3 ya kam hai
+            }
 
-        bindTopUser(
-            third,
-            binding.tvThirdname,
-            binding.tvThirdpoint
-        )
-
-        // Submit full list to adapter
-        adapter.submitList(leaderboard)
+        adapter.submitList(remainingList)
     }
+
 
     private fun bindTopUser(
         user: LeaderBoardData?,
         nameView: TextView,
-        pointView: TextView
+        pointView: TextView,
+        profile : ImageView
     ) {
         if (user == null) {
             nameView.text = "-"
@@ -171,11 +167,9 @@ class Leaderboard : AppCompatActivity() {
             return
         }
 
-        nameView.text = user.emp_name
-            ?.toCapwords()
-            ?: "-"
-
+        nameView.text = user.emp_name?.substringBefore(",")?.toCapwords() ?: "-"
         pointView.text = "${user.total_coins ?: 0} pts"
+        Glide.with(this@Leaderboard).load(user.profile).placeholder(R.drawable.ic_placeholder_profile).into(profile)
     }
 
 

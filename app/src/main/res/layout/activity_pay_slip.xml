@@ -88,7 +88,7 @@
             android:backgroundTint="@color/color_primary"
             android:fontFamily="@font/inter_medium"
             android:gravity="center"
-            android:text="Download PDF"
+            android:text="Download &amp; Share"
             android:textColor="@color/white"
             android:textSize="@dimen/_12ssp"
             android:visibility="gone"

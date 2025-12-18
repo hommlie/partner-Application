@@ -35,6 +35,7 @@
                 android:layout_marginStart="@dimen/_12sdp"
                 android:fontFamily="@font/plusjakartasans_bold"
                 android:textSize="@dimen/_11ssp"
+                android:paddingBottom="@dimen/_2sdp"
                 />
 
             <com.google.android.material.card.MaterialCardView
@@ -72,6 +73,7 @@
                 android:fontFamily="@font/plusjakartasans_bold"
                 android:textSize="@dimen/_11ssp"
                 android:singleLine="true"
+                android:paddingBottom="@dimen/_2sdp"
                 />
             <TextView
                 android:id="@+id/tv_points"
@@ -85,6 +87,7 @@
                 android:layout_marginEnd="@dimen/_12sdp"
                 android:fontFamily="@font/plusjakartasans_bold"
                 android:textSize="@dimen/_11ssp"
+                android:paddingBottom="@dimen/_2sdp"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

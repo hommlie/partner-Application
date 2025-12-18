@@ -21,6 +21,8 @@ object PrefKeys {
     const val BloodGroup = "BloodGroup"
 
     const val lastSwipe = "lastSwipe"
+    const val lastSwipeAddress = "lastSwipeAddress"
+
     val Punch_Status: String = "Punch_Status"
     var todayOnlineId:String ="todayOnlineId"
     const val is_reg_form_sub = "is_reg_form_sub"
