@@ -20,6 +20,7 @@ import com.hommlie.partner.R
 import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.databinding.ActivityLeaderboardBinding
 import com.hommlie.partner.model.LeaderBoardData
+import com.hommlie.partner.utils.CommonMethods.formatCoins
 import com.hommlie.partner.utils.CommonMethods.toCapwords
 import com.hommlie.partner.utils.ProgressDialogUtil
 import com.hommlie.partner.utils.SharePreference
@@ -71,8 +72,6 @@ class Leaderboard : AppCompatActivity() {
         observeClicks()
         observeLeaderBoardResposne()
         setUpLeaderBoardRecylerView()
-
-
     }
 
     private fun observeLeaderBoardResposne() {
@@ -168,10 +167,8 @@ class Leaderboard : AppCompatActivity() {
         }
 
         nameView.text = user.emp_name?.substringBefore(",")?.toCapwords() ?: "-"
-        pointView.text = "${user.total_coins ?: 0} pts"
+        pointView.text = "${user.total_coins?.formatCoins() ?: "0"} pts"
         Glide.with(this@Leaderboard).load(user.profile).placeholder(R.drawable.ic_placeholder_profile).into(profile)
     }
-
-
 
 }

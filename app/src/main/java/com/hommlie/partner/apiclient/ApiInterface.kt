@@ -6,6 +6,7 @@ import com.hommlie.partner.model.BankDetails
 import com.hommlie.partner.model.CheckVersionResponse
 import com.hommlie.partner.model.ChemicalsResponse
 import com.hommlie.partner.model.CmsPageResponse
+import com.hommlie.partner.model.CoinItem
 import com.hommlie.partner.model.ContactDetails
 import com.hommlie.partner.model.DailyPunchLogResponse
 import com.hommlie.partner.model.DynamicSingleResponseWithData
@@ -200,5 +201,11 @@ interface ApiInterface {
 
     @POST("partner/leaderboardCoins")
     suspend fun getLeaderBoard(@Body hashMap: HashMap<String,String>) : Response<DynamicSingleResponseWithData<Leaderboardd>>
+
+    @POST("partner/redeemHistory")
+    suspend fun getRedeemCoinsHistory(@Body hashMap: HashMap<String,String>) : Response<DynamicSingleResponseWithData<List<CoinItem>>>
+
+    @POST("partner/coinBalance")
+    suspend fun getCoinBalance(@Body hashMap: HashMap<String,String>) : Response<DynamicSingleResponseWithData<String>>
 
 }

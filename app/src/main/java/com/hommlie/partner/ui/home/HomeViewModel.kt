@@ -328,7 +328,4 @@ class HomeViewModel  @Inject constructor(
         _jobDataUiState.value = UIState.Idle
     }
 
-
-
-
 }

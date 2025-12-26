@@ -9,6 +9,7 @@ import com.hommlie.partner.R
 import com.hommlie.partner.databinding.RowLeaderbaordBinding
 import com.hommlie.partner.model.AdvanceRequestList
 import com.hommlie.partner.model.LeaderBoardData
+import com.hommlie.partner.utils.CommonMethods.formatCoins
 import com.hommlie.partner.utils.CommonMethods.toCapwords
 import com.hommlie.partner.utils.CommonMethods.toFormattedDate_yyyymmdd
 
@@ -31,7 +32,7 @@ class LeaderBoardAdapter: RecyclerView.Adapter<LeaderBoardAdapter.LeaderBoardAda
 
         with(holder.binding) {
             tvRank.text = item.rank.toString()
-            tvPoints.text = item.total_coins.toString()+" pts"
+            tvPoints.text = item.total_coins?.formatCoins()+" pts"
 
             val context = root.context
 

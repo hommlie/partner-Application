@@ -75,7 +75,7 @@ class Advance : AppCompatActivity() {
         hashmap["month"] = (CommonMethods.getCurrentMonthNumber()+1).toString()
         hashmap["year"]  = CommonMethods.getCurrentYear().toString()
 
-        binding.tvMonth.text = monthNameFromZeroBased(CommonMethods.getCurrentMonthNumber()).take(3)+"-"+CommonMethods.getCurrentYear()
+        binding.tvMonth.text = CommonMethods.monthNameFromZeroBased(CommonMethods.getCurrentMonthNumber()).take(3)+"-"+CommonMethods.getCurrentYear()
 
 
         binding.tvMonth.setOnClickListener {
@@ -85,7 +85,7 @@ class Advance : AppCompatActivity() {
                     context = this,
                 ) { monthZeroBased, year ->
                     val monthNumber = monthZeroBased + 1
-                    val monthName   = monthNameFromZeroBased(monthZeroBased)
+                    val monthName   = CommonMethods.monthNameFromZeroBased(monthZeroBased)
 
                     binding.tvMonth.text = "${monthName.take(3)}-$year "
 
@@ -236,10 +236,6 @@ class Advance : AppCompatActivity() {
             }
             .setNegativeButton("Cancel", null)
             .show()
-    }
-    fun monthNameFromZeroBased(index: Int): String {
-        val cal = Calendar.getInstance().apply { set(Calendar.MONTH, index.coerceIn(0, 11)) }
-        return cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) ?: ""
     }
 
     override fun onResume() {

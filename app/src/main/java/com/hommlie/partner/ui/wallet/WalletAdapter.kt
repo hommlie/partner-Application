@@ -3,41 +3,54 @@ package com.hommlie.partner.ui.wallet
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.hommlie.partner.R
+import com.hommlie.partner.databinding.RowBillHistoryBinding
 import com.hommlie.partner.databinding.RowWalletBinding
-import com.hommlie.partner.model.WalletItem
+import com.hommlie.partner.model.AdvanceRequestList
+import com.hommlie.partner.model.CoinItem
 
-class WalletAdapter(
-    private var items: List<WalletItem>
-) : RecyclerView.Adapter<WalletAdapter.WalletViewHolder>() {
+class WalletAdapter(private val onClick: (CoinItem) -> Unit) : RecyclerView.Adapter<WalletAdapter.WalletViewHolder>() {
 
-    inner class WalletViewHolder(val binding: RowWalletBinding) :
+    private val items = mutableListOf<CoinItem>()
+
+    inner class WalletViewHolder(val binding: RowBillHistoryBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WalletViewHolder {
-        val binding = RowWalletBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = RowBillHistoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return WalletViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: WalletViewHolder, position: Int) {
         val item = items[position]
-        holder.binding.tvTitle.text = item.title
-        holder.binding.tvAmount.text = item.amount
-        holder.binding.tvDate.text = item.date
 
-        // Credit -> Green | Debit -> Red
-        val color = if (item.isCredit) {
-            Color.parseColor("#2E7D32") // Dark Green
-        } else {
-            Color.parseColor("#C62828") // Dark Red
+        holder.binding.tvTitle.text = item.trackingId
+        holder.binding.tvAmount.text = item.coinsRedeemed
+        holder.binding.tvDate.text = item.createdAt
+
+        val colorRes = when (item.statusLabel.lowercase()) {
+            "approved" -> R.color.color_249370
+            "pending"  -> R.color.orange
+            "rejected" -> R.color.red_logout
+            else       -> R.color.medium_gray
         }
-        holder.binding.tvAmount.setTextColor(color)
-    }
 
+        holder.binding.tvStatus.setTextColor(ContextCompat.getColor(holder.itemView.context, colorRes))
+        holder.binding.tvStatus.text = item.statusLabel
+
+        holder.binding.ivShowdetails.setOnClickListener {
+            onClick(item)
+        }
+    }
     override fun getItemCount(): Int = items.size
 
-    fun updateList(newItems: List<WalletItem>) {
-        items = newItems
+    fun submitList(newList: List<CoinItem>?) {
+        items.clear()
+        if (!newList.isNullOrEmpty()) {
+            items.addAll(newList)
+        }
         notifyDataSetChanged()
     }
 }

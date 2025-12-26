@@ -14,8 +14,6 @@
         android:id="@+id/include_toolbar"
         layout="@layout/common_toolbar"
         />
-
-
     <androidx.core.widget.NestedScrollView
         android:id="@+id/ncv"
         android:layout_width="match_parent"

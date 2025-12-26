@@ -606,7 +606,4 @@ class ActAttendance : AppCompatActivity() {
         return hours + minutes / 60f
     }
 
-
-
-
 }

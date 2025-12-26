@@ -38,7 +38,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="@dimen/_12sdp"
                 android:layout_marginStart="@dimen/_13sdp"
-                android:text="Wallet Balance"
+                android:text="Coin Balance"
                 android:fontFamily="@font/inter_medium"
                 android:textSize="@dimen/_12ssp"
                 android:textColor="@color/white"
@@ -66,7 +66,7 @@
                 android:layout_marginTop="@dimen/_1sdp"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginStart="@dimen/_13sdp"
-                android:text="₹0"
+                android:text="0"
                 android:fontFamily="@font/inter_bold"
                 android:textSize="@dimen/_30ssp"
                 android:textColor="@color/white"
@@ -81,11 +81,11 @@
                 android:layout_marginBottom="@dimen/_12sdp"
                 android:layout_marginStart="@dimen/_12sdp"
                 android:layout_marginEnd="@dimen/_13sdp"
-                android:text="Withdraw"
+                android:text="Redeem"
                 android:fontFamily="@font/inter_medium"
-                android:textSize="@dimen/_12ssp"
+                android:textSize="@dimen/_11ssp"
                 android:textColor="@color/color_249370"
-                android:background="@drawable/bg_roundwhite5"
+                android:background="@drawable/circular_background"
                 android:paddingStart="@dimen/_13sdp"
                 android:paddingEnd="@dimen/_13sdp"
                 android:paddingTop="@dimen/_5sdp"
@@ -111,6 +111,26 @@
         android:fontFamily="@font/inter_medium"
         android:textSize="@dimen/_13ssp"
         android:textColor="@color/text_black"
+        />
+    <TextView
+        android:id="@+id/tv_month"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/tv_transaction"
+        app:layout_constraintBottom_toBottomOf="@id/tv_transaction"
+        android:textSize="@dimen/_10ssp"
+        android:textColor="@color/color_primary"
+        android:text="Jun 2025 "
+        android:fontFamily="@font/plussakartasans_medium"
+        android:background="@drawable/transparent_back_5sdp"
+        android:drawableEnd="@drawable/down_arrow"
+        android:backgroundTint="@color/color_primary"
+        android:drawableTint="@color/black"
+        app:layout_constraintEnd_toEndOf="@id/mcv_card"
+        android:paddingStart="@dimen/_10sdp"
+        android:paddingEnd="@dimen/_7sdp"
+        android:paddingTop="@dimen/_2sdp"
+        android:paddingBottom="@dimen/_3sdp"
         />
 
 
@@ -140,7 +160,7 @@
         android:fontFamily="@font/inter_medium"
         android:textSize="@dimen/_14ssp"
         android:textColor="@color/color_primary"
-        android:visibility="gone"
+        android:visibility="visible"
         />
 
 

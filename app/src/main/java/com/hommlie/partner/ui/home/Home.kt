@@ -853,7 +853,11 @@ class Home : Fragment() {
 
             } */
             if (sharePreference.getBoolean(PrefKeys.IS_LOGGED_IN)){
-                binding.tvGreeting.text ="\uD83D\uDCCD "+sharePreference.getString(PrefKeys.lastSwipeAddress)
+                if (sharePreference.getString(PrefKeys.lastSwipeAddress).isNullOrEmpty()){
+                    binding.tvGreeting.text ="Start Your Job"
+                }else{
+                    binding.tvGreeting.text ="\uD83D\uDCCD "+sharePreference.getString(PrefKeys.lastSwipeAddress)
+                }
                 binding.tv1.text = "Hello, ${sharePreference.getString(PrefKeys.userName).substringBefore(",")?:""}"
             }else{
                 binding.tvGreeting.text = "Start earning with hommlie"

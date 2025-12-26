@@ -967,7 +967,16 @@ object CommonMethods {
             ""
         }
     }
-
-
+    fun monthNameFromZeroBased(index: Int): String {
+        val cal = Calendar.getInstance().apply { set(Calendar.MONTH, index.coerceIn(0, 11)) }
+        return cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) ?: ""
+    }
+    fun Double.formatCoins(): String {
+        return if (this % 1.0 == 0.0) {
+            this.toInt().toString()   // 10.0 -> 10
+        } else {
+            String.format("%.1f", this)          // 12.5 -> 12.5
+        }
+    }
 
 }

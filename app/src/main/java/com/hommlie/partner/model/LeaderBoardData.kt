@@ -19,7 +19,7 @@ data class LeaderBoardData(
     val emp_name : String?=null,
 
     @SerializedName("total_coins")
-    val total_coins : Int?=null,
+    val total_coins : Double?=null,
 
     @SerializedName("rank")
     val rank : Int?=null,
