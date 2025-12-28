@@ -82,7 +82,6 @@
             android:overScrollMode="never"
             tools:listitem="@layout/row_jobs"
             android:nestedScrollingEnabled="true"
-            android:background="@color/white"
             android:visibility="gone"
             />
 

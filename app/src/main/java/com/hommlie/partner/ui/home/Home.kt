@@ -831,17 +831,18 @@ class Home : Fragment() {
 //        getLastLocation("3")
 
         if (isAdded) {
-           /* if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
+            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
 
-                binding.tvPunch.text = "Punch Out"
-                binding.ivPunch.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.red_logout))
-                binding.tvPunch.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_logout))
-                binding.mcvPunch.strokeColor = ContextCompat.getColor(requireContext(), R.color.red_logout)
-                binding.mcvPunch.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red_logout_light))
+//                binding.tvPunch.text = "Punch Out"
+//                binding.ivPunch.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.red_logout))
+//                binding.tvPunch.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_logout))
+//                binding.mcvPunch.strokeColor = ContextCompat.getColor(requireContext(), R.color.red_logout)
+//                binding.mcvPunch.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red_logout_light))
 
                 viewModel.getOnsiteJob(sharePreference.getString(PrefKeys.userId))
 
-            } else {
+            }
+            /*else {
 
                 binding.tvPunch.text = "Punch In"
                 binding.ivPunch.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.green))

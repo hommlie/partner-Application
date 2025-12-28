@@ -255,7 +255,7 @@ class PayslipPdfGenerator(private val context: Context) {
         addEmployeeDetailRow(
             table,
             "Employee Name:",
-            data.empName,
+            data.empName?.replace(",","").toString(),
             "Adhaar No.",
             data.aadharNo?:"-"
         )

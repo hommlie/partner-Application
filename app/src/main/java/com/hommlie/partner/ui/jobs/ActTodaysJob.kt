@@ -1,11 +1,17 @@
 package com.hommlie.partner.ui.jobs
 
 import android.app.DatePickerDialog
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
+import android.view.Window
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -20,12 +26,18 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.hommlie.partner.R
 import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.databinding.ActivityActTodaysJobBinding
+import com.hommlie.partner.databinding.BottomsheetServicedetailsBinding
+import com.hommlie.partner.databinding.BottomsheetcoinBinding
+import com.hommlie.partner.model.CoinItem
 import com.hommlie.partner.model.NewOrderData
+import com.hommlie.partner.model.ServiceModel
 import com.hommlie.partner.ui.jobs.JobDetails
 import com.hommlie.partner.ui.jobs.JobsViewModel
 import com.hommlie.partner.ui.jobs.NewJobsAdapter
@@ -119,6 +131,9 @@ class ActTodaysJob : AppCompatActivity() {
                 startActivity(Intent(this, RaiseHelp::class.java).apply {
                     putExtra("job_data", json)
                 })
+            },
+            onClick_viewService = { serviceList ->
+                showServiceDetails(serviceList)
             }
         )
 
@@ -140,7 +155,7 @@ class ActTodaysJob : AppCompatActivity() {
         hashMapNewJob.apply {
             put("user_id", userId)
             put("order_status", "2") // New/pending
-            put("date", CommonMethods.getCurrentDateFormatted())
+//            put("date", CommonMethods.getCurrentDateFormatted())
         }
         hashMapPendingJob.apply {
             put("user_id", userId)
@@ -439,4 +454,39 @@ class ActTodaysJob : AppCompatActivity() {
     }
 
     enum class JobType { COMPLETED, PENDING, ALL }
+
+    fun showServiceDetails(serviceDetails: List<ServiceModel>) {
+
+        val detailsDialogBinding = BottomsheetServicedetailsBinding.inflate(layoutInflater)
+
+        val dialog = Dialog(this@ActTodaysJob, R.style.CustomBottomSheetDialogTheme)
+        //  dialog.setContentView(successDialogBinding.root)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setContentView(detailsDialogBinding.root)
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        dialog.window?.setGravity(Gravity.BOTTOM)
+        dialog.setCancelable(false)
+
+        setupServiceListAdapter(detailsDialogBinding.rvService, serviceDetails)
+
+        detailsDialogBinding.btnClose.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+    private fun setupServiceListAdapter(
+        recyclerView: RecyclerView,
+        serviceList: List<ServiceModel>
+    ) {
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true)
+            adapter = ServiceDetailsAdapter(serviceList)
+        }
+    }
+
 }

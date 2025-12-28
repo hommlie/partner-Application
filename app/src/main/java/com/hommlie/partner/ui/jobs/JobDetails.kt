@@ -34,6 +34,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -50,6 +52,7 @@ import com.hommlie.partner.databinding.BottomsheetOtpBinding
 import com.hommlie.partner.databinding.BottomsheetPaymentBinding
 import com.hommlie.partner.databinding.BottomsheetSignatureBinding
 import com.hommlie.partner.model.NewOrderData
+import com.hommlie.partner.model.ServiceModel
 import com.hommlie.partner.utils.CommonMethods
 import com.hommlie.partner.utils.KeyboardUtils
 import com.hommlie.partner.utils.PrefKeys
@@ -170,15 +173,16 @@ class JobDetails : AppCompatActivity() {
         }
 
         binding.tvCustName.text = jobData.name
-        binding.tvVariation.text="${jobData.attribute?:"-"}\n${jobData.serviceName?:"-"}"
-        binding.tvSize.text=jobData.variation?:"-"
-        binding.tvCategory.text=jobData.categoryName?:"-"
-        binding.tvSubcategory.text=jobData.subcategoryName?:"-"
-        binding.tvType.text="Order#"+jobData.orderNo
+//        binding.tvVariation.text="${jobData.attribute?:"-"}\n${jobData.serviceName?:"-"}"
+//        binding.tvSize.text=jobData.variation?:"-"
+//        binding.tvCategory.text=jobData.categoryName?:"-"
+//        binding.tvSubcategory.text=jobData.subcategoryName?:"-"
+        binding.tvType.text="Visit ID :- "+jobData.orderId
 
 
         hashMap["user_id"] = sharePreference.getString(PrefKeys.userId)
-        hashMap["order_id"] = jobData.orderId.toString()
+//        hashMap["order_id"] = jobData.orderId.toString()
+        hashMap["visit_id"] = jobData.orderId.toString()
 
 
         if (jobData.orderStatus=="3"){
@@ -228,6 +232,8 @@ class JobDetails : AppCompatActivity() {
                 }
             }
         }
+        setupServiceListAdapter(binding.rvService, jobData.services)
+
         observeStartTime()
         observeDuration()
 
@@ -404,10 +410,6 @@ class JobDetails : AppCompatActivity() {
             }
         })
 
-
-
-
-
     }
 
     fun byteArrayToBase64(signature: ByteArray?): String? {
@@ -419,7 +421,7 @@ class JobDetails : AppCompatActivity() {
 
         val map = HashMap<String, RequestBody>()
         map["user_id"] = sharePreference.getString(PrefKeys.userId).toRequestBody("text/plain".toMediaTypeOrNull())
-        map["order_id"] = jobData.orderId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+        map["visit_id"] = jobData.orderId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
         map["order_status"] = "4".toRequestBody("text/plain".toMediaTypeOrNull())
 
         if(signature!=null) {
@@ -505,7 +507,7 @@ class JobDetails : AppCompatActivity() {
 //                    dialog.dismiss()
                     val map = HashMap<String, RequestBody>()
                     map["user_id"] = sharePreference.getString(PrefKeys.userId).toRequestBody("text/plain".toMediaTypeOrNull())
-                    map["order_id"] = jobData.orderId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+                    map["visit_id"] = jobData.orderId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
                     map["order_status"] = "3".toRequestBody("text/plain".toMediaTypeOrNull())
                     map["otp"] = viewModel.enteredOtp.value.toRequestBody("text/plain".toMediaTypeOrNull())
 
@@ -1210,5 +1212,12 @@ class JobDetails : AppCompatActivity() {
         cameraLauncherForCheque.launch(intent)
     }
 
+    private fun setupServiceListAdapter(recyclerView: RecyclerView, serviceList: List<ServiceModel>) {
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true)
+            adapter = JobDetailsServiceAdapter(serviceList)
+        }
+    }
 
 }

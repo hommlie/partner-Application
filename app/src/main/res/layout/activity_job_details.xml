@@ -34,7 +34,7 @@
             android:fontFamily="@font/helvetica"
             android:textSize="@dimen/_14ssp"
             android:textColor="@color/black"
-            android:text="Order# 67322563"
+            android:text="Visit ID :-"
             android:gravity="center"
             android:layout_marginStart="@dimen/_10sdp"
             android:ellipsize="end"
@@ -166,7 +166,8 @@
         app:layout_constraintTop_toBottomOf="@id/cl_cust_name"
         android:layout_marginTop="@dimen/_12sdp"
         android:layout_marginStart="@dimen/_9sdp"
-        android:layout_marginEnd="@dimen/_10sdp">
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/iv_type"
@@ -210,7 +211,8 @@
         app:layout_constraintTop_toBottomOf="@id/cl_type"
         android:layout_marginTop="@dimen/_12sdp"
         android:layout_marginStart="@dimen/_9sdp"
-        android:layout_marginEnd="@dimen/_10sdp">
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/iv_size"
@@ -254,7 +256,8 @@
         app:layout_constraintTop_toBottomOf="@id/cl_variation"
         android:layout_marginTop="@dimen/_12sdp"
         android:layout_marginStart="@dimen/_9sdp"
-        android:layout_marginEnd="@dimen/_10sdp">
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/iv_category"
@@ -298,7 +301,8 @@
         app:layout_constraintTop_toBottomOf="@id/cl_category"
         android:layout_marginTop="@dimen/_12sdp"
         android:layout_marginStart="@dimen/_9sdp"
-        android:layout_marginEnd="@dimen/_10sdp">
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/iv_subcategory"
@@ -424,6 +428,40 @@
             app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_servicedetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/cl_duration"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:background="@color/light_orange"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:gravity="center"
+            android:textSize="@dimen/_13ssp"
+            android:layout_marginTop="@dimen/_4sdp"
+            android:fontFamily="@font/inter_medium"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:text="Service :-"
+            android:textColor="@color/color_primary"
+            app:layout_constraintStart_toStartOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_service"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/cl_servicedetails"
+        app:layout_constraintBottom_toTopOf="@id/mcv_swipebtn"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:paddingTop="@dimen/_7sdp"
+        android:background="@color/light_orange"
+        />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/mcv_swipebtn"

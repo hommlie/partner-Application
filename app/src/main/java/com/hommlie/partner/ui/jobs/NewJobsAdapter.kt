@@ -15,11 +15,13 @@ import com.google.gson.Gson
 import com.hommlie.partner.R
 import com.hommlie.partner.databinding.RowJobsBinding
 import com.hommlie.partner.model.NewOrderData
+import com.hommlie.partner.model.ServiceModel
 import com.hommlie.partner.utils.CommonMethods
 import java.net.URLEncoder
 
 class NewJobsAdapter(private val onCheckOrders: (NewOrderData) -> Unit,
-private val onClick_raiseHelp: (NewOrderData) -> Unit)
+                     private val onClick_raiseHelp: (NewOrderData) -> Unit,
+                     private val onClick_viewService: (List<ServiceModel>) -> Unit)
 : RecyclerView.Adapter<NewJobsAdapter.NewJobsViewHolder>() {
 
 
@@ -66,11 +68,11 @@ private val onClick_raiseHelp: (NewOrderData) -> Unit)
 
             tvAddress.text=job.address?:"-"
             tvName.text=job.name?:"-"
-            tvJobinfo.text=job.serviceName?:"-"
-            tvServiceType.text=job.attribute?:"-"
-            tvCategory.text=job.categoryName?:"-"
-            tvSubcategory.text=job.subcategoryName?:"-"
-            tvUnit.text= "${job.variation}"     //"${job.quantity?.toFloat()?.toInt()?:"-"} ${job.quantityType?:""}"
+//            tvJobinfo.text=job.serviceName?:"-"
+//            tvServiceType.text=job.attribute?:"-"
+//            tvCategory.text=job.categoryName?:"-"
+//            tvSubcategory.text=job.subcategoryName?:"-"
+//            tvUnit.text= "${job.variation}"     //"${job.quantity?.toFloat()?.toInt()?:"-"} ${job.quantityType?:""}"
             tvServicetime.text="Time : ${job.desiredTime?:"-"} | ${job.desiredDate?:"-"}"
             tvOrderno.text=job.orderId.toString()
 
@@ -84,7 +86,7 @@ private val onClick_raiseHelp: (NewOrderData) -> Unit)
 
                 tvTrackOrder.text = "Completed"
                 tvTrackOrder.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.color_primary))
-                tvJobinfo.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.color_primary))
+//                tvJobinfo.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.color_primary))
                 tvTrackOrder.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.context,R.color.green_light))
 
                 trackCard.strokeColor = ContextCompat.getColor(holder.itemView.context, R.color.parrotgreen)
@@ -98,8 +100,8 @@ private val onClick_raiseHelp: (NewOrderData) -> Unit)
 
                 tvTrackOrder.text = "On-Site"
                 tvTrackOrder.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.purple))
-                tvJobinfo.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.purple))
-                tvTrackOrder.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.context,R.color.light_orange))
+//                tvJobinfo.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.purple))
+                tvTrackOrder.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.context,R.color.light_purple))
 
                 trackCard.strokeColor = ContextCompat.getColor(holder.itemView.context, R.color.purple)
             }else if (job.orderStatus == "2"){
@@ -112,7 +114,7 @@ private val onClick_raiseHelp: (NewOrderData) -> Unit)
 
                 tvTrackOrder.text = "Dispatched"
                 tvTrackOrder.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.orange))
-                tvJobinfo.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.orange))
+//                tvJobinfo.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.orange))
                 tvTrackOrder.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.context,R.color.light_orange))
 
                 trackCard.strokeColor = ContextCompat.getColor(holder.itemView.context, R.color.job_stroke_color)
@@ -131,6 +133,9 @@ private val onClick_raiseHelp: (NewOrderData) -> Unit)
 
             tvHelp.setOnClickListener {
                 onClick_raiseHelp(job)
+            }
+            tvJobinfo.setOnClickListener {
+                onClick_viewService(job.services)
             }
 
 
@@ -154,7 +159,6 @@ private val onClick_raiseHelp: (NewOrderData) -> Unit)
            llWhatsapp.setOnClickListener {
                 openWhatsApp(holder.itemView.context,job.mobile,"Hii "+job.name+" Trackiffy technician coming, are you available now??")
            }
-
             llShare.setOnClickListener {
                 val context = holder.itemView.context
                 val link = job.address_lat_lng?.trim()

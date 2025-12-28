@@ -1,33 +1,32 @@
 package com.hommlie.partner.ui.dashboard
 
-import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
+import android.animation.ValueAnimator
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.FileProvider
-import com.bumptech.glide.Glide
-import com.hommlie.partner.R
+import android.view.animation.LinearInterpolator
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
+import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.databinding.FragmentDashboardBinding
-import com.hommlie.partner.databinding.FragmentSettingBinding
+import com.hommlie.partner.ui.wallet.WalletViewModel
 import com.hommlie.partner.utils.CommonMethods
 import com.hommlie.partner.utils.OnNearByServicesClickListener
 import com.hommlie.partner.utils.PrefKeys
+import com.hommlie.partner.utils.ProgressDialogUtil
 import com.hommlie.partner.utils.SharePreference
-import com.hommlie.partner.utils.setupToolbar
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.File
-import java.io.FileOutputStream
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -35,10 +34,18 @@ class Dashboard : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
+    private val viewModel : WalletViewModel by activityViewModels()
 
     lateinit var clickListener: OnNearByServicesClickListener
 
-    private lateinit var referalCode:String
+    private var hashmapUserId = HashMap<String,String>()
+    private lateinit var indicatorAdapter: BannerIndicatorAdapter
+    private var autoScrollJob: Job? = null
+    private var progressAnimator: ValueAnimator? = null
+    private var isUserSwiping = false
+
+    private lateinit var rewardAdapter: RewardListAdapter
+
 
     @Inject
     lateinit var sharePreference : SharePreference
@@ -70,25 +77,172 @@ class Dashboard : Fragment() {
         viewStatusBar.height = statusBarHeight
         binding.viewStatusbar.layoutParams = viewStatusBar
 
-        binding.ivBack.setOnClickListener {
-            clickListener.activateHome()
+        hashmapUserId["user_id"] = sharePreference.getString(PrefKeys.userId)
+
+        setupRewardRecyclerView()
+        observeCoinData()
+        viewModel.getCoinBalance(hashmapUserId)
+
+        setupBanner()
+
+        val sortedList = viewModel.getFakeRewards()
+            .sortedBy { it.rewardType }
+
+        rewardAdapter.submitRewardList(sortedList)
+
+    }
+
+    private fun observeCoinData(){
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.coinData.collect { state ->
+                    when (state) {
+                        is UIState.Idle -> Unit
+                        is UIState.Loading -> ProgressDialogUtil.showLoadingProgress(requireActivity(),viewLifecycleOwner.lifecycleScope)
+                        is UIState.Success -> {
+                            ProgressDialogUtil.dismiss()
+                            val balance = state.data.substringBefore(".")
+
+                            binding.tvTotalCoin.text = balance
+                            viewModel.setCoinBalance(balance)
+
+                            viewModel.reset_getCoinBalance()
+                        }
+                        is UIState.Error -> {
+                            ProgressDialogUtil.dismiss()
+                            viewModel.reset_getCoinBalance()
+                        }
+                    }
+                }
+            }
         }
+    }
+    private fun observeWalletData() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.walletList.collect { state ->
+                    when (state) {
+                        is UIState.Loading -> {
+                            // show loader
+                        }
 
+                        is UIState.Success -> {
+                            // map API response → RewardItem if needed
+                            val sortedList = viewModel.getFakeRewards()
+                                .sortedBy { it.rewardType }
 
-        Glide.with(requireContext()).load("https://www.hommlie.com/panel/public/storage/app/public/images/banner/topbanner-67dc24b0f2df3.png").thumbnail(0.1f).into(binding.ivReferbanner)
+                            rewardAdapter.submitRewardList(sortedList)
 
-        referalCode = sharePreference.getString(PrefKeys.userId)
+                        }
 
+                        is UIState.Error -> {
+                            // show error
+                        }
 
-        binding.cardReferNow.setOnClickListener{
-            shareReferralCode(referalCode,requireContext().packageName)
+                        else -> Unit
+                    }
+                }
+            }
         }
-        binding.cardInvite.setOnClickListener {
-            shareReferralCode(referalCode,"com.hommlie.user")
+    }
+
+
+    private fun setupBanner() {
+
+        val banners = listOf("https://rukminim2.flixcart.com/fk-p-flap/3240/540/image/66faf3950cda0b7a.png?q=60", "https://rukminim2.flixcart.com/fk-p-flap/3240/540/image/d8fd3693165a6ee9.png?q=60", "https://rukminim2.flixcart.com/fk-p-flap/3240/540/image/1f9c9ad24c2bc37b.jpg?q=60","https://rukminim2.flixcart.com/fk-p-flap/3240/540/image/d8fd3693165a6ee9.png?q=60","https://rukminim2.flixcart.com/fk-p-flap/3240/540/image/d8fd3693165a6ee9.png?q=60","https://rukminim2.flixcart.com/fk-p-flap/3240/540/image/d8fd3693165a6ee9.png?q=60",)
+
+        binding.vpBanners.adapter = BannerAdapter(banners)
+
+        indicatorAdapter = BannerIndicatorAdapter(banners.size)
+        binding.rvIndicator.adapter = indicatorAdapter
+        binding.rvIndicator.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+
+        binding.vpBanners.registerOnPageChangeCallback(
+            object : ViewPager2.OnPageChangeCallback() {
+
+                override fun onPageSelected(position: Int) {
+                    val realPos = position % indicatorAdapter.itemCount
+                    indicatorAdapter.setActive(realPos)
+
+                    // 🔥 reset progress whenever page changes
+                    indicatorAdapter.updateProgress(0)
+                }
+
+
+
+                override fun onPageScrollStateChanged(state: Int) {
+
+                    when (state) {
+                        ViewPager2.SCROLL_STATE_DRAGGING -> {
+                            // 🔥 user started manual swipe
+                            isUserSwiping = true
+                            autoScrollJob?.cancel()
+                            indicatorAdapter.updateProgress(0)
+                        }
+
+                        ViewPager2.SCROLL_STATE_IDLE -> {
+                            val realCount = indicatorAdapter.itemCount
+                            val current = binding.vpBanners.currentItem
+
+                            // fake last handling
+                            if (current == realCount) {
+                                binding.vpBanners.setCurrentItem(0, false)
+                            }
+
+                            // 🔥 restart auto-scroll fresh
+                            isUserSwiping = false
+                            restartAutoScroll()
+                        }
+                    }
+                }
+
+
+            }
+        )
+
+        startAutoScroll()
+    }
+    private fun startAutoScroll() {
+        autoScrollJob?.cancel()
+
+        autoScrollJob = viewLifecycleOwner.lifecycleScope.launch {
+            while (true) {
+
+                // 🔥 always start progress from 0
+                indicatorAdapter.updateProgress(0)
+
+                for (progress in 0..100 step 2) {
+
+                    // ❗ if user swiped, stop immediately
+                    if (isUserSwiping) return@launch
+
+                    delay(60)
+                    indicatorAdapter.updateProgress(progress)
+                }
+
+                // move banner only if auto-scroll
+                if (!isUserSwiping) {
+                    binding.vpBanners.setCurrentItem(
+                        binding.vpBanners.currentItem + 1,
+                        true
+                    )
+                }
+            }
         }
-        binding.tvRefferalCode.setOnClickListener {
-            copyTextToClipboard(referalCode)
-        }
+    }
+
+    private fun restartAutoScroll() {
+        autoScrollJob?.cancel()
+        startAutoScroll()
+    }
+    override fun onStop() {
+        super.onStop()
+        autoScrollJob?.cancel()
+        progressAnimator?.cancel()
+    }
+    override fun onStart() {
+        super.onStart()
+        startAutoScroll()
     }
 
 
@@ -97,50 +251,15 @@ class Dashboard : Fragment() {
         _binding = null
     }
 
+    private fun setupRewardRecyclerView() {
+        rewardAdapter = RewardListAdapter()
 
-    private fun copyTextToClipboard(text: String) {
-        val clipboardManager = requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clipData = ClipData.newPlainText("", text)
-        clipboardManager.setPrimaryClip(clipData)
+        binding.rvRewards.apply {
+            isNestedScrollingEnabled = false
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = rewardAdapter
+            setHasFixedSize(false)
+            itemAnimator = null
+        }
     }
-
-
-    private fun shareReferralCode(referralCode: String, userApp: String) {
-        val shareText = "Get an instant ₹100 voucher to use on Hommlie's trusted services! \n\n" +
-                "Download here: https://play.google.com/store/apps/details?id=$userApp \n\n" +
-                "To redeem the voucher, install the app and enter the referral code: $referralCode \n\n" +
-                "Hurry, the reward expires in 4 weeks!"
-
-        // Save drawable to cache
-        val imageFile = File(requireContext().cacheDir, "referandearn.jpeg")
-        val drawable = resources.getDrawable(R.drawable.referandearn, null) as BitmapDrawable
-        val bitmap = drawable.bitmap
-        FileOutputStream(imageFile).use { out ->
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-        }
-
-        // Get content URI
-        val imageUri = FileProvider.getUriForFile(requireActivity(), "${requireContext().packageName}.fileprovider", imageFile)
-
-        // Hybrid Share
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "image/*"
-            putExtra(Intent.EXTRA_TEXT, shareText)
-            putExtra(Intent.EXTRA_STREAM, imageUri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            clipData = ClipData.newUri(requireContext().contentResolver, "Referral Image", imageUri)
-        }
-
-        // Grant permission to all resolved apps
-        val resInfoList = requireContext().packageManager.queryIntentActivities(shareIntent, PackageManager.MATCH_DEFAULT_ONLY)
-        for (resolveInfo in resInfoList) {
-            val packageName = resolveInfo.activityInfo.packageName
-            requireActivity().grantUriPermission(packageName, imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-        startActivity(Intent.createChooser(shareIntent, "Share Referral Code"))
-    }
-
-
-
 }

@@ -157,7 +157,7 @@
                     android:gravity="center_horizontal"
                     android:padding="0dp"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:text="Refer &amp; Earn"
+                    android:text="Rewards"
                     android:fontFamily="@font/sfprodisplay_medium"
                     android:textColor="@color/unselect_icon"
                     android:textSize="@dimen/_11ssp" />

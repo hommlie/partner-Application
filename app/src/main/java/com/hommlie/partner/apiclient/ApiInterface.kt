@@ -71,13 +71,13 @@ interface ApiInterface {
     @GET("cmspages")
     suspend fun getCmsData(): CmsPageResponse
 
-    @POST("partner/orders")
+    @POST("partner/newOrders")
     suspend fun getOrderByOrderStatus(@Body map: HashMap<String, String>): NewOrder
 
     @POST("partner/dailyPuchLog")
     suspend fun dailyPucchLog(@Body map: HashMap<String, String>): DailyPunchLogResponse
 
-    @POST("partner/orders")
+    @POST("partner/newOrders")
     suspend fun getOnsiteJob(@Body map : HashMap<String,String>) : NewOrder
 
     @POST("partner/leavetypelist")
@@ -97,14 +97,14 @@ interface ApiInterface {
     ): SingleResponse
 
     @Multipart
-    @POST("partner/changeStatus")
+    @POST("partner/newChangeStatus")
     suspend fun changeorderStatus(
         @PartMap map: Map<String, @JvmSuppressWildcards RequestBody>,
         @Part emp_onsite_image: MultipartBody.Part,
     ): SingleResponseForOrderThree
 
     @Multipart
-    @POST("partner/changeStatus")
+    @POST("partner/newChangeStatus")
     suspend fun changeorderStatusWhenCheque(
         @PartMap map: Map<String, @JvmSuppressWildcards RequestBody>,
         @Part emp_onsite_image: MultipartBody.Part,
@@ -112,14 +112,14 @@ interface ApiInterface {
 
 
     @Multipart
-    @POST("partner/changeStatus")
+    @POST("partner/newChangeStatus")
     suspend fun changeorderStatusJobDone(
         @PartMap map: Map<String, @JvmSuppressWildcards RequestBody>,
 //        @Part emp_onsite_image: MultipartBody.Part,
     ): SingleResponse
 
 
-    @POST("partner/SendOtpAtStart")
+    @POST("partner/newSendOtpAtStart")
     suspend fun sendOtp(@Body map:HashMap<String,String>): SingleResponse
 
     @GET("partner/workzones")

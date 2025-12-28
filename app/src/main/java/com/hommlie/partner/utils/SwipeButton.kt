@@ -9,6 +9,7 @@ import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -46,6 +47,7 @@ class SwipeButton : RelativeLayout {
         private var arrowHintContainer: LinearLayout? = null
         private var progressBar: ProgressBar? = null
 
+    private val handler = Handler(Looper.getMainLooper())
 
         private var btnText: CharSequence = "BUTTON"
         @ColorInt
@@ -384,10 +386,13 @@ class SwipeButton : RelativeLayout {
 
         @SuppressLint("ObjectAnimatorBinding")
         private fun morphToRect() {
+            if (!isAttachedToWindow) return
+            if (contentContainer == null || gradientDrawable == null) return
+
             setupTouchListener()
             val cornerAnimation = ObjectAnimator.ofFloat(gradientDrawable, "cornerRadius", BTN_MORPHED_RADIUS, BTN_INIT_RADIUS)
 
-            progressBar!!.visibility = View.GONE
+            progressBar?.visibility = View.GONE
             val widthAnimation: ValueAnimator
             widthAnimation = ValueAnimator.ofInt(CommonMethods.dpToPx(50), width)
             widthAnimation.addUpdateListener { valueAnimator ->
@@ -422,6 +427,7 @@ class SwipeButton : RelativeLayout {
         override fun setEnabled(enabled: Boolean) {
             super.setEnabled(enabled)
             if (!enabled) {
+                handler.removeCallbacksAndMessages(null)
                 gradientDrawable!!.setColor(ContextCompat.getColor(contextl, R.color.swipebtn_disabled_grey))
                 updateBackground()
                 this.alpha = 0.5f
@@ -432,8 +438,9 @@ class SwipeButton : RelativeLayout {
         }
 
         private fun showProgressBar() {
+            if (progressBar != null) return
             progressBar = ProgressBar(contextl)
-            progressBar!!.indeterminateDrawable.setColorFilter(ContextCompat.getColor(contextl, android.R.color.white), android.graphics.PorterDuff.Mode.SRC_IN)
+            progressBar?.indeterminateDrawable?.setColorFilter(ContextCompat.getColor(contextl, android.R.color.white), android.graphics.PorterDuff.Mode.SRC_IN)
             CommonMethods.animateFadeHide(contextl, contentTv)
             contentContainer!!.addView(progressBar)
         }
@@ -462,12 +469,12 @@ class SwipeButton : RelativeLayout {
 
             if (shouldReset) {
                 // expand the btn again
-                Handler().postDelayed({
+                handler.postDelayed({
                     val layoutDirection = resources.getString(R.string.layout_direction)
                     if (layoutDirection == "0") {
                         CommonMethods.animateFadeHide(contextl, failureIcon)
                         morphToRect()
-                        arrowHintContainer!!.x = 0f
+                        arrowHintContainer?.x = 0f
                         CommonMethods.animateFadeShow(contextl, arrowHintContainer!!)
                         contentTv?.let { CommonMethods.animateFadeShow(contextl, it) }
                     } else {
@@ -554,5 +561,10 @@ class SwipeButton : RelativeLayout {
         companion object {
             var TripStatus = ""
         }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        handler.removeCallbacksAndMessages(null)
+    }
 
 }
