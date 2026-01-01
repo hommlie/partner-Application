@@ -43,6 +43,7 @@
 <!--    F0F2F8-->
     <color name="transparent">#1E6B757B</color>
     <color name="ub__transparent">#00000000</color>
+    <color name="blakish_disable">#9F000000</color>
     <color name="color_344054">#344054</color>
     <color name="color181818">#181818</color>
     <color name="gray_border">#dbd8d8</color>
@@ -60,6 +61,7 @@
     <color name="color_94AFB6">#94AFB6</color>
     <color name="color_252728">#252728</color>
     <color name="color_536724">#536724</color>
+    <color name="color_C7F064">#C7F064</color>
 
     <!--swipe button color-->
     <color name="swipebtn_translucent_white">#33ffffff</color>

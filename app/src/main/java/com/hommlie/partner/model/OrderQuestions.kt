@@ -9,22 +9,20 @@ data class OrderQuestions(
 )
 
 data class ServiceData(
-    @SerializedName("id") val id: String,
+    @SerializedName("visit_id") val id: String,
     @SerializedName("order_number") val orderNumber: String,
-    @SerializedName("product_name") val productName: String,
-    @SerializedName("mobile") val mobile: String,
-    @SerializedName("desired_date") val desiredDate: String,
-    @SerializedName("desired_time") val desiredTime: String,
-    @SerializedName("price") val price: String,
-    @SerializedName("address") val address: String,
     @SerializedName("order_status") val orderStatus: String,
     @SerializedName("order_ques_count") val orderCount: Int,
-    @SerializedName("order_question") val orderQuestions: List<OrderQuestion> ?= null
+    @SerializedName("service_questions") val orderQuestions: List<OrderQuestionByService> ?= null
 )
-
+data class OrderQuestionByService(
+    @SerializedName("service_id") val service_id: Int,
+    @SerializedName("service_name") val service_name: String,
+    @SerializedName("questions") val questions: List<OrderQuestion>
+)
 data class OrderQuestion(
     @SerializedName("state") val state: String,
-    @SerializedName("question") val questions: List<Questions>
+    @SerializedName("questions") val questions: List<Questions>
 )
 
 data class Questions(
@@ -34,6 +32,7 @@ data class Questions(
     @SerializedName("options") val options: String?,
     @SerializedName("required") val required: String,
     @SerializedName("status") val status: String,
+    @SerializedName("service_id") val serviceId :Int,
     @SerializedName("created_at") val createdAt: String,
     @SerializedName("updated_at") val updatedAt: String
 )

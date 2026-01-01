@@ -190,14 +190,14 @@
 
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""
+                            android:text="Duration"
                             android:singleLine="true"
                             android:textColor="#66000000"
                             android:textSize="@dimen/_9ssp"
                             android:layout_marginTop="@dimen/_2sdp"
                             />
                         <TextView
-                            android:id="@+id/tv_orderCost"
+                            android:id="@+id/tv_duration"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text=""
@@ -427,7 +427,6 @@
                         android:gravity="center"
                         android:layout_marginTop="@dimen/_2sdp"/>
                     <TextView
-                        android:id="@+id/tv_serviceplan"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintTop_toBottomOf="@id/tv_name"
@@ -501,7 +500,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginTop="@dimen/_2sdp"
                     android:weightSum="3"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:orientation="horizontal">
 
                     <TextView
@@ -510,12 +509,12 @@
                         app:layout_constraintTop_toBottomOf="@id/tv_name"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        android:text="Property Size"
+                        android:text="Property Plan"
                         android:textColor="#66000000"
                         android:textSize="@dimen/_9ssp"
                         android:layout_marginTop="@dimen/_2sdp"
                         android:fontFamily="@font/plussakartasans_medium"
-                        android:layout_weight="2.1"
+                        android:layout_weight="2.3"
                         />
                     <TextView
                         android:layout_width="@dimen/_2sdp"
@@ -525,19 +524,19 @@
                         android:layout_marginTop="@dimen/_2sdp"/>
 
                     <TextView
-                        android:id="@+id/tv_propertysize"
+                        android:id="@+id/tv_serviceplan"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintTop_toBottomOf="@id/tv_name"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        android:text="Service Plan"
+                        android:text=""
                         android:layout_marginStart="@dimen/_3sdp"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_9ssp"
                         android:layout_marginTop="@dimen/_2sdp"
                         android:fontFamily="@font/plusjakartasans_semi_bold"
-                        android:layout_weight="0.9"
+                        android:layout_weight="0.7"
                         />
 
                 </LinearLayout>
@@ -769,7 +768,7 @@
             app:layout_constraintTop_toBottomOf="@id/track_card"
             app:layout_constraintStart_toStartOf="@id/tv_no"
             app:layout_constraintEnd_toEndOf="@id/tv_no"
-            android:background="#EDF3FE"
+            android:background="@color/color_primary"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

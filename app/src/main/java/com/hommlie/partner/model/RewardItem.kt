@@ -7,6 +7,7 @@ data class RewardItem(
     val description: String,
     val worthText: String,
     val isLocked: Boolean,
-    val imageRes: String
+    val imageRes: String,
+    val requiredCoin: Int,
 )
 

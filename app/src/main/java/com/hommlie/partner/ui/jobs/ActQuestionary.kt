@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -89,34 +90,34 @@ class ActQuestionary : AppCompatActivity() {
 
 
 
-        recyclerView=binding.rvQuestion
+        recyclerView = binding.rvQuestion
 
-        orderId=intent.getStringExtra("orderId").toString()
-        questionfor=intent.getStringExtra("questionfor").toString()
-        orderStatus=intent.getStringExtra("order_status").toString()
+        orderId = intent.getStringExtra("orderId").toString()
+        questionfor = intent.getStringExtra("questionfor").toString()
+        orderStatus = intent.getStringExtra("order_status").toString()
 
 
-        if (orderStatus=="2"){
+        if (orderStatus == "2") {
             orderStatus = "3"
             setupToolbar(toolbarView, "Pre Inspection", this, R.color.transparent, R.color.black)
-        }else if (orderStatus=="3"){
+        } else if (orderStatus == "3") {
             orderStatus = "4"
             setupToolbar(toolbarView, "Post Inspection", this, R.color.transparent, R.color.black)
         }
 
 
-        hashMap["user_id"]=sharePreference.getString(PrefKeys.userId)
-        hashMap["order_status"]=orderStatus
-        hashMap["order_id"]=orderId
+        hashMap["user_id"] = sharePreference.getString(PrefKeys.userId)
+        hashMap["order_status"] = orderStatus
+        hashMap["visit_id"] = orderId
 
 
-        viewModel.callApiforQuestions(hashMap,questionfor)
+        viewModel.callApiforQuestions(hashMap, questionfor)
 
         observeGetQuestion(questionfor)
         observeSubmitQuestionAnwer()
 
 
-        binding.btnSubmit.setOnClickListener {
+        /*binding.btnSubmit.setOnClickListener {
             val answers = adaptor.getAnswers()
             if (answers != null && answers.isNotEmpty()) {
                 val gson = Gson()
@@ -139,10 +140,66 @@ class ActQuestionary : AppCompatActivity() {
             } else {
                 CommonMethods.getToast(this@ActQuestionary, "Attempt required questions")
             }
+        } */
+        binding.btnSubmit.setOnClickListener {
+
+            val services = adaptor.getServiceWiseAnswers()
+
+            if (services.isNotEmpty()) {
+
+                //  FINAL BODY (backend expectation)
+                val body = mapOf(
+                    "visit_id" to orderId,
+                    "order_status" to orderStatus,
+                    "user_id" to sharePreference.getString(PrefKeys.userId),
+                    "services" to services
+                )
+
+                val json = Gson().toJson(body)
+
+                //  POSTMAN / API LOG
+                Log.d("POSTMAN_BODY", json)
+
+                // ---------------- IMAGE PART ----------------
+                val imageParts = mutableListOf<MultipartBody.Part>()
+
+                Log.d("API_SEND", "------ IMAGE PARAMS ------")
+                for ((questionId, bitmaps) in adaptor.getImageAnswers()) {
+                    bitmaps.forEachIndexed { index, bitmap ->
+                        val imagePart = prepareImagePart(
+                            bitmap,
+                            "question_${questionId}_image_$index"
+                        )
+                        imageParts.add(imagePart)
+
+                        Log.d(
+                            "API_SEND",
+                            "Sending image → questionId=$questionId index=$index"
+                        )
+                    }
+                }
+
+                Log.d("API_SEND", "Total images = ${imageParts.size}")
+
+                //  TEXT BODY AS REQUEST MAP (agar multipart chahiye)
+                val requestMap = mapOf(
+                    "payload" to json
+                ).mapValues {
+                    it.value.toRequestBody("text/plain".toMediaTypeOrNull())
+                }
+
+                //  FINAL API CALL
+                 viewModel.submitAnswers(requestMap, imageParts)
+
+            } else {
+                CommonMethods.getToast(
+                    this@ActQuestionary,
+                    "Attempt required questions"
+                )
+            }
         }
     }
-
-    private fun observeGetQuestion(questionfor: String) {
+        private fun observeGetQuestion(questionfor: String) {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.uiState.collect{ state->
@@ -150,33 +207,40 @@ class ActQuestionary : AppCompatActivity() {
                         is UIState.Loading->{
                             ProgressDialogUtil.showLoadingProgress(this@ActQuestionary,lifecycleScope)
                         }
-                        is UIState.Success-> {
+                        is UIState.Success -> {
                             ProgressDialogUtil.dismiss()
                             viewModel.resetUIState()
 
                             val serviceData = state.data.serviceData
-                            if (serviceData != null) {
-                                val totalquestions = serviceData.orderCount
-                                if (totalquestions > 0) {
 
-                                    val questions_data = serviceData.orderQuestions
-                                    if (serviceData.orderQuestions == null) {
-                                        binding.btnSubmit.visibility = View.GONE
+                            if (serviceData.orderCount > 0 && !serviceData.orderQuestions.isNullOrEmpty()) {
 
-                                    } else {
+                                val filteredQuestions = mutableListOf<Questions>()
 
-                                        var onsiteQuestions: List<Questions>? = null
-                                        questions_data?.let {
-                                            onsiteQuestions =
-                                                it.find { question -> question.state == questionfor }?.questions
-                                        }
-                                        onsiteQuestions?.let { setRecylerView(it) }
-                                    }
+                                serviceData.orderQuestions.forEach { service ->
+                                    service.questions
+                                        .find { it.state == questionfor }   // 🔥 STATE FILTER
+                                        ?.questions
+                                        ?.let { filteredQuestions.addAll(it) }
+                                }
+
+                                if (filteredQuestions.isNotEmpty()) {
+                                    setRecylerView(filteredQuestions)
+                                    binding.btnSubmit.visibility = View.VISIBLE
                                 } else {
                                     binding.btnSubmit.visibility = View.GONE
-                                    CommonMethods.alertErrorOrValidationDialog(this@ActQuestionary, "No questions found")
-
+                                    CommonMethods.alertErrorOrValidationDialog(
+                                        this@ActQuestionary,
+                                        "No $questionfor questions found"
+                                    )
                                 }
+
+                            } else {
+                                binding.btnSubmit.visibility = View.GONE
+                                CommonMethods.alertErrorOrValidationDialog(
+                                    this@ActQuestionary,
+                                    "No questions found"
+                                )
                             }
                         }
                         is UIState.Error->{
@@ -185,7 +249,7 @@ class ActQuestionary : AppCompatActivity() {
 
                             // IF no question found to skipping the current task
                             if (orderStatus=="3"){
-                                JobDetails.isonsiteAnswersubmit.value="1"
+                                JobDetails.isonsiteAnswersubmit.value= 1
                             }
                             if (orderStatus=="4"){
                                 JobDetails.isOnCompleteAnswersubmit.value="1"
@@ -221,7 +285,7 @@ class ActQuestionary : AppCompatActivity() {
                             ProgressDialogUtil.dismiss()
                             viewModel.resetUISubmitAnswer()
                             if (orderStatus=="3"){
-                                JobDetails.isonsiteAnswersubmit.value="1"
+                                JobDetails.isonsiteAnswersubmit.value= 1
                                 CommonMethods.getToast(this@ActQuestionary,"Answers submitted successfully.")
                             }
                             if (orderStatus=="4"){
@@ -245,12 +309,11 @@ class ActQuestionary : AppCompatActivity() {
     }
 
     private fun setRecylerView(data: List<Questions>) {
-        adaptor = QuestionAdaptor(this,data)
+        adaptor = QuestionAdaptor(this) // only context
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adaptor
+        adaptor.submitList(data) // submit data here
     }
-
-
 
     override fun onBackPressed() {
         super.onBackPressed()

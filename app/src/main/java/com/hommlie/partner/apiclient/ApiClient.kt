@@ -20,17 +20,6 @@ object ApiClient {
     val APP_URL =  "https://www.hommlie.com/panel/public/api/"
     private const val WEATHER_BASE_URL = "https://weather.googleapis.com/"
 
-//    val apiInterface: ApiInterface by lazy {
-//        val gson = GsonBuilder().setLenient().create()
-//
-//        val retrofit = Retrofit.Builder()
-//            .baseUrl(BASE_URL)
-//            .addConverterFactory(GsonConverterFactory.create(gson))
-//            .build()
-//
-//        retrofit.create(ApiInterface::class.java)
-//    }
-
     @Provides
     @Singleton
     @Named("AppRetrofit")
@@ -66,9 +55,6 @@ object ApiClient {
     fun provideWeatherApi(@Named("WeatherRetrofit") retrofit: Retrofit): WeatherApiInterface {
         return retrofit.create(WeatherApiInterface::class.java)
     }
-
-
-
     private fun createLoggingInterceptor(): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply {
@@ -76,7 +62,6 @@ object ApiClient {
             })
             .build()
     }
-
 
 }
 

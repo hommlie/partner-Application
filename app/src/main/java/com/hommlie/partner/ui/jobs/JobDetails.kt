@@ -101,7 +101,7 @@ class JobDetails : AppCompatActivity() {
     var isComeFromHome : Int = 0
 
     companion object{
-        var isonsiteAnswersubmit = MutableLiveData<String>()
+        var isonsiteAnswersubmit = MutableLiveData<Int>()
         var isOnCompleteAnswersubmit = MutableLiveData<String>()
         var isonCompleteChemicalFilled = MutableLiveData<String>()
         var OnSiteQuestions = ""
@@ -152,7 +152,7 @@ class JobDetails : AppCompatActivity() {
         val toolbarView = binding.root.findViewById<View>(R.id.include_toolbar)
         setupToolbar(toolbarView, "Job Details", this, R.color.transparent, R.color.black)
 
-        isonsiteAnswersubmit.value = "0"
+        isonsiteAnswersubmit.value = 0
         isOnCompleteAnswersubmit.value = "0"
         isonCompleteChemicalFilled.value ="0"
         OnSiteQuestions = "0"
@@ -184,17 +184,17 @@ class JobDetails : AppCompatActivity() {
 //        hashMap["order_id"] = jobData.orderId.toString()
         hashMap["visit_id"] = jobData.orderId.toString()
 
+        Glide.with(this@JobDetails).load(jobData.emp_onsite_image).placeholder(R.drawable.ic_placeholder_profile).into(binding.ivCaptureImagebeforejobstart)
 
         if (jobData.orderStatus=="3"){
             serviceStartAt.value = jobData.onsite_updated_at
-
         }else if(jobData.orderStatus =="2"){
             serviceStartAt.value = "yet to start"
             viewModel.sentOnsiteotp(hashMap)
             showOTPBottomsheet(this)
         }
 
-        isonsiteAnswersubmit.value =  jobData.IsQuestionsSubmitted
+        isonsiteAnswersubmit.value =  jobData.IsOniteQuestionsSubmitted
         OnSiteQuestions = jobData.OnSiteQuestions.toString()
         OnCompletedQuestions = jobData.OnCompletedQuestions.toString()
 
@@ -240,7 +240,7 @@ class JobDetails : AppCompatActivity() {
         observeJobFinish()
 
         isonsiteAnswersubmit.observe(this) { data ->
-            if (data == "1"){
+            if (data == 1){
                 binding.swipebtn.text ="Completed"
             }
         }
@@ -290,7 +290,7 @@ class JobDetails : AppCompatActivity() {
                 binding.mcvSwipebtn.visibility = View.VISIBLE
 
                 if (OnSiteQuestions == "1"){
-                    if (isonsiteAnswersubmit.value == "1"){
+                    if (isonsiteAnswersubmit.value == 1){
                         binding.swipebtn.text = "Completed"
                     }else{
                         binding.swipebtn.text = "Start Pre-Inspection"
@@ -327,7 +327,7 @@ class JobDetails : AppCompatActivity() {
                 }else{
 
                     if (OnSiteQuestions == "1"){
-                        if (isonsiteAnswersubmit.value == "1"){
+                        if (isonsiteAnswersubmit.value == 1){
                             binding.swipebtn.text = "Completed"
                             binding.mcvSwipebtn.visibility = View.VISIBLE
                             isComeFromHome = 0
@@ -622,7 +622,7 @@ class JobDetails : AppCompatActivity() {
             viewModel.generatePaymentQR(
                 hashMapOf(
                     "user_id" to sharePreference.getString(PrefKeys.userId),
-                    "order_id" to jobData.orderId.toString()
+                    "visit_id" to jobData.orderId.toString()
                 )
             )
         }
@@ -1181,7 +1181,7 @@ class JobDetails : AppCompatActivity() {
         check_paymentStatusJob?.cancel()
 
         val hashMap = HashMap<String,String>()
-        hashMap["order_id"] = jobData.orderId.toString()
+        hashMap["visit_id"] = jobData.orderId.toString()
 
         check_paymentStatusJob = lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {

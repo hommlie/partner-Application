@@ -143,7 +143,7 @@ class NewJobsAdapter(private val onCheckOrders: (NewOrderData) -> Unit,
                 CommonMethods.showConfirmationDialog(
                     holder.itemView.context,
                     "Confirmation !...",
-                    "Order Id     : ${job.orderId}\nOrder No.  : ${job.orderNo}\nAre you sure you want to start this service.",
+                    "Visit Id     : ${job.orderId}\nOrder No.  : ${job.orderNo}\nAre you sure you want to start this service.",
                     false,
                     true
                 ) {

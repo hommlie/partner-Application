@@ -101,10 +101,12 @@ class Dashboard : Fragment() {
                         is UIState.Loading -> ProgressDialogUtil.showLoadingProgress(requireActivity(),viewLifecycleOwner.lifecycleScope)
                         is UIState.Success -> {
                             ProgressDialogUtil.dismiss()
-                            val balance = state.data.substringBefore(".")
 
-                            binding.tvTotalCoin.text = balance
+                            val balance = state.data.substringBefore(".").toInt()
                             viewModel.setCoinBalance(balance)
+                            binding.tvTotalCoin.text = balance.toString()
+                            rewardAdapter.updateUserCoinBalance(balance)
+
 
                             viewModel.reset_getCoinBalance()
                         }

@@ -155,7 +155,7 @@ class ActTodaysJob : AppCompatActivity() {
         hashMapNewJob.apply {
             put("user_id", userId)
             put("order_status", "2") // New/pending
-//            put("date", CommonMethods.getCurrentDateFormatted())
+            put("date", CommonMethods.getCurrentDateFormatted())
         }
         hashMapPendingJob.apply {
             put("user_id", userId)
@@ -337,6 +337,9 @@ class ActTodaysJob : AppCompatActivity() {
         val json = Gson().toJson(item)
         startActivity(Intent(this@ActTodaysJob, JobDetails::class.java).apply {
             putExtra("job_data", json)
+            if (item.orderStatus == "3"){
+            putExtra("isComeFromHome",1)
+                }
         })
     }
 

@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -166,7 +167,12 @@ class Leaderboard : AppCompatActivity() {
             return
         }
 
-        nameView.text = user.emp_name?.substringBefore(",")?.toCapwords() ?: "-"
+        if (user.is_current_user == true){
+            nameView.text = "You"
+            nameView.setTextColor(ContextCompat.getColor(this@Leaderboard, R.color.color_C7F064))
+        }else{
+            nameView.text = user.emp_name?.substringBefore(",")?.toCapwords() ?: "-"
+        }
         pointView.text = "${user.total_coins?.formatCoins() ?: "0"} pts"
         Glide.with(this@Leaderboard).load(user.profile).placeholder(R.drawable.ic_placeholder_profile).into(profile)
     }

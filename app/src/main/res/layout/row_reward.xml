@@ -20,6 +20,7 @@
         />
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/mcv_maincard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/tv_rewardtype"
@@ -32,6 +33,7 @@
         android:layout_marginBottom="@dimen/_5sdp"
         app:strokeWidth="0dp"
         app:cardCornerRadius="@dimen/_10sdp"
+        app:cardForegroundColor="@color/blakish_disable"
         >
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

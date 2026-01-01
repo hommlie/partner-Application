@@ -213,7 +213,7 @@ class PaySlip : AppCompatActivity() {
             value = currentYear
         }
 
-        fun updateMonthPicker(selectedYear: Int, keepMonthIndex: Int) {
+       /* fun updateMonthPicker(selectedYear: Int, keepMonthIndex: Int) {
             val allowedMonths = if (selectedYear == currentYear) {
                 // sirf current month ke previous tak
                 allMonths.sliceArray(0 until currentMonth)
@@ -228,10 +228,45 @@ class PaySlip : AppCompatActivity() {
             monthPicker.maxValue = allowedMonths.size - 1
             monthPicker.displayedValues = allowedMonths
             monthPicker.value = oldIndex
-        }
+        } */
+       fun updateMonthPicker(selectedYear: Int, keepMonthIndex: Int) {
+
+           val allowedMonths = if (selectedYear == currentYear) {
+               if (currentMonth == 0) {
+                   // January → no previous month
+                   emptyArray()
+               } else {
+                   allMonths.sliceArray(0 until currentMonth)
+               }
+           } else {
+               allMonths
+           }
+
+           monthPicker.displayedValues = null
+
+           if (allowedMonths.isEmpty()) {
+               // disable month picker safely
+               monthPicker.minValue = 0
+               monthPicker.maxValue = 0
+               monthPicker.displayedValues = arrayOf("N/A")
+               monthPicker.value = 0
+               monthPicker.isEnabled = false
+               return
+           }
+
+           monthPicker.isEnabled = true
+           monthPicker.minValue = 0
+           monthPicker.maxValue = allowedMonths.size - 1
+           monthPicker.displayedValues = allowedMonths
+
+           val safeIndex = keepMonthIndex.coerceIn(0, allowedMonths.size - 1)
+           monthPicker.value = safeIndex
+       }
+
 
         // initialize with current year & current month -1 (previous)
-        val initialMonth = (currentMonth - 1).coerceAtLeast(0)
+//        val initialMonth = (currentMonth - 1).coerceAtLeast(0)
+        val initialMonth = if (currentMonth == 0) 0 else currentMonth - 1
         updateMonthPicker(currentYear, initialMonth)
 
         yearPicker.setOnValueChangedListener { _, _, newYear ->
@@ -250,8 +285,6 @@ class PaySlip : AppCompatActivity() {
             .setNegativeButton("Cancel", null)
             .show()
     }
-
-
 
     fun monthNameFromZeroBased(index: Int): String {
         val cal = Calendar.getInstance().apply { set(Calendar.MONTH, index.coerceIn(0, 11)) }

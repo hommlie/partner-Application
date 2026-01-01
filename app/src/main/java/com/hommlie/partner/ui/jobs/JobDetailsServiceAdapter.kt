@@ -17,8 +17,10 @@ class JobDetailsServiceAdapter(private val serviceList: List<ServiceModel>
         fun bind(service: ServiceModel) {
             binding.tvJobinfo.text = service.serviceName
             binding.tvCategory.text = service.categoryName
-            binding.tvServiceType.text = service.attribute
+            binding.tvServiceType.text = service.service_type
+            binding.tvServiceplan.text = service.attribute
             binding.tvUnit.text = service.variation
+            binding.tvDuration.text = service.duration
             binding.tvSrid.text = service.id
             // serial number
             binding.tvNo.text = (adapterPosition + 1).toString()

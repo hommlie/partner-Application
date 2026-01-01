@@ -6,7 +6,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     >
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,10 +14,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginBottom="@dimen/_3sdp"
-        android:layout_marginTop="@dimen/_5sdp"
         >
-
-
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/track_card"
             android:layout_width="match_parent"
@@ -42,8 +38,8 @@
                 android:layout_height="match_parent"
                 android:paddingStart="@dimen/_11sdp"
                 android:paddingEnd="@dimen/_11sdp"
-                android:paddingBottom="@dimen/_11sdp"
-                android:paddingTop="@dimen/_11sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:paddingTop="@dimen/_5sdp"
                 >
 
                 <TextView
@@ -54,6 +50,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/tv_trackOrder"
                     app:layout_constraintStart_toStartOf="parent"
                     android:text="Time"
+                    android:visibility="gone"
                     android:textColor="@color/color_344054"
                     android:textSize="@dimen/_10ssp"
                     android:fontFamily="@font/helvetica"
@@ -76,7 +73,7 @@
                     android:paddingTop="@dimen/_4sdp"
                     android:paddingBottom="@dimen/_5sdp"
                     android:gravity="center"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     />
 
                 <TextView
@@ -86,6 +83,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:text="  Help"
+                    android:visibility="gone"
                     android:textColor="@color/color_344054"
                     android:textSize="@dimen/_12ssp"
                     android:paddingTop="@dimen/_3sdp"
@@ -106,7 +104,7 @@
                     android:text="Name"
                     android:textColor="@color/color181818"
                     android:textSize="@dimen/_14ssp"
-                    android:layout_marginTop="@dimen/_6sdp"
+                    android:layout_marginTop="@dimen/_3sdp"
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:singleLine="true"
                     android:ellipsize="end"
@@ -121,7 +119,6 @@
                     app:layout_constraintTop_toBottomOf="@id/tv_name"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginTop="@dimen/_10sdp"
                     android:orientation="horizontal"
                     android:weightSum="3">
                     <LinearLayout
@@ -192,17 +189,17 @@
 
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Amount"
+                            android:text="Duration"
                             android:singleLine="true"
                             android:textColor="#66000000"
                             android:textSize="@dimen/_9ssp"
                             android:layout_marginTop="@dimen/_2sdp"
                             />
                         <TextView
-                            android:id="@+id/tv_orderCost"
+                            android:id="@+id/tv_duration"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="-"
+                            android:text=""
                             android:singleLine="true"
                             android:textColor="@color/color_344054"
                             android:textSize="@dimen/_11ssp"
@@ -314,7 +311,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:weightSum="3"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -430,16 +427,15 @@
                         android:gravity="center"
                         android:layout_marginTop="@dimen/_2sdp"/>
                     <TextView
-                        android:id="@+id/tv_serviceplan"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintTop_toBottomOf="@id/tv_name"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        android:text="Service Plan"
+                        android:text="-"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_9ssp"
+                        android:textSize="@dimen/_10ssp"
                         android:layout_marginTop="@dimen/_2sdp"
                         android:fontFamily="@font/plusjakartasans_semi_bold"
                         android:layout_weight="0.9"
@@ -455,7 +451,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginTop="@dimen/_2sdp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:weightSum="3">
 
                     <TextView

@@ -171,7 +171,6 @@ class Home : Fragment() {
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.getUserJobData()
             binding.swipeRefresh.isRefreshing = false
-
         }
 
         binding.llTotaljob.setOnClickListener {

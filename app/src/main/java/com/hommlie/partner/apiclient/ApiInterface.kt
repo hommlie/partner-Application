@@ -86,11 +86,11 @@ interface ApiInterface {
     @POST("partner/get_monthly_attendance")
     suspend fun getAttendance(@Body map : HashMap<String,String>): AttendanceResponse
 
-    @POST("partner/getOrderDetails")
+    @POST("partner/newQuestions")
     suspend fun getQuestions(@Body map: HashMap<String, String>): OrderQuestions
 
     @Multipart
-    @POST("partner/questionAnswer")
+    @POST("partner/newQuestionAnswer")
     suspend fun submitAnswer(
         @PartMap params: Map<String, @JvmSuppressWildcards RequestBody>,
         @Part images: List<MultipartBody.Part>
@@ -161,7 +161,7 @@ interface ApiInterface {
         @Part document: MultipartBody.Part?
     ): SingleResponse
 
-    @POST("partner/genrateQr")
+    @POST("partner/newGenrateQr")
     suspend fun generateQr(@Body map : HashMap<String,String>): DynamicSingleResponseWithData<PaymentLinkResponse>
 
     @POST("partner/chekcPamentStaus")

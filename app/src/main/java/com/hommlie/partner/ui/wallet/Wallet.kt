@@ -127,7 +127,7 @@ class Wallet : AppCompatActivity() {
 
         binding.tvWithdraw.setOnClickListener {
 
-            val balance = viewModel.coinBalance.value.toIntOrNull() ?: 0
+            val balance = viewModel.coinBalance.value
 
             when {
                 balance <= 0 -> {
@@ -247,10 +247,9 @@ class Wallet : AppCompatActivity() {
                         is UIState.Loading -> ProgressDialogUtil.showLoadingProgress(this@Wallet,lifecycleScope)
                         is UIState.Success -> {
                             ProgressDialogUtil.dismiss()
-                            val balance = state.data.substringBefore(".")
-
-                            binding.tvAmount.text = balance
+                            val balance = state.data.substringBefore(".").toInt()
                             viewModel.setCoinBalance(balance)
+                            binding.tvAmount.text = balance.toString()
 
                             viewModel.reset_getCoinBalance()
                         }

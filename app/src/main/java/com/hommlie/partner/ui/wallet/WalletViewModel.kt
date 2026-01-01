@@ -26,9 +26,9 @@ class WalletViewModel @Inject constructor(private val repository: ExpenseReposit
     private val _coinData = MutableStateFlow<UIState<String>>(UIState.Idle)
     val coinData: StateFlow<UIState<String>> = _coinData
 
-    private val _coinBalance = MutableStateFlow("0")
-    val coinBalance: StateFlow<String> = _coinBalance
-    fun setCoinBalance(balance: String) {
+    private val _coinBalance = MutableStateFlow(0)
+    val coinBalance: StateFlow<Int> = _coinBalance
+    fun setCoinBalance(balance: Int) {
         _coinBalance.value = balance
     }
 
@@ -100,7 +100,8 @@ class WalletViewModel @Inject constructor(private val repository: ExpenseReposit
                 description = "Spend 5000 coins to unlock this reward",
                 worthText = "⭐ Travel Bag Worth ₹ 2,999 ⭐",
                 isLocked = true,
-                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/rucksack/w/r/k/-original-imahfskuwb2bq8g3.jpeg?q=70"
+                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/rucksack/w/r/k/-original-imahfskuwb2bq8g3.jpeg?q=70",
+                requiredCoin = 5000
             ),
             RewardItem(
                 id = "2",
@@ -109,7 +110,8 @@ class WalletViewModel @Inject constructor(private val repository: ExpenseReposit
                 description = "Spend 7000 coins to unlock this reward",
                 worthText = "⭐ Jacket Worth ₹ 3,499 ⭐",
                 isLocked = true,
-                imageRes = "https://m.media-amazon.com/images/I/619xMvtqClL._AC_UL480_FMwebp_QL65_.jpg"
+                imageRes = "https://m.media-amazon.com/images/I/619xMvtqClL._AC_UL480_FMwebp_QL65_.jpg",
+                requiredCoin = 7000
             ),
             RewardItem(
                 id = "3",
@@ -118,7 +120,8 @@ class WalletViewModel @Inject constructor(private val repository: ExpenseReposit
                 description = "Spend 3000 coins to unlock this reward",
                 worthText = "⭐ Flask Worth ₹ 1,499 ⭐",
                 isLocked = true,
-                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/bottle/c/y/n/500-smart-water-thermal-bottle-stainless-steel-mr46-1-led-original-imaghh2gafmb8th9.jpeg?q=70"
+                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/bottle/c/y/n/500-smart-water-thermal-bottle-stainless-steel-mr46-1-led-original-imaghh2gafmb8th9.jpeg?q=70",
+                requiredCoin = 3000
             ),
 
             // ---------- Electronics (2) ----------
@@ -129,7 +132,8 @@ class WalletViewModel @Inject constructor(private val repository: ExpenseReposit
                 description = "Spend 8000 coins to unlock this reward",
                 worthText = "⭐ Worth ₹ 4,999 ⭐",
                 isLocked = true,
-                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/headphone/p/6/p/tws-earbuds-pro-style-bluetooth-2nd-gen-magsafe-charging-case-original-imahhv4eehjh3rty.jpeg?q=70"
+                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/headphone/p/6/p/tws-earbuds-pro-style-bluetooth-2nd-gen-magsafe-charging-case-original-imahhv4eehjh3rty.jpeg?q=70",
+                requiredCoin = 8000
             ),
             RewardItem(
                 id = "5",
@@ -138,7 +142,8 @@ class WalletViewModel @Inject constructor(private val repository: ExpenseReposit
                 description = "Spend 6000 coins to unlock this reward",
                 worthText = "⭐ Worth ₹ 2,499 ⭐",
                 isLocked = true,
-                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/power-bank/h/y/f/-original-imah439zhgxtxqh7.jpeg?q=70"
+                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/power-bank/h/y/f/-original-imah439zhgxtxqh7.jpeg?q=70",
+                requiredCoin = 6000
             ),
 
             // ---------- Super Reward (3) ----------
@@ -149,7 +154,8 @@ class WalletViewModel @Inject constructor(private val repository: ExpenseReposit
                 description = "Spend 12000 coins to unlock this reward",
                 worthText = "⭐ Worth ₹ 7,999 ⭐",
                 isLocked = true,
-                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/smartwatch/f/v/t/-original-imahghmj5yd4zngd.jpeg?q=70"
+                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/smartwatch/f/v/t/-original-imahghmj5yd4zngd.jpeg?q=70",
+                requiredCoin = 12000
             ),
             RewardItem(
                 id = "7",
@@ -158,7 +164,8 @@ class WalletViewModel @Inject constructor(private val repository: ExpenseReposit
                 description = "Spend 10000 coins to unlock this reward",
                 worthText = "⭐ Worth ₹ 6,499 ⭐",
                 isLocked = true,
-                imageRes = "https://m.media-amazon.com/images/I/41JACWT-wWL._AC_UY327_FMwebp_QL65_.jpg"
+                imageRes = "https://m.media-amazon.com/images/I/41JACWT-wWL._AC_UY327_FMwebp_QL65_.jpg",
+                requiredCoin = 10000
             ),
             RewardItem(
                 id = "8",
@@ -167,7 +174,8 @@ class WalletViewModel @Inject constructor(private val repository: ExpenseReposit
                 description = "Spend 9000 coins to unlock this reward",
                 worthText = "⭐ Worth ₹ 3,999 ⭐",
                 isLocked = true,
-                imageRes = "https://m.media-amazon.com/images/I/71zKx3CNPFL._AC_UL480_FMwebp_QL65_.jpg"
+                imageRes = "https://m.media-amazon.com/images/I/71zKx3CNPFL._AC_UL480_FMwebp_QL65_.jpg",
+                requiredCoin = 9000
             ),
 
             // ---------- Special Picks (Added by Me) (2) ----------
@@ -178,7 +186,8 @@ class WalletViewModel @Inject constructor(private val repository: ExpenseReposit
                 description = "Spend 4000 coins to unlock this reward",
                 worthText = "⭐ Worth ₹ 2,199 ⭐",
                 isLocked = true,
-                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/sunglass/g/d/e/m-2660s10147-moonx-original-imahfyqufqk8kdh7.jpeg?q=70"
+                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/sunglass/g/d/e/m-2660s10147-moonx-original-imahfyqufqk8kdh7.jpeg?q=70",
+                requiredCoin = 4000
             ),
             RewardItem(
                 id = "10",
@@ -187,7 +196,8 @@ class WalletViewModel @Inject constructor(private val repository: ExpenseReposit
                 description = "Spend 5500 coins to unlock this reward",
                 worthText = "⭐ Worth ₹ 2,799 ⭐",
                 isLocked = true,
-                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/duffel-bag/a/a/3/-original-imagrzzzyjppuzyd.jpeg?q=70"
+                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/duffel-bag/a/a/3/-original-imagrzzzyjppuzyd.jpeg?q=70",
+                requiredCoin = 5500
             )
         )
     }
