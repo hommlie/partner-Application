@@ -10,19 +10,19 @@ plugins {
 
 android {
     namespace = "com.hommlie.partner"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.hommlie.partner"
         minSdk = 26
-        targetSdk = 35
-        ndkVersion = "26.2.11394342"
-        versionCode = 15
-        versionName = "2.4"
+        targetSdk = 36
+        ndkVersion = "29.0.14206865"
+        versionCode = 16
+        versionName = "2.5"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-
+        ndk.debugSymbolLevel = "FULL"
     }
 
     buildTypes {
