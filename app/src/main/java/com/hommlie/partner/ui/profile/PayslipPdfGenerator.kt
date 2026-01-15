@@ -519,15 +519,15 @@ class PayslipPdfGenerator(private val context: Context) {
             .setMarginTop(12f)
             .setFixedLeading(10f)
 
-        val cinNote = Paragraph("CIN no: null")
-            .setFontSize(8f)
-            .setFontColor(ColorConstants.BLACK)
-            .setTextAlignment(TextAlignment.CENTER)
-            .setMarginBottom(20f)
-            .setFixedLeading(10f)
+//        val cinNote = Paragraph("CIN no: null")
+//            .setFontSize(8f)
+//            .setFontColor(ColorConstants.BLACK)
+//            .setTextAlignment(TextAlignment.CENTER)
+//            .setMarginBottom(20f)
+//            .setFixedLeading(10f)
 
         document.add(note)
-        document.add(cinNote)
+//        document.add(cinNote)
     }
 
     private fun addExactPageTwoContent(document: Document) {

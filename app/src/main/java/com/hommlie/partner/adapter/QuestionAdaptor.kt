@@ -27,7 +27,7 @@ class QuestionAdaptor(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(questionData: Questions) {
-            binding.tvQuestionNO.text = "Qes : ${adapterPosition + 1}"
+            binding.tvQuestionNO.text = "Qes : ${bindingAdapterPosition + 1}"
             binding.tvQuestion.text = if (questionData.required == "1") questionData.label
             else "${questionData.label} (optional)"
 

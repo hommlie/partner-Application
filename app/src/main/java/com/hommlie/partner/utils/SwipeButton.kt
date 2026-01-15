@@ -6,6 +6,7 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Handler
@@ -440,7 +441,7 @@ class SwipeButton : RelativeLayout {
         private fun showProgressBar() {
             if (progressBar != null) return
             progressBar = ProgressBar(contextl)
-            progressBar?.indeterminateDrawable?.setColorFilter(ContextCompat.getColor(contextl, android.R.color.white), android.graphics.PorterDuff.Mode.SRC_IN)
+            progressBar?.indeterminateDrawable?.colorFilter = PorterDuffColorFilter(ContextCompat.getColor(contextl, android.R.color.white), PorterDuff.Mode.SRC_IN)
             CommonMethods.animateFadeHide(contextl, contentTv)
             contentContainer!!.addView(progressBar)
         }

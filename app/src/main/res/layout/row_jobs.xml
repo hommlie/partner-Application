@@ -54,9 +54,9 @@
                     android:src="@drawable/ic_complete_stamp"
                     app:layout_constraintBottom_toTopOf="@id/ll_address"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginTop="@dimen/_10sdp"
-                    app:layout_constraintTop_toBottomOf="@id/ll_jobinfo"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     />
                 <TextView
                     android:id="@+id/tv_servicetime"

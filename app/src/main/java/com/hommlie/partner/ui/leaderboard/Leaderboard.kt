@@ -1,10 +1,15 @@
 package com.hommlie.partner.ui.leaderboard
 
+import android.animation.ObjectAnimator
+import android.app.Activity
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -17,12 +22,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.hommlie.partner.R
 import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.databinding.ActivityLeaderboardBinding
+import com.hommlie.partner.databinding.BottomsheetFeetbackBinding
+import com.hommlie.partner.databinding.BottomsheetreferBinding
 import com.hommlie.partner.model.LeaderBoardData
+import com.hommlie.partner.utils.CommonMethods
 import com.hommlie.partner.utils.CommonMethods.formatCoins
 import com.hommlie.partner.utils.CommonMethods.toCapwords
+import com.hommlie.partner.utils.PrefKeys
 import com.hommlie.partner.utils.ProgressDialogUtil
 import com.hommlie.partner.utils.SharePreference
 import com.hommlie.partner.utils.setupToolbar
@@ -38,7 +48,6 @@ class Leaderboard : AppCompatActivity() {
     @Inject
     lateinit var sharePreference: SharePreference
     private val viewModel : LeaderBoardViewModel by viewModels()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

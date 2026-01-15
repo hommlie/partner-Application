@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("kapt")
+//    alias(libs.plugins.ksp)
     id("kotlin-parcelize")
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.google.services)
@@ -16,32 +17,32 @@ android {
         applicationId = "com.hommlie.partner"
         minSdk = 26
         targetSdk = 36
-        ndkVersion = "29.0.14206865"
-        versionCode = 16
-        versionName = "2.5"
+        versionCode = 19
+        versionName = "2.8"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        ndk.debugSymbolLevel = "FULL"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = true // <-- Set this to true for release build
+            isMinifyEnabled = true
             isShrinkResources = true
             isDebuggable = false
-
+            ndk.debugSymbolLevel = "FULL"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-
             dependenciesInfo {
                 includeInApk = false
                 includeInBundle = false
             }
         }
-
+        debug {
+            isMinifyEnabled = false // <-- Set this to true for release build
+            isShrinkResources = false
+        }
     }
 
     bundle {
@@ -49,7 +50,6 @@ android {
             enableSplit = false
         }
     }
-
 
     buildFeatures {
         viewBinding = true
@@ -61,6 +61,12 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    ndkVersion = "29.0.14206865"
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
 }
 
 kapt {
@@ -68,7 +74,6 @@ kapt {
 }    //  for ignore the error or compile time of hilt
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -83,88 +88,58 @@ dependencies {
     implementation(libs.firebase.messaging.ktx)
     implementation(libs.play.services.maps)
     implementation(libs.google.maps.utils)
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-
     // Retrofit & OkHttp
     implementation(libs.gson)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
     implementation(libs.retrofit)
     implementation(libs.gson.converter)
-
     // For responsive UI
     implementation(libs.sdp)
     implementation(libs.ssp)
-
     // Hilt dependencies
     implementation(libs.hilt.android)  // androidx.hilt:hilt-android
     kapt(libs.hilt.compiler)    // androidx.hilt:hilt-compiler
-
     implementation(libs.hilt.work)
     kapt(libs.hilt.work.compiler)
-
 //    implementation(libs.javapoet)
-
-
     // Coroutines dependencies
     implementation(libs.coroutines)
-
     // ViewModel and LiveData dependencies
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.lifecycleLiveDataKtx)
     implementation(libs.lifecycle.runtime.ktx)
-
     //Glide
     implementation(libs.glide)
     kapt(libs.glide.compiler)
-
-
-
     // Firebase BoM – manages all versions
     implementation(platform(libs.firebase.bom))
-
     // Firebase components
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
-
-
-    implementation("com.prolificinteractive:material-calendarview:1.4.3")
-
+    implementation(libs.material.calendarview)
 //    implementation("com.kizitonwose.calendar:view:2.3.0")
 //    implementation("com.applandeo:material-calendar-view:1.5.0")
-
     //CircelImageView
-    implementation("com.makeramen:roundedimageview:2.3.0")
-
+    implementation(libs.roundedimageview)
     //Image round
-    implementation ("de.hdodenhof:circleimageview:2.2.0")
-
-    implementation ("com.github.yalantis:ucrop:2.2.8")
-
-    implementation ("com.github.dhaval2404:imagepicker:2.1")
-
-
-    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
-
-    implementation ("com.razorpay:checkout:1.6.33")
-    implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
-
-    implementation("com.airbnb.android:lottie:6.4.0")
-
-    implementation("com.github.gcacace:signature-pad:1.3.1")
-
+    implementation (libs.circleimageview)
+    implementation (libs.ucrop)
+    implementation (libs.imagepicker)
+    implementation (libs.mpandroidchart)
+    implementation (libs.checkout)
+    implementation (libs.zxing.android.embedded)
+    implementation(libs.lottie)
+    implementation(libs.signature.pad)
     implementation("com.itextpdf:itext7-core:7.2.5") {
         exclude(group = "org.bouncycastle")
     }
-
-    implementation("com.github.mhiew:android-pdf-viewer:3.2.0-beta.3")
-    implementation("org.slf4j:slf4j-nop:2.0.7")
-
-
+//    implementation(libs.android.pdf.viewer)
+//    implementation("com.github.barteksc:android-pdf-viewer:2.8.2")
+    implementation(libs.slf4j.nop)
 }
 
 

@@ -1,5 +1,7 @@
 package com.hommlie.partner.ui.jobs
 
+import android.R.attr.duration
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
@@ -8,6 +10,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Base64
@@ -51,6 +54,7 @@ import com.hommlie.partner.databinding.BottomsheetFeetbackBinding
 import com.hommlie.partner.databinding.BottomsheetOtpBinding
 import com.hommlie.partner.databinding.BottomsheetPaymentBinding
 import com.hommlie.partner.databinding.BottomsheetSignatureBinding
+import com.hommlie.partner.databinding.BottomsheetreferBinding
 import com.hommlie.partner.model.NewOrderData
 import com.hommlie.partner.model.ServiceModel
 import com.hommlie.partner.utils.CommonMethods
@@ -80,8 +84,10 @@ class JobDetails : AppCompatActivity() {
 
     private val viewModel : JobDetailsViewModel by viewModels()
     private var payment_dialog : Dialog?=null
+    private var referral_bottomsheet : Dialog?=null
 
     lateinit var signatureView: SignatureView
+    var selectedRating = 0
 
     @Inject
     lateinit var sharePreference: SharePreference
@@ -101,14 +107,14 @@ class JobDetails : AppCompatActivity() {
     var isComeFromHome : Int = 0
 
     companion object{
-        var isonsiteAnswersubmit = MutableLiveData<Int>()
+        var isonsiteAnswersubmit = MutableLiveData<Int?>()
         var isOnCompleteAnswersubmit = MutableLiveData<String>()
         var isonCompleteChemicalFilled = MutableLiveData<String>()
         var OnSiteQuestions = ""
         var OnCompletedQuestions = ""
         var imagewhenStart : Bitmap?=null
         var chequeImage : Bitmap ?= null
-        var serviceStartAt : MutableLiveData<String> = MutableLiveData()
+        var serviceStartAt : MutableLiveData<String?> = MutableLiveData()
         var signature : ByteArray?=null
     }
 
@@ -236,8 +242,8 @@ class JobDetails : AppCompatActivity() {
 
         observeStartTime()
         observeDuration()
-
         observeJobFinish()
+        observeReferal()
 
         isonsiteAnswersubmit.observe(this) { data ->
             if (data == 1){
@@ -718,8 +724,6 @@ class JobDetails : AppCompatActivity() {
     }
 
     fun showSignatureBottomsheet(): Dialog {
-
-
         val dialog = BottomSheetDialog(this)
         val binding = BottomsheetSignatureBinding.inflate(LayoutInflater.from(this))
         dialog.setContentView(binding.root)
@@ -758,9 +762,40 @@ class JobDetails : AppCompatActivity() {
         return dialog
     }
 
+    fun showReferalBottomsheet(context: Activity) {
+        val dialog = BottomSheetDialog(context)
 
+        val binding = BottomsheetreferBinding.inflate(LayoutInflater.from(context))
+        dialog.setContentView(binding.root)
+        referral_bottomsheet = dialog
 
+        binding.tvSkip.setOnClickListener {
+            dialog.dismiss()
+            showFeedbackBottomsheet(this@JobDetails)
+        }
+        binding.mcvSwipebtn.setOnClickListener {
+            val selectedId = binding.radioGroup.checkedRadioButtonId
 
+            if (selectedId == -1) {
+                Toast.makeText(context, "Please select Yes or No", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val explainProcess = when (selectedId) {
+                R.id.rd_yes -> "YES"
+                R.id.rd_no -> "NO"
+                else -> "NO"
+            }
+            val hashMap = HashMap<String, String>()
+            hashMap["user_id"] = sharePreference.getString(PrefKeys.userId)
+            hashMap["explain_process"] = explainProcess
+            hashMap["customer_mobile"] = binding.edtMobileno.text.toString().trim()
+            hashMap["customer_name"] = binding.edtName.text.toString().trim()
+            viewModel.submitRefferal(hashMap)
+        }
+        dialog.setCancelable(false)
+        dialog.show()
+    }
     fun showFeedbackBottomsheet(context: Activity) {
         val dialog = BottomSheetDialog(context)
 
@@ -775,7 +810,7 @@ class JobDetails : AppCompatActivity() {
             dialog.dismiss()
             finish()
         }
-
+        setupRatingSelector(binding)
         dialog.setCancelable(false)
         dialog.show()
     }
@@ -1045,17 +1080,44 @@ class JobDetails : AppCompatActivity() {
                             ProgressDialogUtil.showAleartLoadingProgress(this@JobDetails,lifecycleScope,"Loading...","Please wait while we are checking and finishing the job.")
                         }
                         is UIState.Success ->{
+                            ProgressDialogUtil.dismiss()
                             if (payment_dialog?.isShowing == true){
                                 payment_dialog?.dismiss()
                             }
-                            ProgressDialogUtil.dismiss()
                             viewModel.resetUIJobFinish()
-                            showFeedbackBottomsheet(this@JobDetails)
+                            showReferalBottomsheet(this@JobDetails)
                         }
                         is UIState.Error ->{
                             ProgressDialogUtil.dismiss()
                             viewModel.resetUIJobFinish()
                             binding.swipebtn.showResultIcon(false, true)
+                            CommonMethods.alertErrorOrValidationDialog(this@JobDetails,state.message)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    fun observeReferal(){
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.uiStateReferal.collect{ state->
+                    when(state){
+                        is UIState.Idle ->{}
+                        is UIState.Loading ->{
+                            ProgressDialogUtil.showAleartLoadingProgress(this@JobDetails,lifecycleScope,"Loading...","Please wait while we are checking and finishing the job.")
+                        }
+                        is UIState.Success ->{
+                            ProgressDialogUtil.dismiss()
+                            if (referral_bottomsheet?.isShowing == true){
+                                referral_bottomsheet?.dismiss()
+                            }
+                            viewModel.reset_submitRefferal()
+                            showFeedbackBottomsheet(this@JobDetails)
+                        }
+                        is UIState.Error ->{
+                            ProgressDialogUtil.dismiss()
+                            viewModel.reset_submitRefferal()
                             CommonMethods.alertErrorOrValidationDialog(this@JobDetails,state.message)
                         }
                     }
@@ -1220,4 +1282,45 @@ class JobDetails : AppCompatActivity() {
         }
     }
 
+    private fun setupRatingSelector(binding: BottomsheetFeetbackBinding) {
+
+        val emojiViews = listOf(
+            binding.otpDigit1,
+            binding.otpDigit2,
+            binding.otpDigit3,
+            binding.otpDigit4,
+            binding.otpDigit5
+        )
+
+        // Initially hide selector
+        binding.selectionView.visibility = View.INVISIBLE
+
+        emojiViews.forEachIndexed { index, textView ->
+            textView.setOnClickListener {
+                selectedRating = index + 1
+
+                // First time click → make selector visible
+                if (binding.selectionView.visibility != View.VISIBLE) {
+                    binding.selectionView.visibility = View.VISIBLE
+                }
+
+                moveSelector(binding.selectionView, textView)
+            }
+        }
+    }
+
+    private fun moveSelector(selector: View, target: View) {
+        // Match selector width to clicked emoji
+        selector.layoutParams = selector.layoutParams.apply {
+            width = target.width
+        }
+        selector.requestLayout()
+
+        // Animate X using translation (better than raw x)
+        selector.animate()
+            .translationX(target.left.toFloat())
+            .setDuration(250)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .start()
+    }
 }

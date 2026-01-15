@@ -127,6 +127,7 @@
             android:id="@+id/iv_first_profile"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scaleType="centerCrop"
             />
     </com.google.android.material.card.MaterialCardView>
     <ImageView
@@ -206,6 +207,7 @@
             android:id="@+id/iv_second_profile"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scaleType="centerCrop"
             />
     </com.google.android.material.card.MaterialCardView>
     <com.google.android.material.card.MaterialCardView
@@ -276,6 +278,7 @@
             android:id="@+id/iv_third_profile"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scaleType="centerCrop"
             />
     </com.google.android.material.card.MaterialCardView>
     <com.google.android.material.card.MaterialCardView

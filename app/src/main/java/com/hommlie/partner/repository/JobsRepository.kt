@@ -51,6 +51,9 @@ class JobsRepository @Inject constructor(private val apiService : ApiInterface) 
     ): SingleResponse {
         return apiService.changeorderStatusWhenCheque(map,cheque_img)
     }
+    suspend fun submitReferral(map: Map<String, String>): SingleResponse {
+        return apiService.submitReferral(map)
+    }
 
     suspend fun changeorderStatusJobDone(
         map: Map<String, @JvmSuppressWildcards RequestBody>,

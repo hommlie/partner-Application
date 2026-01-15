@@ -110,6 +110,8 @@ interface ApiInterface {
         @Part emp_onsite_image: MultipartBody.Part,
     ): SingleResponse
 
+    @POST("partner/customerReferral")
+    suspend fun submitReferral(@PartMap map: Map<String, String>): SingleResponse
 
     @Multipart
     @POST("partner/newChangeStatus")

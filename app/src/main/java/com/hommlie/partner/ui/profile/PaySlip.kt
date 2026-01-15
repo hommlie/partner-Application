@@ -41,6 +41,7 @@ import android.os.Environment
 import android.os.ParcelFileDescriptor
 import androidx.activity.enableEdgeToEdge
 import androidx.core.content.FileProvider
+import com.bumptech.glide.Glide
 import com.hommlie.partner.model.SalaryBreakDown
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -129,7 +130,9 @@ class PaySlip : AppCompatActivity() {
         }
 
         binding.btnDownload.setOnClickListener {
-            sharePdfFile(pdfFile!!)   // OR save to downloads
+//            sharePdfFile(pdfFile!!)   // OR save to downloads
+            pdfFile?.let { showPdfSuccess(it) }
+
         }
 
 
@@ -382,7 +385,7 @@ class PaySlip : AppCompatActivity() {
     private fun showPdfSuccess(pdfFile: File) {
         AlertDialog.Builder(this)
             .setTitle("Payslip Generated")
-            .setMessage("Payslip has been saved to:\n${pdfFile.absolutePath}")
+            .setMessage("Payslip has been saved")// to:\n${pdfFile.absolutePath}")
             .setPositiveButton("Open") { _, _ ->
                 openPdfFile(pdfFile)
             }
@@ -390,9 +393,10 @@ class PaySlip : AppCompatActivity() {
                 sharePdfFile(pdfFile)
             }
             .setNeutralButton("Close", null)
+            .setCancelable(false)
             .show()
     }
-    private fun renderPdfInsideApp(pdfFile: File) {
+    /*private fun renderPdfInsideApp(pdfFile: File) {
         try {
             val fileDescriptor = ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
             pdfRenderer = PdfRenderer(fileDescriptor)
@@ -422,7 +426,37 @@ class PaySlip : AppCompatActivity() {
         } catch (e: Exception) {
             Toast.makeText(this, "Preview failed: ${e.message}", Toast.LENGTH_SHORT).show()
         }
+    } */
+    private fun renderPdfInsideApp(pdfFile: File) {
+        try {
+            val fileDescriptor = ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
+            pdfRenderer = PdfRenderer(fileDescriptor)
+
+            if (pdfRenderer!!.pageCount > 0) {
+                currentPage = pdfRenderer!!.openPage(0)
+
+                val bitmap = Bitmap.createBitmap(
+                    currentPage!!.width,
+                    currentPage!!.height,
+                    Bitmap.Config.ARGB_8888
+                )
+
+                currentPage!!.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+
+                binding.pdfView.visibility = View.VISIBLE
+                binding.pdfView.setImageBitmap(bitmap)
+//                Glide.with(this@PaySlip).load(bitmap).into(binding.pdfView)
+
+
+                binding.btnDownload.visibility = View.VISIBLE
+                binding.tvNotransactionfound.visibility = View.GONE
+            }
+
+        } catch (e: Exception) {
+            Toast.makeText(this, "Preview failed: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
+
 
     private fun openPdfFile(file: File) {
         val uri = FileProvider.getUriForFile(

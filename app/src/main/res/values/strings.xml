@@ -21,6 +21,7 @@
     </string-array>
 
     <string name="layout_direction">0</string>
+    <string name="let_s_collect_customer_details"><u>Let\'s collect the Customer Details</u></string>
 
     <string-array name="service_type_array">
         <item>B2B</item>

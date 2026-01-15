@@ -80,6 +80,8 @@ class JobDetailsViewModel @Inject constructor(
     private val _uiStatePaymentStatus = MutableStateFlow<UIState<DynamicSingleResponseWithData<PaymentStatus>>>(UIState.Idle)
     val uiStatePaymentStatus: StateFlow<UIState<DynamicSingleResponseWithData<PaymentStatus>>> = _uiStatePaymentStatus
 
+    private val _uiStateReferal = MutableStateFlow<UIState<SingleResponse>>(UIState.Idle)
+    val uiStateReferal: StateFlow<UIState<SingleResponse>> = _uiStateReferal
 
     fun startOtpTimer(totalMillis: Long = 30000L) {
         timerJob?.cancel()
@@ -237,6 +239,26 @@ class JobDetailsViewModel @Inject constructor(
                 _uiStateGenerateQR.value = UIState.Error(e.message ?: "Something went wrong")
             }
         }
+    }
+    fun submitRefferal(data: HashMap<String, String>) {
+        viewModelScope.launch {
+            _uiStateFinishJob.value = UIState.Loading
+            delay(800)
+            try {
+                val response = repository.submitReferral(data)
+                if (response.status==1){
+                    _uiStateFinishJob.value = UIState.Success(response)
+                }else{
+                    _uiStateFinishJob.value = UIState.Error(response.message ?: "Something went wrong")
+                }
+
+            } catch (e: Exception) {
+                _uiStateFinishJob.value = UIState.Error(e.message ?: "Something went wrong")
+            }
+        }
+    }
+    fun reset_submitRefferal(){
+        _uiStateReferal.value = UIState.Idle
     }
 
     fun resetUIState() {

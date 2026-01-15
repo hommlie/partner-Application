@@ -847,10 +847,10 @@
 
                 <TextView
                     android:id="@+id/tv_spenthrs"
-                    android:layout_width="@dimen/_75sdp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:text="--:--"
+                    android:text="--:--:--"
                     android:textSize="@dimen/_15ssp"
                     android:textColor="@color/color_344054"
                     android:layout_marginStart="@dimen/_10sdp"
@@ -866,7 +866,7 @@
                     android:text="hrs"
                     android:textSize="@dimen/_15ssp"
                     android:textColor="@color/color_344054"
-                    android:layout_marginStart="@dimen/_1sdp"
+                    android:layout_marginStart="@dimen/_4sdp"
                     android:fontFamily="@font/inter_bold"
                     app:layout_constraintStart_toEndOf="@id/tv_spenthrs"
                     app:layout_constraintTop_toTopOf="@id/mcv_clock"
@@ -935,7 +935,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_reward"
-                android:scaleType="centerCrop"/>
+                android:scaleType="fitXY"/>
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -988,7 +988,7 @@
                 android:id="@+id/iv_refer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
+                android:scaleType="fitXY"
                 />
 
         </com.google.android.material.card.MaterialCardView>
