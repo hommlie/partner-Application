@@ -17,6 +17,7 @@
         android:textSize="@dimen/_12ssp"
         android:fontFamily="@font/inter_medium"
         android:textColor="@color/black"
+        android:singleLine="true"
         android:layout_marginEnd="@dimen/_13sdp"
         />
     <TextView

@@ -32,6 +32,7 @@ import com.hommlie.partner.databinding.BottomsheetAdvanceRequestDetailsBinding
 import com.hommlie.partner.databinding.BottomsheetcoinBinding
 import com.hommlie.partner.model.AdvanceRequestList
 import com.hommlie.partner.model.CoinItem
+import com.hommlie.partner.model.RedeemedData
 import com.hommlie.partner.utils.CommonMethods
 import com.hommlie.partner.utils.PrefKeys
 import com.hommlie.partner.utils.ProgressDialogUtil
@@ -77,7 +78,7 @@ class Wallet : AppCompatActivity() {
         val toolbarView = binding.root.findViewById<View>(R.id.include_toolbar)
         setupToolbar(toolbarView, "H - Wallet", this, R.color.activity_bg, R.color.black)
 
-        hashmap["user_id"] = sharePreference.getString(PrefKeys.userId)
+        hashmap["emp_id"] = sharePreference.getString(PrefKeys.userId)
         hashmap["month"] = (CommonMethods.getCurrentMonthNumber()+1).toString()
         hashmap["year"]  = CommonMethods.getCurrentYear().toString()
 
@@ -263,7 +264,7 @@ class Wallet : AppCompatActivity() {
         }
     }
 
-    fun showCoinDetails(advanceRequestList: CoinItem) {
+    fun showCoinDetails(advanceRequestList: RedeemedData) {
 
         val detailsDialogBinding = BottomsheetcoinBinding.inflate(layoutInflater)
 
@@ -280,10 +281,16 @@ class Wallet : AppCompatActivity() {
 
         // Your data binding same as before
         detailsDialogBinding.tvRequestid.text = advanceRequestList.trackingId.toString()
-        detailsDialogBinding.tvRequestedamount.text = "\u20b9 "+advanceRequestList.convertedAmount.toString()
+        detailsDialogBinding.tvRequestedamount.text = advanceRequestList.coinsRedeemed+" coins"
         detailsDialogBinding.tvReason.text = advanceRequestList.adminNote.toString()
         detailsDialogBinding.tvRequestdate.text = advanceRequestList.createdAt.toString()
         detailsDialogBinding.tvRequeststatus.text = advanceRequestList.statusLabel.toString()
+
+        Glide.with(this@Wallet)
+            .load(advanceRequestList.itemImageFullUrl)
+            .dontAnimate()
+            .dontTransform()
+            .into(detailsDialogBinding.ivItemimage)
 
         var colorRes = -1
         when (advanceRequestList.statusLabel?.lowercase()) {

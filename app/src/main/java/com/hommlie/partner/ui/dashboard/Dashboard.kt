@@ -81,14 +81,18 @@ class Dashboard : Fragment() {
 
         setupRewardRecyclerView()
         observeCoinData()
-        viewModel.getCoinBalance(hashmapUserId)
+        observeGetRewardItems()
+        observeClickRedeem()
 
         setupBanner()
 
-        val sortedList = viewModel.getFakeRewards()
-            .sortedBy { it.rewardType }
+        viewModel.getCoinBalance(hashmapUserId)
+        viewModel.getRewardItems()
 
-        rewardAdapter.submitRewardList(sortedList)
+    }
+
+    override fun onResume() {
+        super.onResume()
 
     }
 
@@ -119,6 +123,63 @@ class Dashboard : Fragment() {
             }
         }
     }
+    private fun observeGetRewardItems(){
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.getRewardItems.collect { state ->
+                    when(state){
+                        is UIState.Idle -> Unit
+                        is UIState.Success -> {
+                            rewardAdapter.submitRewardList(state.data)
+                            ProgressDialogUtil.dismiss()
+                            viewModel.reset_getRewardItem()
+                        }
+                        is UIState.Error ->{
+                            ProgressDialogUtil.dismiss()
+                            viewModel.reset_getRewardItem()
+                        }
+                        is UIState.Loading ->{
+                            ProgressDialogUtil.showLoadingProgress(requireActivity(),viewLifecycleOwner.lifecycleScope)
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+    private fun observeClickRedeem(){
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.clickRedeem.collect { state ->
+                    when(state){
+                        is UIState.Idle -> Unit
+                        is UIState.Success -> {
+
+                            CommonMethods.showConfirmationDialog(requireContext(),"Hurrah !",state.data.message,false,false,"OK"){ dialogInterface ->
+                                dialogInterface.dismiss()
+                                viewModel.getCoinBalance(hashmapUserId)
+                                viewModel.getRewardItems()
+                            }
+                            ProgressDialogUtil.dismiss()
+                            viewModel.reset_clickRedeem()
+                        }
+                        is UIState.Error ->{
+                            CommonMethods.showConfirmationDialog(requireContext(),"Alert !",state.message,false,false,"OK"){ dialogInterface ->
+                                dialogInterface.dismiss()
+                            }
+                            ProgressDialogUtil.dismiss()
+                            viewModel.reset_clickRedeem()
+                        }
+                        is UIState.Loading ->{
+                            ProgressDialogUtil.showLoadingProgress(requireActivity(),viewLifecycleOwner.lifecycleScope)
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
     private fun observeWalletData() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -129,11 +190,6 @@ class Dashboard : Fragment() {
                         }
 
                         is UIState.Success -> {
-                            // map API response → RewardItem if needed
-                            val sortedList = viewModel.getFakeRewards()
-                                .sortedBy { it.rewardType }
-
-                            rewardAdapter.submitRewardList(sortedList)
 
                         }
 
@@ -254,7 +310,15 @@ class Dashboard : Fragment() {
     }
 
     private fun setupRewardRecyclerView() {
-        rewardAdapter = RewardListAdapter()
+        rewardAdapter = RewardListAdapter{ item ->
+            CommonMethods.showConfirmationDialog(requireContext(),"Confirmation !","Are you sure want to redeem this item\n${item.requiredCoin} coins will be debited from your total coins.",false,true,"Yes"){ dialogInterface ->
+                dialogInterface.dismiss()
+                val hashMap = HashMap<String, String>()
+                hashMap["emp_id"] = sharePreference.getString(PrefKeys.userId)
+                hashMap["redeemable_item_id"] = item.id.toString()
+                viewModel.clickRedeem(hashMap)
+            }
+        }
 
         binding.rvRewards.apply {
             isNestedScrollingEnabled = false

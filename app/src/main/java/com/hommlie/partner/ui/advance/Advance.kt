@@ -161,7 +161,17 @@ class Advance : AppCompatActivity() {
                             binding.tvApprovalRate.text = "%.1f%%".format(approvalRate)
 
 
-                            adapter.submitList(response?.advanceRequests)
+                            val list = response?.advanceRequests.orEmpty()
+
+                            if (list.isEmpty()) {
+                                binding.tvNotransactionfound.visibility = View.VISIBLE
+                            } else {
+                                binding.tvNotransactionfound.visibility = View.GONE
+                            }
+
+                            adapter.submitList(list)
+
+//                            adapter.submitList(response?.advanceRequests)
 
                             viewModel.resetAdvanceHistoryState()
                         }

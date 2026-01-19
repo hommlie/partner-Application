@@ -10,10 +10,11 @@ import com.hommlie.partner.databinding.RowBillHistoryBinding
 import com.hommlie.partner.databinding.RowWalletBinding
 import com.hommlie.partner.model.AdvanceRequestList
 import com.hommlie.partner.model.CoinItem
+import com.hommlie.partner.model.RedeemedData
 
-class WalletAdapter(private val onClick: (CoinItem) -> Unit) : RecyclerView.Adapter<WalletAdapter.WalletViewHolder>() {
+class WalletAdapter(private val onClick: (RedeemedData) -> Unit) : RecyclerView.Adapter<WalletAdapter.WalletViewHolder>() {
 
-    private val items = mutableListOf<CoinItem>()
+    private val items = mutableListOf<RedeemedData>()
 
     inner class WalletViewHolder(val binding: RowBillHistoryBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -26,7 +27,7 @@ class WalletAdapter(private val onClick: (CoinItem) -> Unit) : RecyclerView.Adap
     override fun onBindViewHolder(holder: WalletViewHolder, position: Int) {
         val item = items[position]
 
-        holder.binding.tvTitle.text = item.trackingId
+        holder.binding.tvTitle.text = item.itemName.toString()
         holder.binding.tvAmount.text = item.coinsRedeemed
         holder.binding.tvDate.text = item.createdAt
 
@@ -46,7 +47,7 @@ class WalletAdapter(private val onClick: (CoinItem) -> Unit) : RecyclerView.Adap
     }
     override fun getItemCount(): Int = items.size
 
-    fun submitList(newList: List<CoinItem>?) {
+    fun submitList(newList: List<RedeemedData>?) {
         items.clear()
         if (!newList.isNullOrEmpty()) {
             items.addAll(newList)

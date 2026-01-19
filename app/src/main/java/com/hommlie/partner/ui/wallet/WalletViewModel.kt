@@ -9,6 +9,7 @@ import com.hommlie.partner.apiclient.ApiResult
 import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.model.CoinItem
 import com.hommlie.partner.model.DynamicSingleResponseWithData
+import com.hommlie.partner.model.RedeemedData
 import com.hommlie.partner.model.RewardItem
 import com.hommlie.partner.repository.ExpenseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,14 +21,21 @@ import javax.inject.Inject
 @HiltViewModel
 class WalletViewModel @Inject constructor(private val repository: ExpenseRepository) : ViewModel() {
 
-    private val _walletList = MutableStateFlow<UIState<List<CoinItem>>>(UIState.Idle)
-    val walletList: StateFlow<UIState<List<CoinItem>>> = _walletList
+    private val _walletList = MutableStateFlow<UIState<List<RedeemedData>>>(UIState.Idle)
+    val walletList: StateFlow<UIState<List<RedeemedData>>> = _walletList
 
     private val _coinData = MutableStateFlow<UIState<String>>(UIState.Idle)
     val coinData: StateFlow<UIState<String>> = _coinData
 
+    private val _getRewardItems = MutableStateFlow<UIState<List<RewardItem>>>(UIState.Idle)
+    val getRewardItems: StateFlow<UIState<List<RewardItem>>> = _getRewardItems
+
+    private val _clickRedeem = MutableStateFlow<UIState<DynamicSingleResponseWithData<Any>>>(UIState.Idle)
+    val clickRedeem: StateFlow<UIState<DynamicSingleResponseWithData<Any>>> = _clickRedeem
+
     private val _coinBalance = MutableStateFlow(0)
     val coinBalance: StateFlow<Int> = _coinBalance
+
     fun setCoinBalance(balance: Int) {
         _coinBalance.value = balance
     }
@@ -39,7 +47,11 @@ class WalletViewModel @Inject constructor(private val repository: ExpenseReposit
                 is ApiResult.Success -> {
                     val response = result.data
                     if (response.status == 1) {
-                        _walletList.value = UIState.Success(response.data.orEmpty())
+                        if (response.data?.redeemedData!=null){
+                            _walletList.value = UIState.Success(response.data.redeemedData)
+                        }else {
+                            _walletList.value = UIState.Error("No Data Found")
+                        }
                     } else {
                         _walletList.value = UIState.Error(response.message ?: "Something went wrong"
                         )
@@ -89,119 +101,61 @@ class WalletViewModel @Inject constructor(private val repository: ExpenseReposit
         _coinData.value = UIState.Idle
     }
 
-    fun getFakeRewards(): List<RewardItem> {
-        return listOf(
-
-            // ---------- Winter Exclusive (3) ----------
-            RewardItem(
-                id = "1",
-                rewardType = "Winter Exclusive",
-                productName = "Free Travel Bag",
-                description = "Spend 5000 coins to unlock this reward",
-                worthText = "⭐ Travel Bag Worth ₹ 2,999 ⭐",
-                isLocked = true,
-                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/rucksack/w/r/k/-original-imahfskuwb2bq8g3.jpeg?q=70",
-                requiredCoin = 5000
-            ),
-            RewardItem(
-                id = "2",
-                rewardType = "Winter Exclusive",
-                productName = "Woolen Jacket",
-                description = "Spend 7000 coins to unlock this reward",
-                worthText = "⭐ Jacket Worth ₹ 3,499 ⭐",
-                isLocked = true,
-                imageRes = "https://m.media-amazon.com/images/I/619xMvtqClL._AC_UL480_FMwebp_QL65_.jpg",
-                requiredCoin = 7000
-            ),
-            RewardItem(
-                id = "3",
-                rewardType = "Winter Exclusive",
-                productName = "Thermal Flask",
-                description = "Spend 3000 coins to unlock this reward",
-                worthText = "⭐ Flask Worth ₹ 1,499 ⭐",
-                isLocked = true,
-                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/bottle/c/y/n/500-smart-water-thermal-bottle-stainless-steel-mr46-1-led-original-imaghh2gafmb8th9.jpeg?q=70",
-                requiredCoin = 3000
-            ),
-
-            // ---------- Electronics (2) ----------
-            RewardItem(
-                id = "4",
-                rewardType = "Electronics",
-                productName = "Bluetooth Earbuds",
-                description = "Spend 8000 coins to unlock this reward",
-                worthText = "⭐ Worth ₹ 4,999 ⭐",
-                isLocked = true,
-                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/headphone/p/6/p/tws-earbuds-pro-style-bluetooth-2nd-gen-magsafe-charging-case-original-imahhv4eehjh3rty.jpeg?q=70",
-                requiredCoin = 8000
-            ),
-            RewardItem(
-                id = "5",
-                rewardType = "Electronics",
-                productName = "Smart Power Bank",
-                description = "Spend 6000 coins to unlock this reward",
-                worthText = "⭐ Worth ₹ 2,499 ⭐",
-                isLocked = true,
-                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/power-bank/h/y/f/-original-imah439zhgxtxqh7.jpeg?q=70",
-                requiredCoin = 6000
-            ),
-
-            // ---------- Super Reward (3) ----------
-            RewardItem(
-                id = "6",
-                rewardType = "Super Reward",
-                productName = "Smart Watch",
-                description = "Spend 12000 coins to unlock this reward",
-                worthText = "⭐ Worth ₹ 7,999 ⭐",
-                isLocked = true,
-                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/smartwatch/f/v/t/-original-imahghmj5yd4zngd.jpeg?q=70",
-                requiredCoin = 12000
-            ),
-            RewardItem(
-                id = "7",
-                rewardType = "Super Reward",
-                productName = "Wireless Headphones",
-                description = "Spend 10000 coins to unlock this reward",
-                worthText = "⭐ Worth ₹ 6,499 ⭐",
-                isLocked = true,
-                imageRes = "https://m.media-amazon.com/images/I/41JACWT-wWL._AC_UY327_FMwebp_QL65_.jpg",
-                requiredCoin = 10000
-            ),
-            RewardItem(
-                id = "8",
-                rewardType = "Super Reward",
-                productName = "Table Stand Combo",
-                description = "Spend 9000 coins to unlock this reward",
-                worthText = "⭐ Worth ₹ 3,999 ⭐",
-                isLocked = true,
-                imageRes = "https://m.media-amazon.com/images/I/71zKx3CNPFL._AC_UL480_FMwebp_QL65_.jpg",
-                requiredCoin = 9000
-            ),
-
-            // ---------- Special Picks (Added by Me) (2) ----------
-            RewardItem(
-                id = "9",
-                rewardType = "Special Pick",
-                productName = "Premium Sunglasses",
-                description = "Spend 4000 coins to unlock this reward",
-                worthText = "⭐ Worth ₹ 2,199 ⭐",
-                isLocked = true,
-                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/sunglass/g/d/e/m-2660s10147-moonx-original-imahfyqufqk8kdh7.jpeg?q=70",
-                requiredCoin = 4000
-            ),
-            RewardItem(
-                id = "10",
-                rewardType = "Special Pick",
-                productName = "Gym Duffle Bag",
-                description = "Spend 5500 coins to unlock this reward",
-                worthText = "⭐ Worth ₹ 2,799 ⭐",
-                isLocked = true,
-                imageRes = "https://rukminim2.flixcart.com/image/612/612/xif0q/duffel-bag/a/a/3/-original-imagrzzzyjppuzyd.jpeg?q=70",
-                requiredCoin = 5500
-            )
-        )
+    fun clickRedeem(params: HashMap<String, String>) {
+        viewModelScope.launch {
+            _clickRedeem.value = UIState.Loading
+            when (val result = repository.clickRedeem(params)) {
+                is ApiResult.Success -> {
+                    val response = result.data
+                    if (response.status == 1) {
+                        _clickRedeem.value = UIState.Success(response)
+                    } else {
+                        _clickRedeem.value = UIState.Error(response.message ?: "Something went wrong")
+                    }
+                }
+                is ApiResult.Error -> {
+                    _clickRedeem.value = UIState.Error("Error ${result.code}: ${result.message}")
+                }
+                is ApiResult.NetworkError -> {
+                    _clickRedeem.value = UIState.Error("Network error. Please check your connection.")
+                }
+                is ApiResult.UnknownError -> {
+                    _clickRedeem.value = UIState.Error(result.message)
+                }
+            }
+        }
+    }
+    fun reset_clickRedeem(){
+        _clickRedeem.value = UIState.Idle
     }
 
+    fun getRewardItems() {
+        viewModelScope.launch {
+            _getRewardItems.value = UIState.Loading
+            when (val result = repository.getRewardItems()) {
+                is ApiResult.Success -> {
+                    val response = result.data
+                    if (response.status == 1) {
+                        _getRewardItems.value = UIState.Success(response.data.orEmpty())
+                    } else {
+                        _getRewardItems.value = UIState.Error(response.message ?: "Something went wrong")
+                    }
+                }
+                is ApiResult.Error -> {
+                    _getRewardItems.value = UIState.Error("Error ${result.code}: ${result.message}")
+                }
+                is ApiResult.NetworkError -> {
+                    _getRewardItems.value = UIState.Error("Network error. Please check your connection.")
+                }
+                is ApiResult.UnknownError -> {
+                    _getRewardItems.value = UIState.Error(result.message)
+                }
+            }
+        }
+    }
+    fun reset_getRewardItem(){
+        _getRewardItems.value = UIState.Idle
+    }
 
 
     /*  private fun loadWalletTransactions() {

@@ -402,12 +402,13 @@ object CommonMethods {
         message: String,
         isCancelable: Boolean,
         show_no_btn : Boolean,
+        positiveText: String?="Yes",
         onConfirm: (DialogInterface) -> Unit
     ) {
         val builder = AlertDialog.Builder(context)
             .setTitle(title)
             .setMessage(message)
-            .setPositiveButton("Yes") { dialog, _ ->
+            .setPositiveButton(positiveText) { dialog, _ ->
                 onConfirm(dialog)
             }
             .setCancelable(isCancelable)

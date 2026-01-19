@@ -82,6 +82,7 @@
                 android:layout_marginStart="@dimen/_12sdp"
                 android:layout_marginEnd="@dimen/_13sdp"
                 android:text="Redeem"
+                android:visibility="gone"
                 android:fontFamily="@font/inter_medium"
                 android:textSize="@dimen/_11ssp"
                 android:textColor="@color/color_249370"
@@ -107,7 +108,7 @@
         android:layout_marginBottom="@dimen/_1sdp"
         android:layout_marginStart="@dimen/_12sdp"
         android:layout_marginEnd="@dimen/_12sdp"
-        android:text="Transactions"
+        android:text="Coin Redeem History"
         android:fontFamily="@font/inter_medium"
         android:textSize="@dimen/_13ssp"
         android:textColor="@color/text_black"
@@ -131,6 +132,7 @@
         android:paddingEnd="@dimen/_7sdp"
         android:paddingTop="@dimen/_2sdp"
         android:paddingBottom="@dimen/_3sdp"
+        android:visibility="gone"
         />
 
 

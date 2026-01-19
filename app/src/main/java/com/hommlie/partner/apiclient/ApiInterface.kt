@@ -21,6 +21,7 @@ import com.hommlie.partner.model.OrderQuestions
 import com.hommlie.partner.model.PaymentLinkResponse
 import com.hommlie.partner.model.PaymentStatus
 import com.hommlie.partner.model.PersonalDetails
+import com.hommlie.partner.model.RewardItem
 import com.hommlie.partner.model.SalaryBreakDown
 import com.hommlie.partner.model.SigninSignup
 import com.hommlie.partner.model.SingleResponse
@@ -204,10 +205,16 @@ interface ApiInterface {
     @POST("partner/leaderboardCoins")
     suspend fun getLeaderBoard(@Body hashMap: HashMap<String,String>) : Response<DynamicSingleResponseWithData<Leaderboardd>>
 
-    @POST("partner/redeemHistory")
-    suspend fun getRedeemCoinsHistory(@Body hashMap: HashMap<String,String>) : Response<DynamicSingleResponseWithData<List<CoinItem>>>
+    @POST("partner/redeemItemsHistory")
+    suspend fun getRedeemCoinsHistory(@Body hashMap: HashMap<String,String>) : Response<DynamicSingleResponseWithData<CoinItem>>
 
     @POST("partner/coinBalance")
     suspend fun getCoinBalance(@Body hashMap: HashMap<String,String>) : Response<DynamicSingleResponseWithData<String>>
+
+    @POST("partner/redeemItems")
+    suspend fun getRewardItems() : Response<DynamicSingleResponseWithData<List<RewardItem>>>
+
+    @POST("partner/redeemItemRequest")
+    suspend fun clickRedeem(@Body hashMap: HashMap<String,String>) : Response<DynamicSingleResponseWithData<Any>>
 
 }
