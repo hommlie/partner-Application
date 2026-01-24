@@ -79,7 +79,7 @@ class Advance : AppCompatActivity() {
 
 
         binding.tvMonth.setOnClickListener {
-            if (CommonMethods.isCheckNetwork(this)) {
+            if (CommonMethods.isInternetAvailable(this)) {
                 val now = Calendar.getInstance()
                 showMonthYearPicker(
                     context = this,

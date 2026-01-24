@@ -144,13 +144,8 @@ class ActTravelLogs : AppCompatActivity(), OnMapReadyCallback {
             insets
         }
 
-//        val toolbarView = binding.root.findViewById<View>(R.id.include_toolbar)
-//        setupToolbar(toolbarView, "Travel Log", this, R.color.transparent, R.color.black)
-
-
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             // This is Android 15 or above
-
             WindowCompat.getInsetsController(window, window.decorView)?.apply {
             isAppearanceLightStatusBars = true // or false for light theme
             isAppearanceLightNavigationBars = true
@@ -158,7 +153,6 @@ class ActTravelLogs : AppCompatActivity(), OnMapReadyCallback {
 
         } else {
             // This is Android 14 or below
-
         }
 
 
@@ -174,8 +168,7 @@ class ActTravelLogs : AppCompatActivity(), OnMapReadyCallback {
         binding.tvTravellogof.text = "${currentDate?.toFormattedDate_ddmmmyyyy()}  "
         binding.tvTravellogfor.text = "Details of : ${currentDate?.toFormattedDate_ddmmmyyyy()}"
 
-        viewModel.fetchTravelLogs(CommonMethods.getCurrentDateFormatted())
-
+        viewModel.fetchTravelLogs(this,CommonMethods.getCurrentDateFormatted())
 
 
         binding.mapView.setOnTouchListener { v, event ->
@@ -196,7 +189,7 @@ class ActTravelLogs : AppCompatActivity(), OnMapReadyCallback {
 
         binding.tvTravellogof.setOnClickListener {
 
-            if(CommonMethods.isCheckNetwork(this)) {
+            if(CommonMethods.isInternetAvailable(this)) {
 
                 val calendar = Calendar.getInstance()
                 val year = calendar[Calendar.YEAR]
@@ -221,19 +214,18 @@ class ActTravelLogs : AppCompatActivity(), OnMapReadyCallback {
                         binding.tvTravellogof.setText(date.toFormattedDate_ddmmmyyyy() + "  ")
                         hashMap["date"] = date
                         currentDate = date
-                        viewModel.fetchTravelLogs(date)
+                        viewModel.fetchTravelLogs(this,date)
                     },
                     year, month, day
                 )
                 datePickerDialog.datePicker.maxDate = calendar.timeInMillis
                 datePickerDialog.show()
             }else{
-                CommonMethods.alertDialogNoInternet(this, resources.getString(R.string.no_internet))
+                CommonMethods.showConfirmationDialog(this,"Alert!","Please connect to internet",false,false,"Retry"){
+                    it.dismiss()
+                }
             }
         }
-
-
-
 
     }
 
@@ -269,9 +261,6 @@ class ActTravelLogs : AppCompatActivity(), OnMapReadyCallback {
 
                             }
 
-
-
-
                             ProgressDialogUtil.dismiss()
                             viewModel.resetUIState()
                         }
@@ -279,6 +268,7 @@ class ActTravelLogs : AppCompatActivity(), OnMapReadyCallback {
                             binding.nsv.visibility = View.GONE
                             binding.tvNodata.visibility = View.VISIBLE
                             ProgressDialogUtil.dismiss()
+
                             if (state.message.equals("User Not Found", true) ||
                                 state.message.equals("Employee Not Found", true)
                             ) {
@@ -286,8 +276,21 @@ class ActTravelLogs : AppCompatActivity(), OnMapReadyCallback {
                                 CommonMethods.logOut(sharePreference, this@ActTravelLogs)
                                 return@collect
                             }
+                            if (state.message == "No internet connection") {
+                                CommonMethods.showConfirmationDialog(
+                                    this@ActTravelLogs,
+                                    "Alert!",
+                                    state.message,
+                                    false,
+                                    true,
+                                    "Retry",
+                                    "Cancel"
+                                ) {
+                                    it.dismiss()
+                                    viewModel.fetchTravelLogs(this@ActTravelLogs, CommonMethods.getCurrentDateFormatted())
+                                }
+                            }
                             viewModel.resetUIState()
-                            Toast.makeText(this@ActTravelLogs, state.message, Toast.LENGTH_SHORT).show()
                         }
                         is UIState.Idle -> {
                             // Init
@@ -300,6 +303,12 @@ class ActTravelLogs : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
+
+        Log.d("MAP_DEBUG", "Map object ready")
+
+        googleMap.setOnMapLoadedCallback {
+            Log.d("MAP_DEBUG", "Tiles loaded")
+        }
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             googleMap.isMyLocationEnabled = true
@@ -393,7 +402,7 @@ class ActTravelLogs : AppCompatActivity(), OnMapReadyCallback {
                 MarkerOptions().apply {
                     position(jobLatLng)
                     title("Job ${index + 1}: ${job.location_name}")
-                    snippet("Time: ${CommonMethods.convertToIndiaTime(job.start_time)}")
+                    snippet("Time: ${CommonMethods.convertToIndiaTime(job.start_time?:"")}")
                     icon(smallMarkerIconnn)
                 }
             )

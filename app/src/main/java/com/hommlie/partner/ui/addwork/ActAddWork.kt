@@ -222,7 +222,7 @@ class ActAddWork : AppCompatActivity() {
 
 
         binding.ivCalender.setOnClickListener {
-            if (CommonMethods.isCheckNetwork(this)) {
+            if (CommonMethods.isInternetAvailable(this)) {
                 val now = Calendar.getInstance()
                 showMonthYearPicker(
                     context = this,
@@ -250,7 +250,7 @@ class ActAddWork : AppCompatActivity() {
 
         binding.edtDate.setOnClickListener {
 
-            if(CommonMethods.isCheckNetwork(this)) {
+            if(CommonMethods.isInternetAvailable(this)) {
 
                 val calendar = Calendar.getInstance()
                 val year = calendar[Calendar.YEAR]

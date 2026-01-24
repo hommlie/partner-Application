@@ -75,7 +75,7 @@ class AddAdvanceRequest : AppCompatActivity() {
                         "Please enter a reason"
                     )
                 }
-                !CommonMethods.isCheckNetwork(this) -> {
+                !CommonMethods.isInternetAvailable(this) -> {
                     CommonMethods.showErrorFullMsg(
                         this@AddAdvanceRequest,
                         getString(R.string.no_internet)

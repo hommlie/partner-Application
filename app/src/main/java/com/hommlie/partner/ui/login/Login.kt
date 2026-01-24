@@ -71,14 +71,18 @@ class Login : AppCompatActivity() {
 
 
         binding.btnGetotp.setOnClickListener {
-            val hashMap = HashMap<String, String>()
-            hashMap["mobile"] = "+91" + viewModel.enteredMobileNo.value
-            hashMap["token"] = viewModel.strToken.value
+            if (CommonMethods.isInternetAvailable(this)){
+                val hashMap = HashMap<String, String>()
+                hashMap["mobile"] = "+91" + viewModel.enteredMobileNo.value
+                hashMap["token"] = viewModel.strToken.value
 
-            viewModel.registerUser(hashMap)
+                viewModel.registerUser(hashMap)
+            }else {
+                CommonMethods.showConfirmationDialog(this,"Alert!","Please connect to internet",false,false,"Ok"){
+                    it.dismiss()
+                }
+            }
         }
-
-
         binding.edtMobileno.addTextChangedListener {
             viewModel.onMobileNumberChanged(it.toString())
         }

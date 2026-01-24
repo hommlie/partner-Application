@@ -1,5 +1,6 @@
 package com.hommlie.partner.ui.travellog
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hommlie.partner.apiclient.UIState
@@ -8,6 +9,7 @@ import com.hommlie.partner.model.Location
 import com.hommlie.partner.model.TravelLogData
 import com.hommlie.partner.model.TravelLogResponse
 import com.hommlie.partner.repository.TravelLogRepository
+import com.hommlie.partner.utils.CommonMethods
 import com.hommlie.partner.utils.PrefKeys
 import com.hommlie.partner.utils.SharePreference
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,7 +43,12 @@ class TravelLogViewModel @Inject constructor(
     }
 
 
-    fun fetchTravelLogs(date : String) {
+    fun fetchTravelLogs(context: Context, date : String) {
+        if (!CommonMethods.isInternetAvailable(context)) {
+            _uiState.value = UIState.Error("No internet connection")
+            return
+        }
+
         viewModelScope.launch {
 
             val hashMap = HashMap<String,String>()

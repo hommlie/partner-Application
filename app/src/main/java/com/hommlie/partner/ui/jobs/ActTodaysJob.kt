@@ -374,7 +374,7 @@ class ActTodaysJob : AppCompatActivity() {
     // Date-picker (Completed jobs)
     private fun setupDatePicker() {
         binding.tvDate.setOnClickListener {
-            if (!CommonMethods.isCheckNetwork(this)) {
+            if (!CommonMethods.isInternetAvailable(this)) {
                 CommonMethods.alertDialogNoInternet(this, getString(R.string.no_internet))
                 return@setOnClickListener
             }

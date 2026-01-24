@@ -112,7 +112,7 @@ interface ApiInterface {
     ): SingleResponse
 
     @POST("partner/customerReferral")
-    suspend fun submitReferral(@PartMap map: Map<String, String>): SingleResponse
+    suspend fun submitReferral(@Body map: Map<String, String>): SingleResponse
 
     @Multipart
     @POST("partner/newChangeStatus")

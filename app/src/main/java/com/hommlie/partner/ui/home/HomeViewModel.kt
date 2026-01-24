@@ -1,5 +1,6 @@
 package com.hommlie.partner.ui.home
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -87,11 +88,18 @@ class HomeViewModel  @Inject constructor(
         }
     }
 
-    fun getDailyPuchLog(map : HashMap<String,String>){
+    fun getDailyPuchLog(context: Context){
+        if (!CommonMethods.isInternetAvailable(context)) {
+            _dailyPuchLog.value = UIState.Error("No internet connection")
+            return
+        }
+        val hashMap = HashMap<String,String>()
+        hashMap["user_id"] = sharePreference.getString(PrefKeys.userId)
+        hashMap["date"] = CommonMethods.getCurrentDateFormatted()
         viewModelScope.launch {
             _dailyPuchLog.value = UIState.Loading
             try{
-                val respone = repository.dailyPuchLog(map)  //getMockDailyPunchLogResponse()
+                val respone = repository.dailyPuchLog(hashMap)  //getMockDailyPunchLogResponse()
 
                 if (respone.data !=null){
                     _dailyPuchLog.value = UIState.Success(respone)
@@ -105,8 +113,11 @@ class HomeViewModel  @Inject constructor(
         }
     }
 
-    fun getOnsiteJob(userId: String){
-
+    fun getOnsiteJob(context: Context,userId: String){
+        if (!CommonMethods.isInternetAvailable(context)) {
+            _onsiteJob.value = UIState.Error("No internet connection")
+            return
+        }
         val hashMap = HashMap<String,String>()
         hashMap["user_id"] = userId
         hashMap["order_status"] = "3"
@@ -203,23 +214,15 @@ class HomeViewModel  @Inject constructor(
             _homeoptions_uiState.value = UIState.Success(mockResponse)
         }
     }
-
-
-
     fun resetOnsiteServiceCheck() {
         _isOnsiteService.value = null
     }
-
-
     fun resetUIState() {
         _uiState.value = UIState.Idle
     }
-
     fun resetDailyPunchState() {
         _dailyPuchLog.value = UIState.Idle
     }
-
-
     fun resetHomeOptionsUIState() {
         _homeoptions_uiState.value = UIState.Idle
     }
@@ -305,9 +308,12 @@ class HomeViewModel  @Inject constructor(
             }
         }
     }
+    fun getUserJobData(context : Context) {
+        if (!CommonMethods.isInternetAvailable(context)) {
+            _jobDataUiState.value = UIState.Error("No internet connection")
+            return
+        }
 
-
-    fun getUserJobData() {
         val hashMap = HashMap<String,String>()
         hashMap["user_id"] = sharePreference.getString(PrefKeys.userId)
         hashMap["date"] = CommonMethods.getCurrentDateFormatted()
@@ -320,10 +326,8 @@ class HomeViewModel  @Inject constructor(
                 is ApiResult.UnknownError ->  UIState.Error("Error : ${result.message}")
                 ApiResult.NetworkError -> UIState.Error("No internet connection")
             }
-
         }
     }
-
     fun reset_jobDataUiState(){
         _jobDataUiState.value = UIState.Idle
     }

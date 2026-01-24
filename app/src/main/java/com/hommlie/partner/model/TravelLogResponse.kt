@@ -18,9 +18,9 @@ data class JobItem(
     val location_name: String,
     val latitude: Double,
     val longitude: Double,
-    val start_time: String,
-    val end_time: String,
-    val distance_from_previous: Double
+    val start_time: String?=null,
+    val end_time: String?=null,
+    val distance_from_previous: Double?=null
 )
 
 data class Location(

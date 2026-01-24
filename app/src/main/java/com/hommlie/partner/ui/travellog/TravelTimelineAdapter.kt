@@ -36,8 +36,8 @@ class TravelTimelineAdapter(
         holder.binding.apply {
             jobId.text = "SR ID : ${job.job_id}"
             stationName.text = job.location_name
-            arrivalTime.text = "${CommonMethods.convertToIndiaTime(job.start_time).substringAfter(" ")}"
-            departureTime.text = "${CommonMethods.convertToIndiaTime(job.end_time).substringAfter(" ")}"
+            arrivalTime.text = "${CommonMethods.convertToIndiaTime(job.start_time?:"").substringAfter(" ")}"
+            departureTime.text = "${CommonMethods.convertToIndiaTime(job.end_time?:"").substringAfter(" ")}"
             platformInfo.text = "Distance: ${job.distance_from_previous} km"
 
             if (items.size == 1) {

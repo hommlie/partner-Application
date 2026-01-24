@@ -383,12 +383,17 @@ object CommonMethods {
         }
     }
 
-    fun isCheckNetwork(context: Context): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    fun isInternetAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
         val network = connectivityManager.activeNetwork ?: return false
         val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
     }
+
 
     fun getToast(activity: Activity, strTxtToast: String) {
         Toast.makeText(activity, strTxtToast, Toast.LENGTH_SHORT).show()
@@ -403,6 +408,7 @@ object CommonMethods {
         isCancelable: Boolean,
         show_no_btn : Boolean,
         positiveText: String?="Yes",
+        negativeText: String?="No",
         onConfirm: (DialogInterface) -> Unit
     ) {
         val builder = AlertDialog.Builder(context)
@@ -414,7 +420,7 @@ object CommonMethods {
             .setCancelable(isCancelable)
 
         if (show_no_btn) {
-            builder.setNegativeButton("No") { dialog, _ ->
+            builder.setNegativeButton(negativeText) { dialog, _ ->
                 dialog.dismiss()
             }
         }

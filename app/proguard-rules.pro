@@ -31,6 +31,12 @@
     <init>(...);
 }
 
+# Google Maps
+-keep class com.google.android.gms.maps.** { *; }
+-keep class com.google.maps.android.** { *; }
+-dontwarn com.google.android.gms.**
+
+
 # Also keep network / data classes often used with reflection/deserializers
 -keep class com.hommlie.partner.network.** { *; }
 -keep class com.hommlie.partner.data.** { *; }
@@ -121,6 +127,7 @@
 -dontwarn com.makeramen.**
 -dontwarn de.hdodenhof.circleimageview.**
 -dontwarn com.github.PhilJay.**
+-keep class com.github.mikephil.charting.** { *; }
 
 # -------------------------
 # WorkManager, Lifecycle, ViewModel, LiveData, Room (if used)

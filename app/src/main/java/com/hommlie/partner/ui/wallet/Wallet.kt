@@ -85,7 +85,7 @@ class Wallet : AppCompatActivity() {
         binding.tvMonth.text = CommonMethods.monthNameFromZeroBased(CommonMethods.getCurrentMonthNumber()).take(3)+"-"+CommonMethods.getCurrentYear()+"  "
 
         binding.tvMonth.setOnClickListener {
-            if (CommonMethods.isCheckNetwork(this)) {
+            if (CommonMethods.isInternetAvailable(this)) {
                 val now = Calendar.getInstance()
                 showMonthYearPicker(
                     context = this,

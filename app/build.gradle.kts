@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("kapt")
-//    alias(libs.plugins.ksp)
     id("kotlin-parcelize")
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.google.services)
@@ -17,8 +16,8 @@ android {
         applicationId = "com.hommlie.partner"
         minSdk = 26
         targetSdk = 36
-        versionCode = 20
-        versionName = "2.9"
+        versionCode = 22
+        versionName = "3.1"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -66,6 +65,9 @@ android {
         jniLibs {
             useLegacyPackaging = true
         }
+    }
+    androidResources {
+        noCompress += listOf("webp")
     }
 }
 
@@ -136,11 +138,9 @@ dependencies {
     implementation(libs.signature.pad)
     implementation("com.itextpdf:itext7-core:7.2.5") {
         exclude(group = "org.bouncycastle")
+        exclude(group = "com.fasterxml.jackson")
     }
 //    implementation(libs.android.pdf.viewer)
 //    implementation("com.github.barteksc:android-pdf-viewer:2.8.2")
     implementation(libs.slf4j.nop)
 }
-
-
-

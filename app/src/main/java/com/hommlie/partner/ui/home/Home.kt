@@ -52,7 +52,7 @@ import com.hommlie.partner.ui.refer.ReferEarn
 import com.hommlie.partner.ui.registration.ActRegistration
 import com.hommlie.partner.ui.travellog.ActTravelLogs
 import com.hommlie.partner.utils.CommonMethods
-import com.hommlie.partner.utils.CommonMethods.isCheckNetwork
+import com.hommlie.partner.utils.CommonMethods.isInternetAvailable
 import com.hommlie.partner.utils.CommonMethods.isServiceRunning
 import com.hommlie.partner.utils.CommonMethods.setTracking
 import com.hommlie.partner.utils.CommonMethods.showToast
@@ -62,6 +62,7 @@ import com.hommlie.partner.utils.PrefKeys
 import com.hommlie.partner.utils.ProgressDialogUtil
 import com.hommlie.partner.utils.SharePreference
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDateTime
@@ -169,7 +170,7 @@ class Home : Fragment() {
 
 
         binding.swipeRefresh.setOnRefreshListener {
-            viewModel.getUserJobData()
+            viewModel.getUserJobData(requireContext())
             binding.swipeRefresh.isRefreshing = false
         }
 
@@ -262,6 +263,7 @@ class Home : Fragment() {
         binding.mcvJobs.setOnClickListener {
             if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
                 val intent = Intent(requireContext(), ActTodaysJob::class.java)
+                intent.putExtra("title","Today's Pending Jobs")
                 startActivity(intent)
             }else{
                 CommonMethods.alertErrorOrValidationDialog(requireActivity(),"Please punch-in to start the job")
@@ -274,7 +276,7 @@ class Home : Fragment() {
 
 
         binding.mcvPunch.setOnLongClickListener {
-            if (isCheckNetwork(requireActivity())) {
+            if (isInternetAvailable(requireActivity())) {
                 if (!isLocationEnabled(requireContext())) {
                     promptEnableLocation()
                 } else {
@@ -443,10 +445,10 @@ class Home : Fragment() {
                                         val hashMap = HashMap<String,String>()
                                         hashMap["user_id"] = sharePreference.getString(PrefKeys.userId)
                                         hashMap["date"] = CommonMethods.getCurrentDateFormatted()
-                                        viewModel.getDailyPuchLog(hashMap)
+                                        viewModel.getDailyPuchLog(requireContext())
 
 
-                                        viewModel.getOnsiteJob(sharePreference.getString(PrefKeys.userId))
+                                        viewModel.getOnsiteJob(requireContext(),sharePreference.getString(PrefKeys.userId))
 
                                     }else{
 //                                        sharePreference.setInt(PrefKeys.todayOnlineId, "totaldistance", "0")
@@ -822,36 +824,13 @@ class Home : Fragment() {
         )
     }
 
-
-
     override fun onResume() {
         super.onResume()
 
 //        getLastLocation("3")
 
         if (isAdded) {
-            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
 
-//                binding.tvPunch.text = "Punch Out"
-//                binding.ivPunch.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.red_logout))
-//                binding.tvPunch.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_logout))
-//                binding.mcvPunch.strokeColor = ContextCompat.getColor(requireContext(), R.color.red_logout)
-//                binding.mcvPunch.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red_logout_light))
-
-                viewModel.getOnsiteJob(sharePreference.getString(PrefKeys.userId))
-
-            }
-            /*else {
-
-                binding.tvPunch.text = "Punch In"
-                binding.ivPunch.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.green))
-                binding.tvPunch.setTextColor(ContextCompat.getColor(requireContext(), R.color.green))
-                binding.mcvPunch.strokeColor = ContextCompat.getColor(requireContext(), R.color.green)
-                binding.mcvPunch.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green_light))
-
-                binding.mcvOnsiteorder.visibility = View.GONE
-
-            } */
             if (sharePreference.getBoolean(PrefKeys.IS_LOGGED_IN)){
                 if (sharePreference.getString(PrefKeys.lastSwipeAddress).isNullOrEmpty()){
                     binding.tvGreeting.text ="Start Your Job"
@@ -865,14 +844,23 @@ class Home : Fragment() {
             Glide.with(requireContext()).load(sharePreference.getString(PrefKeys.userProfile)).placeholder(R.drawable.ic_placeholder_profile).into(binding.ivEmpimage)
 
 
-            viewModel.getUserJobData()
-
             binding.tv2.text = sharePreference.getString(PrefKeys.lastSwipe).substringBefore(" ")+"\n"+sharePreference.getString(PrefKeys.lastSwipe).substringAfter(" ")
 
-            val hashMap = HashMap<String,String>()
-            hashMap["user_id"] = sharePreference.getString(PrefKeys.userId)
-            hashMap["date"] = CommonMethods.getCurrentDateFormatted()
-            viewModel.getDailyPuchLog(hashMap)
+
+            viewModel.getDailyPuchLog(requireContext())
+
+            lifecycleScope.launch {
+                delay(500)
+                viewModel.getUserJobData(requireContext())
+            }
+
+            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
+                lifecycleScope.launch {
+                    delay(500)
+                    viewModel.getOnsiteJob(requireContext(),sharePreference.getString(PrefKeys.userId))
+                }
+            }
+
         }
 
 
@@ -952,6 +940,26 @@ class Home : Fragment() {
 
                             binding.mcvOnsiteorder.visibility = View.GONE
                             ProgressDialogUtil.dismiss()
+                            if (state.message == "No internet connection") {
+                                CommonMethods.showConfirmationDialog(
+                                    requireContext(),
+                                    "Alert!",
+                                    state.message,
+                                    false,
+                                    false,
+                                    "Retry",
+                                    "Cancel"
+                                ) {
+                                    it.dismiss()
+                                    lifecycleScope.launch {
+                                        delay(500)
+                                        viewModel.getOnsiteJob(
+                                            requireContext(),
+                                            sharePreference.getString(PrefKeys.userId)
+                                        )
+                                    }
+                                }
+                            }
                             viewModel.resetgetOnsiteJob()
 
                         }
@@ -1098,6 +1106,23 @@ class Home : Fragment() {
                         is UIState.Error -> {
                             ProgressDialogUtil.dismiss()
 //                            CommonMethods.alertErrorOrValidationDialog(requireActivity(),state.message)
+                            if (state.message == "No internet connection") {
+                                CommonMethods.showConfirmationDialog(
+                                    requireContext(),
+                                    "Alert!",
+                                    state.message,
+                                    false,
+                                    false,
+                                    "Retry",
+                                    "Cancel"
+                                ) {
+                                    it.dismiss()
+                                    lifecycleScope.launch {
+                                        delay(500)
+                                        viewModel.getDailyPuchLog(requireContext())
+                                    }
+                                }
+                            }
                             viewModel.resetDailyPunchState()
                         }
 
@@ -1227,16 +1252,11 @@ class Home : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.jobDataUiState.collect{ state ->
                     when(state){
-                        is UIState.Idle ->{
-
-                        }
+                        is UIState.Idle ->{}
                         is UIState.Loading ->{
                             ProgressDialogUtil.showAleartLoadingProgress(requireActivity(),viewLifecycleOwner.lifecycleScope,"Loading...","Please wait we are fetching your current stats.")
                         }
                         is UIState.Success ->{
-                            ProgressDialogUtil.dismiss()
-                            viewModel.reset_jobDataUiState()
-
                             state.data.data?.let { jobSummary ->
                                 binding.apply {
                                     tvTotalJob.text = jobSummary.totalJobs.toString()
@@ -1247,9 +1267,28 @@ class Home : Fragment() {
                                     tvKmtravelled.text = "${jobSummary.kmTravelledTodays} KM Travelled Today's"
                                 }
                             }
+                            ProgressDialogUtil.dismiss()
+                            viewModel.reset_jobDataUiState()
                         }
                         is UIState.Error ->{
                             ProgressDialogUtil.dismiss()
+                            if (state.message == "No internet connection") {
+                                CommonMethods.showConfirmationDialog(
+                                    requireContext(),
+                                    "Alert!",
+                                    state.message,
+                                    false,
+                                    false,
+                                    "Retry",
+                                    "Cancel"
+                                ) {
+                                    it.dismiss()
+                                    lifecycleScope.launch {
+                                        delay(500)
+                                        viewModel.getUserJobData(requireContext())
+                                    }
+                                }
+                            }
                             viewModel.reset_jobDataUiState()
                         }
                     }

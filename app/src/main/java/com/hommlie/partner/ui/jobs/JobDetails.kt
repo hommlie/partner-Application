@@ -371,7 +371,7 @@ class JobDetails : AppCompatActivity() {
             }
 
             override fun onSwipeConfirm() {
-                if (CommonMethods.isCheckNetwork(applicationContext)) {
+                if (CommonMethods.isInternetAvailable(applicationContext)) {
                     if (binding.swipebtn.text=="Start Pre-Inspection") {
                         val intent = Intent(this@JobDetails, ActQuestionary::class.java)
                         intent.putExtra("orderId", jobData.orderId.toString())
@@ -509,7 +509,7 @@ class JobDetails : AppCompatActivity() {
 
             override fun onSwipeConfirm() {
 
-                if (CommonMethods.isCheckNetwork(applicationContext)) {
+                if (CommonMethods.isInternetAvailable(applicationContext)) {
 //                    dialog.dismiss()
                     val map = HashMap<String, RequestBody>()
                     map["user_id"] = sharePreference.getString(PrefKeys.userId).toRequestBody("text/plain".toMediaTypeOrNull())
@@ -671,7 +671,7 @@ class JobDetails : AppCompatActivity() {
             override fun onButtonReleased() {}
 
             override fun onSwipeConfirm() {
-                if (!CommonMethods.isCheckNetwork(context)) {
+                if (!CommonMethods.isInternetAvailable(context)) {
                     binding.swipebtn.showResultIcon(false, true)
                     CommonMethods.alertErrorOrValidationDialog(context, "No internet connection")
                     return
