@@ -17,10 +17,11 @@ class ServiceDetailsAdapter(
         fun bind(service: ServiceModel) {
             binding.tvJobinfo.text = service.serviceName
             binding.tvSubcategory.text = service.subcategoryName
-            binding.tvServiceType.text = service.service_type
+            binding.tvServicePlan.text = service.attribute?:""
+            binding.tvServiceType.text = service.service_type?:""
             binding.tvUnit.text = service.variation
             binding.tvSrid.text = service.id
-            binding.tvDuration.text = service.duration
+            binding.tvDuration.text = service.duration?:""
 
         }
     }

@@ -404,7 +404,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginTop="@dimen/_2sdp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:weightSum="3">
 
                     <TextView
@@ -427,6 +427,7 @@
                         android:gravity="center"
                         android:layout_marginTop="@dimen/_2sdp"/>
                     <TextView
+                        android:id="@+id/tv_service_plan"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintTop_toBottomOf="@id/tv_name"
@@ -437,7 +438,7 @@
                         android:textColor="@color/black"
                         android:textSize="@dimen/_10ssp"
                         android:layout_marginTop="@dimen/_2sdp"
-                        android:fontFamily="@font/plusjakartasans_semi_bold"
+                        android:fontFamily="@font/sfprodisplay_medium"
                         android:layout_weight="0.9"
                         />
 

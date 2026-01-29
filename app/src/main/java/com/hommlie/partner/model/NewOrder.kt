@@ -42,10 +42,10 @@ data class NewOrderData(
 data class ServiceModel(
     @SerializedName("id") val id: String,
     @SerializedName("product_name") val serviceName: String,
-    @SerializedName("service_type") val service_type: String,
-    @SerializedName("duration") val duration: String,
+    @SerializedName("service_type") val service_type: String?=null,
+    @SerializedName("duration") val duration: String?=null,
     @SerializedName("variation") val variation: String,
-    @SerializedName("attribute") val attribute: String,
+    @SerializedName("attribute") val attribute: String? =null,
     @SerializedName("category_name") val categoryName: String,
     @SerializedName("subcategory_name") val subcategoryName: String,
 //    @SerializedName("IsQuestionsSubmitted") val isQuestionsSubmitted: Int
