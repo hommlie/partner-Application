@@ -460,9 +460,13 @@ object CommonMethods {
         }
     }
 
-    fun getCurrentDateFormatted(): String {
+//    fun getCurrentDateFormatted(): String {
+//        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//        return LocalDate.now().format(formatter)
+//    }
+    fun getCurrentDateFormatted(daysBefore: Long = 0): String {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        return LocalDate.now().format(formatter)
+        return LocalDate.now().minusDays(daysBefore).format(formatter)
     }
 
     fun getCurrentTime(): String {

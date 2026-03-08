@@ -217,4 +217,13 @@ interface ApiInterface {
     @POST("partner/redeemItemRequest")
     suspend fun clickRedeem(@Body hashMap: HashMap<String,String>) : Response<DynamicSingleResponseWithData<Any>>
 
+    @Multipart
+    @POST("partner/storeJobCards")
+    suspend fun uploadJobCardPhoto(
+        @Part("user_id") userId: RequestBody,
+        @Part("order_number") order_number: RequestBody,
+        @Part("sr_ids") srIds : RequestBody,
+        @Part profilePhoto: MultipartBody.Part?
+        ) : Response<SingleResponse>
+
 }

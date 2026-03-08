@@ -19,9 +19,10 @@ data class JobSummary(
     val halfDayInThisMonth: Int,
 
     @SerializedName("km_travelled_todays")
-    val kmTravelledTodays: Int,
+    val kmTravelledTodays: Double,
 
     @SerializedName("date")
     val date: String
 )
+
 

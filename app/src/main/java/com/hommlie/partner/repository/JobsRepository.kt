@@ -1,5 +1,6 @@
 package com.hommlie.partner.repository
 
+import android.util.Log
 import com.hommlie.partner.apiclient.ApiInterface
 import com.hommlie.partner.apiclient.ApiResult
 import com.hommlie.partner.apiclient.safeApiCall
@@ -76,6 +77,12 @@ class JobsRepository @Inject constructor(private val apiService : ApiInterface) 
 
     suspend fun raiseTicket(hashMap: HashMap<String, String>): ApiResult<DynamicSingleResponseWithData<Any>> {
         return safeApiCall { apiService.raiseTicket(hashMap) }
+    }
+    suspend fun uploadJobCardPhoto(user_id: RequestBody,
+                                   orderNo : RequestBody,
+                                   srIds : RequestBody,
+                                   profilePhoto: MultipartBody.Part?) : ApiResult<SingleResponse>{
+        return safeApiCall { apiService.uploadJobCardPhoto(user_id,orderNo,srIds,profilePhoto)}
     }
 
 

@@ -1,12 +1,13 @@
 package com.hommlie.partner.ui.jobs
 
-import android.R.attr.duration
-import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -17,6 +18,7 @@ import android.util.Base64
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -29,10 +31,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
@@ -70,11 +74,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -101,6 +109,12 @@ class JobDetails : AppCompatActivity() {
     private lateinit var alertDialog: AlertDialog
     private lateinit var cameraLauncher: ActivityResultLauncher<Intent>
     private lateinit var cameraLauncherForCheque : ActivityResultLauncher<Intent>
+
+    private var selectedService: ServiceModel? = null
+    private var selectedServicePosition: Int = -1
+    private lateinit var uploadJobCardAdapter: UploadJobCardAdapter
+    private lateinit var jobCardImageUri: Uri
+    private var pendingJobCardImageUri: Uri? = null
 
     val hashMap =  HashMap<String,String>()
 
@@ -179,15 +193,9 @@ class JobDetails : AppCompatActivity() {
         }
 
         binding.tvCustName.text = jobData.name
-//        binding.tvVariation.text="${jobData.attribute?:"-"}\n${jobData.serviceName?:"-"}"
-//        binding.tvSize.text=jobData.variation?:"-"
-//        binding.tvCategory.text=jobData.categoryName?:"-"
-//        binding.tvSubcategory.text=jobData.subcategoryName?:"-"
         binding.tvType.text="Visit ID :- "+jobData.orderId
 
-
         hashMap["user_id"] = sharePreference.getString(PrefKeys.userId)
-//        hashMap["order_id"] = jobData.orderId.toString()
         hashMap["visit_id"] = jobData.orderId.toString()
 
         Glide.with(this@JobDetails).load(jobData.emp_onsite_image).placeholder(R.drawable.ic_placeholder_profile).into(binding.ivCaptureImagebeforejobstart)
@@ -217,7 +225,12 @@ class JobDetails : AppCompatActivity() {
                 // Use the bitmap if it's not null
                 imageBitmap?.let {
                     imagewhenStart = it
-                    binding.ivCaptureImagebeforejobstart.setImageBitmap(it)
+                    Glide.with(this)
+                        .load(it)
+                        .placeholder(R.drawable.ic_placeholder_profile)
+                        .error(R.drawable.ic_placeholder_profile)
+                        .into(binding.ivCaptureImagebeforejobstart)
+//                    binding.ivCaptureImagebeforejobstart.setImageBitmap(it)
                 }
             }
         }
@@ -259,8 +272,6 @@ class JobDetails : AppCompatActivity() {
             }
         }
 
-
-
         serviceStartAt.observe(this) { data ->
             if (!data.isNullOrEmpty() && data!="yet to start") {
                 viewModel.startDurationUpdater(data)
@@ -270,7 +281,6 @@ class JobDetails : AppCompatActivity() {
                 binding.tvStartTime.text = data
             }
         }
-
 
         dialogView = LayoutInflater.from(this).inflate(R.layout.success_bottomsheet_dialog, null)
         btnSubmit = dialogView.findViewById<Button>(R.id.btn_takeselfie)
@@ -283,9 +293,6 @@ class JobDetails : AppCompatActivity() {
 //        orderLastUpdated_at = intent.getStringExtra("updated_at").toString()
 
         observSendOTP()
-
-
-
 
         viewModel.updateOrderStatus(jobData.orderStatus.toString())
 
@@ -533,7 +540,8 @@ class JobDetails : AppCompatActivity() {
                             swipeBtn.showResultIcon(false, true)
                         }
                         else -> {
-                            val imagePart = CommonMethods.prepareImagePart("emp_onsite_image", imageBitmap)
+//                            val imagePart = CommonMethods.prepareImagePart("emp_onsite_image", imageBitmap)
+                            val imagePart = bitmapToCompressedMultipart(imageBitmap, "emp_onsite_image")
                             viewModel.verifyOtp_changeOrderStatus(map, imagePart)
                         }
                     }
@@ -622,7 +630,6 @@ class JobDetails : AppCompatActivity() {
 
             resetChequeFields()
         }
-
 
         binding.tvGenerateqr.setOnClickListener {
             viewModel.generatePaymentQR(
@@ -730,6 +737,8 @@ class JobDetails : AppCompatActivity() {
 
         signatureView = binding.signatureView
 
+        binding.btnConfirmJobcardUploaded.visibility = View.GONE
+
         binding.cardSaveSignature.setOnClickListener {
 
             if (!signatureView.hasSignature()) {
@@ -755,7 +764,27 @@ class JobDetails : AppCompatActivity() {
         binding.cardClearSignature.setOnClickListener {
             signatureView.clearSignature()
         }
+        observeUploadJobCardImage(binding.btnConfirmJobcardUploaded)
+        setupUploadJobCardAdapter(binding.rvJobcard)
 
+        binding.signatureView.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    // Jab touch shuru ho, scroll view ko disable kar do
+                    v.parent.requestDisallowInterceptTouchEvent(true)
+                }
+                MotionEvent.ACTION_UP -> {
+                    // Jab touch khatam ho, scroll view ko wapas enable kar do
+                    v.parent.requestDisallowInterceptTouchEvent(false)
+                }
+            }
+            // Ye line zaroori hai taaki signature view apna drawing logic chala sake
+            false
+        }
+        binding.btnConfirmJobcardUploaded.setOnClickListener {
+            binding.llJobcards.visibility = View.GONE
+            binding.llSignature.visibility = View.VISIBLE
+        }
 
         dialog.setCancelable(false)
         dialog.show()
@@ -768,6 +797,13 @@ class JobDetails : AppCompatActivity() {
         val binding = BottomsheetreferBinding.inflate(LayoutInflater.from(context))
         dialog.setContentView(binding.root)
         referral_bottomsheet = dialog
+
+        binding.edtMobileno.doOnTextChanged { text, _, _, _ ->
+            if (text?.toString()?.trim()?.length == 10) {
+                KeyboardUtils.hideKeyboard(binding.edtMobileno)
+                binding.edtMobileno.clearFocus()
+            }
+        }
 
         binding.tvSkip.setOnClickListener {
             dialog.dismiss()
@@ -1281,6 +1317,55 @@ class JobDetails : AppCompatActivity() {
             adapter = JobDetailsServiceAdapter(serviceList)
         }
     }
+    private fun setupUploadJobCardAdapter(recyclerView: RecyclerView) {
+        // B2B == 1 || B2C==0
+
+        val temp = when(jobData.orderMode){
+            0 ->{
+                jobData.services // show all items
+            }
+            1 ->{
+                listOf(jobData.services.first()) // show only one item
+            }
+            else -> {
+                jobData.services
+            }
+        }
+
+        uploadJobCardAdapter = UploadJobCardAdapter(temp) { service, position ->
+            selectedService = service
+            selectedServicePosition = position
+
+            // existing permission + camera flow reuse
+            takeJobCardPhoto()
+        }
+
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.hasFixedSize()
+        recyclerView.adapter = uploadJobCardAdapter
+    }
+    private fun takeJobCardPhoto() {
+        if (!CommonMethods.isCameraPermissionGranted(this)) {
+            CommonMethods.requestCameraPermission(this)
+        } else if (CommonMethods.isCameraPermissionDinead(this)) {
+            showCameraPermissionDialog(this)
+        } else {
+            openCameraForJobCard()
+        }
+    }
+    private fun openCameraForJobCard() {
+        val file = File.createTempFile("jobcard_", ".jpg", cacheDir)
+
+        jobCardImageUri = FileProvider.getUriForFile(
+            this,
+            "${packageName}.fileprovider",
+            file
+        )
+
+        jobCardCameraLauncher.launch(jobCardImageUri)
+    }
+
+
 
     private fun setupRatingSelector(binding: BottomsheetFeetbackBinding) {
 
@@ -1323,4 +1408,195 @@ class JobDetails : AppCompatActivity() {
             .setInterpolator(AccelerateDecelerateInterpolator())
             .start()
     }
+
+    private fun observeUploadJobCardImage(btnConfirmJobcardUploaded: TextView) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uploadJobCardPhoto.collect { state ->
+                    when(state){
+
+                        is UIState.Loading -> {
+                            ProgressDialogUtil.showLoadingProgress(
+                                this@JobDetails,
+                                lifecycleScope
+                            )
+                        }
+
+                        is UIState.Success -> {
+                            ProgressDialogUtil.dismiss()
+
+                            // ✅ API SUCCESS → ab image dikhao
+                            selectedService?.localImageUri = pendingJobCardImageUri
+                            uploadJobCardAdapter.notifyItemChanged(selectedServicePosition)
+
+                            if (uploadJobCardAdapter.isEverythingUploaded()) {
+                                // Agar sab ho gaya toh button dikhao
+                                btnConfirmJobcardUploaded.visibility = View.VISIBLE
+                            }
+
+                            // cleanup
+                            pendingJobCardImageUri = null
+                            viewModel.reset_uploadJobCardPhoto()
+                        }
+
+                        is UIState.Error -> {
+                            ProgressDialogUtil.dismiss()
+
+                            // ❌ API FAIL → image nahi dikhegi
+                            pendingJobCardImageUri = null
+
+                            Toast.makeText(
+                                this@JobDetails,
+                                "Image upload failed. Please upload again.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            viewModel.reset_uploadJobCardPhoto()
+                        }
+
+                        is UIState.Idle -> Unit
+                    }
+                }
+            }
+        }
+    }
+
+    private val jobCardCameraLauncher =
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success && selectedService != null) {
+
+                // ✅ sirf temporary rakho
+                pendingJobCardImageUri = jobCardImageUri
+
+                // ❌ UI abhi update mat karo
+                uploadJobCardPhoto(jobCardImageUri)
+            }
+        }
+
+    private fun uploadJobCardPhoto(uri: Uri) {
+
+        val compressedFile = compressImageToUnder2MB(
+            context = this,
+            uri = uri,
+            maxSizeMB = 2
+        )
+
+        val requestFile = compressedFile
+            .asRequestBody("image/jpeg".toMediaTypeOrNull())
+
+        val imagePart = MultipartBody.Part.createFormData(
+            "job_card_image",
+            compressedFile.name,
+            requestFile
+        )
+
+        // IDs collect karne ka logic
+        val idList = when(jobData.orderMode) {
+            0 -> {
+                // B2C: Sirf selected service ki ID
+                listOf(selectedService!!.id)
+            }
+            1 -> {
+                // B2B: Saari services ki IDs collect karo
+                jobData.services.map { it.id }
+            }
+            else -> listOf(selectedService!!.id)
+        }
+
+        val jsonArrayString = Gson().toJson(idList) // Result: [12212] ya [1212,23433,1231]
+
+        viewModel.uploadJobCardPhoto(
+            userId = sharePreference.getString(PrefKeys.userId)
+                .toRequestBody("text/plain".toMediaTypeOrNull()),
+            orderNo = jobData.orderNo
+                .toRequestBody("text/plain".toMediaTypeOrNull()),
+            srId = jsonArrayString
+                .toRequestBody("application/json".toMediaTypeOrNull()),
+            profilePhoto = imagePart
+        )
+    }
+
+    fun compressImageToUnder2MB(
+        context: Context,
+        uri: Uri,
+        maxSizeMB: Int = 2
+    ): File {
+
+        val maxBytes = maxSizeMB * 1024 * 1024
+
+        // Decode bitmap safely
+        val originalBitmap = BitmapFactory.decodeStream(
+            context.contentResolver.openInputStream(uri)
+        )
+
+        // Resize (maintain aspect ratio)
+        val maxDimension = 1600
+        val ratio = minOf(
+            maxDimension.toFloat() / originalBitmap.width,
+            maxDimension.toFloat() / originalBitmap.height,
+            1f
+        )
+
+        val resizedBitmap = Bitmap.createScaledBitmap(
+            originalBitmap,
+            (originalBitmap.width * ratio).toInt(),
+            (originalBitmap.height * ratio).toInt(),
+            true
+        )
+
+        var quality = 85
+        var compressedFile: File
+        var byteSize: Int
+
+        do {
+            compressedFile = File.createTempFile("upload_", ".jpg", context.cacheDir)
+
+            val stream = ByteArrayOutputStream()
+            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream)
+            val bytes = stream.toByteArray()
+
+            compressedFile.writeBytes(bytes)
+            byteSize = bytes.size
+
+            quality -= 5
+        } while (byteSize > maxBytes && quality > 40)
+
+        return compressedFile
+    }
+    fun compressBitmapToUnder2MB(
+        bitmap: Bitmap,
+        maxSizeMB: Int = 2
+    ): ByteArray {
+
+        val maxBytes = maxSizeMB * 1024 * 1024
+        var quality = 90
+        val stream = ByteArrayOutputStream()
+
+        do {
+            stream.reset()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream)
+            quality -= 5
+        } while (stream.size() > maxBytes && quality > 40)
+
+        return stream.toByteArray()
+    }
+    fun bitmapToCompressedMultipart(
+        bitmap: Bitmap,
+        partName: String
+    ): MultipartBody.Part {
+
+        val compressedBytes = compressBitmapToUnder2MB(bitmap, 2)
+
+        val requestBody = compressedBytes.toRequestBody(
+            "image/jpeg".toMediaTypeOrNull()
+        )
+
+        return MultipartBody.Part.createFormData(
+            partName,
+            "onsite.jpg",
+            requestBody
+        )
+    }
+
+
 }

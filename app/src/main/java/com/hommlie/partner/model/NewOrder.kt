@@ -1,5 +1,6 @@
 package com.hommlie.partner.model
 
+import android.net.Uri
 import com.google.gson.annotations.SerializedName
 
 data class NewOrder(
@@ -14,8 +15,6 @@ data class NewOrderData(
     @SerializedName("OnCompletedQuestions") val OnCompletedQuestions: Int,
     @SerializedName("order_number") val orderNo: String,
     @SerializedName("full_name") val name: String,
-//    @SerializedName("variation") val variation: String,
-//    @SerializedName("attribute") val attribute: String,
     @SerializedName("payment_type") var payment_type: String,
     @SerializedName("payment_staus") var payment_status: String,
 //    @SerializedName("product_name") val serviceName: String,
@@ -29,8 +28,8 @@ data class NewOrderData(
     @SerializedName("emp_onsite_image") val emp_onsite_image :String?,
     @SerializedName("IsOnsiteQuestionsSubmitted") val IsOniteQuestionsSubmitted :Int?,
     @SerializedName("IsOnCompletedQuestionsSubmitted") val isoncompletedQuestionSubmtted :Int?,
-//    @SerializedName("subcategory_name") val subcategoryName: String,
-//    @SerializedName("category_name") val categoryName: String,
+    @SerializedName("order_mode") val orderMode: Int,
+    @SerializedName("order_mode_label") val orderModeLabel: String,
     @SerializedName("onsite_updated_at") val onsite_updated_at: String,
 
     @SerializedName("services") val services: List<ServiceModel>
@@ -45,8 +44,9 @@ data class ServiceModel(
     @SerializedName("service_type") val service_type: String?=null,
     @SerializedName("duration") val duration: String?=null,
     @SerializedName("variation") val variation: String,
-    @SerializedName("attribute") val attribute: String? =null,
+    @SerializedName("service_type_label") val attribute: String? =null,
     @SerializedName("category_name") val categoryName: String,
     @SerializedName("subcategory_name") val subcategoryName: String,
+    var localImageUri: Uri? = null
 //    @SerializedName("IsQuestionsSubmitted") val isQuestionsSubmitted: Int
 )

@@ -28,13 +28,13 @@
     <color name="light_skyblue">#CAECFC</color>
     <color name="parrotgreen">#9BCB2E</color>
     <color name="light_parrotgreen">#E7F3D1</color>
+    <color name="light_leafegreen">#C9E8DE</color>
     <color name="color_2170B4">#2170B4</color>
     <color name="light_CFDEEE">#CFDEEE</color>
     <color name="blue">#59D3CF</color>
     <color name="light_blue">#D3F3F2</color>
     <color name="color_F2F3F5">#F2F3F5</color>
     <color name="leafegreen">#1BB581</color>
-    <color name="light_leafegreen">#C9E8DE</color>
     <color name="dark_gray">#6B757B</color>
     <color name="medium_gray">#A4A3A3</color>
     <color name="btnapply">#f5f5f5</color>

@@ -118,7 +118,22 @@ class NewJobsAdapter(private val onCheckOrders: (NewOrderData) -> Unit,
                 tvTrackOrder.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.context,R.color.light_orange))
 
                 trackCard.strokeColor = ContextCompat.getColor(holder.itemView.context, R.color.job_stroke_color)
-            } else{
+            } else if (job.orderStatus == "5"){
+                holder.itemView.isEnabled = false
+                cl2.visibility = View.GONE
+                viewNav.visibility = View.GONE
+                tvTrackOrder.visibility = View.VISIBLE
+                tvHelp.visibility = View.GONE
+                ivStamp.visibility = View.GONE
+
+                tvTrackOrder.text = "InCompleted"
+                tvTrackOrder.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.red_logout))
+//                tvJobinfo.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.color_primary))
+                tvTrackOrder.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.context,R.color.light_red))
+
+                trackCard.strokeColor = ContextCompat.getColor(holder.itemView.context, R.color.red_logout)
+            }
+            else{
                 holder.itemView.isEnabled = false
                 cl2.visibility = View.VISIBLE
                 viewNav.visibility = View.VISIBLE

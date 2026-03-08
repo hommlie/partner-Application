@@ -171,18 +171,20 @@ class ActTravelLogs : AppCompatActivity(), OnMapReadyCallback {
         viewModel.fetchTravelLogs(this,CommonMethods.getCurrentDateFormatted())
 
 
-        binding.mapView.setOnTouchListener { v, event ->
-            when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
-                    // Stop NestedScrollView from intercepting all gestures (scroll/pinch/drag)
-                    binding.nsv.requestDisallowInterceptTouchEvent(true)
+        binding.mapTouchInterceptor.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    // CoordinatorLayout/AppBarLayout ko freeze karo
+                    binding.main.requestDisallowInterceptTouchEvent(true)
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    // Allow NSV to resume intercepting after gesture ends
-                    binding.nsv.requestDisallowInterceptTouchEvent(false)
+                    // Wapas normal karo
+                    binding.main.requestDisallowInterceptTouchEvent(false)
                 }
             }
-            false // Let MapView handle the event
+            // Ye line map ko event pass karegi taaki zoom/drag chale
+            binding.mapView.dispatchTouchEvent(event)
+            true
         }
 
 

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hommlie.partner.apiclient.ApiResult
 import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.model.DynamicSingleResponseWithData
 import com.hommlie.partner.model.PaymentLinkResponse
@@ -242,18 +243,18 @@ class JobDetailsViewModel @Inject constructor(
     }
     fun submitRefferal(data: HashMap<String, String>) {
         viewModelScope.launch {
-            _uiStateFinishJob.value = UIState.Loading
+            _uiStateReferal.value = UIState.Loading
             delay(800)
             try {
                 val response = repository.submitReferral(data)
                 if (response.status==1){
-                    _uiStateFinishJob.value = UIState.Success(response)
+                    _uiStateReferal.value = UIState.Success(response)
                 }else{
-                    _uiStateFinishJob.value = UIState.Error(response.message ?: "Something went wrong")
+                    _uiStateReferal.value = UIState.Error(response.message ?: "Something went wrong")
                 }
 
             } catch (e: Exception) {
-                _uiStateFinishJob.value = UIState.Error(e.message ?: "Something went wrong")
+                _uiStateReferal.value = UIState.Error(e.message ?: "Something went wrong")
             }
         }
     }
@@ -391,6 +392,42 @@ class JobDetailsViewModel @Inject constructor(
         } catch (e: Exception) {
             "Error: ${e.localizedMessage}"
         }
+    }
+
+    private val _uploadJobCardPhoto = MutableStateFlow<UIState<SingleResponse>>(UIState.Idle)
+    val uploadJobCardPhoto: StateFlow<UIState<SingleResponse>> = _uploadJobCardPhoto
+
+    fun uploadJobCardPhoto(
+        userId: RequestBody,
+        orderNo: RequestBody,
+        srId: RequestBody,
+        profilePhoto: MultipartBody.Part
+    ) {
+        viewModelScope.launch {
+            _uploadJobCardPhoto.value = UIState.Loading
+            when (val result = repository.uploadJobCardPhoto(userId, orderNo, srId, profilePhoto)) {
+                is ApiResult.Success -> {
+                    val response = result.data
+                    if (response.status == 1) {
+                        _uploadJobCardPhoto.value = UIState.Success(response)
+                    } else {
+                        _uploadJobCardPhoto.value = UIState.Error(response.message ?: "Something went wrong")
+                    }
+                }
+                is ApiResult.Error -> {
+                    _uploadJobCardPhoto.value = UIState.Error("Error ${result.code}: ${result.message}")
+                }
+                is ApiResult.NetworkError -> {
+                    _uploadJobCardPhoto.value = UIState.Error("Network error. Please check your connection.")
+                }
+                is ApiResult.UnknownError -> {
+                    _uploadJobCardPhoto.value = UIState.Error(result.message)
+                }
+            }
+        }
+    }
+    fun reset_uploadJobCardPhoto(){
+        _uploadJobCardPhoto.value = UIState.Idle
     }
 
 

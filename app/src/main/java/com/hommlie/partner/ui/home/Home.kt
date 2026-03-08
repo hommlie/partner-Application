@@ -171,26 +171,32 @@ class Home : Fragment() {
 
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.getUserJobData(requireContext())
+//            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
+                lifecycleScope.launch {
+                    delay(500)
+                    viewModel.getOnsiteJob(requireContext(),sharePreference.getString(PrefKeys.userId))
+                }
+//            }
             binding.swipeRefresh.isRefreshing = false
         }
 
         binding.llTotaljob.setOnClickListener {
-            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
+//            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
                 val intent = Intent(requireActivity(),ActTodaysJob::class.java)
                 intent.putExtra("title","Today's Total Jobs")
                 startActivity(intent)
-            }else{
-                CommonMethods.alertErrorOrValidationDialog(requireActivity(),"Please punch-in to explore jobs")
-            }
+//            }else{
+//                CommonMethods.alertErrorOrValidationDialog(requireActivity(),"Please punch-in to explore jobs")
+//            }
         }
         binding.llPendingjob.setOnClickListener {
-            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
+//            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
                 val intent = Intent(requireActivity(),ActTodaysJob::class.java)
                 intent.putExtra("title","Today's Pending Jobs")
                 startActivity(intent)
-            }else{
-                CommonMethods.alertErrorOrValidationDialog(requireActivity(),"Please punch-in to explore jobs")
-            }
+//            }else{
+//                CommonMethods.alertErrorOrValidationDialog(requireActivity(),"Please punch-in to explore jobs")
+//            }
         }
         binding.llCompletedjob.setOnClickListener {
             val intent = Intent(requireActivity(),ActTodaysJob::class.java)
@@ -261,13 +267,13 @@ class Home : Fragment() {
         }
 
         binding.mcvJobs.setOnClickListener {
-            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
+//            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
                 val intent = Intent(requireContext(), ActTodaysJob::class.java)
                 intent.putExtra("title","Today's Pending Jobs")
                 startActivity(intent)
-            }else{
-                CommonMethods.alertErrorOrValidationDialog(requireActivity(),"Please punch-in to start the job")
-            }
+//            }else{
+//                CommonMethods.alertErrorOrValidationDialog(requireActivity(),"Please punch-in to start the job")
+//            }
         }
         binding.mcvOther.setOnClickListener {
             CommonMethods.openWhatsApp(requireActivity(),sharePreference.getString(PrefKeys.contact_us),"")
@@ -448,7 +454,7 @@ class Home : Fragment() {
                                         viewModel.getDailyPuchLog(requireContext())
 
 
-                                        viewModel.getOnsiteJob(requireContext(),sharePreference.getString(PrefKeys.userId))
+//                                        viewModel.getOnsiteJob(requireContext(),sharePreference.getString(PrefKeys.userId))
 
                                     }else{
 //                                        sharePreference.setInt(PrefKeys.todayOnlineId, "totaldistance", "0")
@@ -854,12 +860,12 @@ class Home : Fragment() {
                 viewModel.getUserJobData(requireContext())
             }
 
-            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
-                lifecycleScope.launch {
-                    delay(500)
-                    viewModel.getOnsiteJob(requireContext(),sharePreference.getString(PrefKeys.userId))
-                }
-            }
+//            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
+//                lifecycleScope.launch {
+//                    delay(500)
+//                    viewModel.getOnsiteJob(requireContext(),sharePreference.getString(PrefKeys.userId))
+//                }
+//            }
 
         }
 
@@ -1042,15 +1048,6 @@ class Home : Fragment() {
                         is UIState.Loading -> {
                             ProgressDialogUtil.showLoadingProgress(requireActivity(),lifecycleScope)
                         }
-                      /*  is UIState.Success -> {
-                            ProgressDialogUtil.dismiss()
-                            state.data.data?.data?.let {
-                                val isPunchedIn = sharePreference.getString(PrefKeys.Punch_Status) == "1"
-                                viewModel.startTimer(it,isPunchedIn)
-                            }
-
-                            viewModel.resetDailyPunchState()
-                        } */
                         is UIState.Success -> {
                             ProgressDialogUtil.dismiss()
 
@@ -1101,6 +1098,12 @@ class Home : Fragment() {
 
                             // Reset State
                             viewModel.resetDailyPunchState()
+//                            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
+                                lifecycleScope.launch {
+                                    delay(500)
+                                    viewModel.getOnsiteJob(requireContext(),sharePreference.getString(PrefKeys.userId))
+                                }
+//                            }
                         }
 
                         is UIState.Error -> {
@@ -1257,6 +1260,7 @@ class Home : Fragment() {
                             ProgressDialogUtil.showAleartLoadingProgress(requireActivity(),viewLifecycleOwner.lifecycleScope,"Loading...","Please wait we are fetching your current stats.")
                         }
                         is UIState.Success ->{
+                            ProgressDialogUtil.dismiss()
                             state.data.data?.let { jobSummary ->
                                 binding.apply {
                                     tvTotalJob.text = jobSummary.totalJobs.toString()
@@ -1267,7 +1271,6 @@ class Home : Fragment() {
                                     tvKmtravelled.text = "${jobSummary.kmTravelledTodays} KM Travelled Today's"
                                 }
                             }
-                            ProgressDialogUtil.dismiss()
                             viewModel.reset_jobDataUiState()
                         }
                         is UIState.Error ->{

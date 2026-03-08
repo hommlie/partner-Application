@@ -17,7 +17,9 @@ private val onClick: (SimInfo) -> Unit
 
         init {
             itemView.setOnClickListener {
-                onClick(simList[adapterPosition])
+                bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION }?.let { position ->
+                    onClick(simList[position])
+                }
             }
         }
     }

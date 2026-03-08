@@ -66,6 +66,8 @@ class ActTodaysJob : AppCompatActivity() {
     private val hashMapNewJob = HashMap<String, String>()
     private val hashMapPendingJob = HashMap<String, String>()
     private val hashMapCompletedJob = HashMap<String, String>()
+    private val hashMapInCompletedJob = HashMap<String, String>()
+    private val hashMapYesterdayDispatchedJob = HashMap<String, String>()
 
     private var userId = ""
     private var title = ""
@@ -74,7 +76,9 @@ class ActTodaysJob : AppCompatActivity() {
     // Flags & temp storage used for merging multi-call results
     private var newJobLoaded = false
     private var pendingLoaded = false
+    private var yesterdayJobLoaded = false
     private var completedLoaded = false
+    private var incompletedLoaded = false
     private val tempAllList = mutableListOf<NewOrderData>()
 
     private var currentType = JobType.PENDING
@@ -165,6 +169,15 @@ class ActTodaysJob : AppCompatActivity() {
             put("user_id", userId)
             put("order_status", "4")
         }
+        hashMapInCompletedJob.apply {
+            put("user_id", userId)
+            put("order_status", "5")
+        }
+        hashMapYesterdayDispatchedJob.apply {
+            put("user_id", userId)
+            put("order_status", "2") // New/pending
+            put("date", CommonMethods.getCurrentDateFormatted(1))
+        }
     }
 
     // --- Observers ---
@@ -227,8 +240,13 @@ class ActTodaysJob : AppCompatActivity() {
             tempAllList.addAll(newList)
         }
 
+        if (!yesterdayJobLoaded){
+            yesterdayJobLoaded = true
+            tempAllList.addAll(newList)
+        }
+
         // both arrived → finalize
-        if (pendingLoaded && newJobLoaded) {
+        if (pendingLoaded && yesterdayJobLoaded && newJobLoaded) {
             allJobsList.apply {
                 clear()
                 addAll(tempAllList.distinctBy { it.orderId })
@@ -240,7 +258,7 @@ class ActTodaysJob : AppCompatActivity() {
     }
 
     private fun handleAllSequence(newList: List<NewOrderData>) {
-        // Sequence: pending -> new -> completed
+        // Sequence:  pending -> yesterday -> new -> completed
         when {
             !pendingLoaded -> {
                 pendingLoaded = true
@@ -254,13 +272,24 @@ class ActTodaysJob : AppCompatActivity() {
                 return
             }
 
+            !yesterdayJobLoaded -> {
+                yesterdayJobLoaded = true
+                tempAllList.addAll(newList)
+                return
+            }
+
             !completedLoaded -> {
                 completedLoaded = true
                 tempAllList.addAll(newList)
             }
+            !incompletedLoaded ->{
+                incompletedLoaded = true
+                tempAllList.addAll(newList)
+            }
+
         }
 
-        if (pendingLoaded && newJobLoaded && completedLoaded) {
+        if (pendingLoaded && yesterdayJobLoaded && newJobLoaded && completedLoaded && incompletedLoaded) {
             allJobsList.apply {
                 clear()
                 addAll(tempAllList.distinctBy { it.orderId })
@@ -287,9 +316,10 @@ class ActTodaysJob : AppCompatActivity() {
 
             JobType.PENDING -> {
                 if (!pendingLoaded) pendingLoaded = true
+                else if (!yesterdayJobLoaded) yesterdayJobLoaded = true
                 else if (!newJobLoaded) newJobLoaded = true
                 // finalize if both marked
-                if (pendingLoaded && newJobLoaded) {
+                if (pendingLoaded && yesterdayJobLoaded && newJobLoaded) {
                     allJobsList.apply {
                         clear()
                         addAll(tempAllList.distinctBy { it.orderId })
@@ -301,10 +331,12 @@ class ActTodaysJob : AppCompatActivity() {
 
             JobType.ALL -> {
                 if (!pendingLoaded) pendingLoaded = true
+                else if (!yesterdayJobLoaded) yesterdayJobLoaded = true
                 else if (!newJobLoaded) newJobLoaded = true
                 else if (!completedLoaded) completedLoaded = true
+                else if (!incompletedLoaded) incompletedLoaded = true
 
-                if (pendingLoaded && newJobLoaded && completedLoaded) {
+                if (pendingLoaded && yesterdayJobLoaded && newJobLoaded && completedLoaded && incompletedLoaded) {
                     allJobsList.apply {
                         clear()
                         addAll(tempAllList.distinctBy { it.orderId })
@@ -319,9 +351,13 @@ class ActTodaysJob : AppCompatActivity() {
     // --- Utilities ---
     private fun resetFlags(type: JobType) {
         newJobLoaded = false
+        yesterdayJobLoaded = false
         pendingLoaded = false
         tempAllList.clear()
-        if (type == JobType.ALL) completedLoaded = false
+        if (type == JobType.ALL){
+            completedLoaded = false
+            incompletedLoaded = false
+        }
     }
 
     private fun updateUI() {
@@ -440,6 +476,8 @@ class ActTodaysJob : AppCompatActivity() {
                     // pending(3) then new(2)
                     viewModel.getNewJobs(hashMapPendingJob)
                     delay(250)
+                    viewModel.getNewJobs(hashMapYesterdayDispatchedJob)
+                    delay(250)
                     viewModel.getNewJobs(hashMapNewJob)
                 }
 
@@ -447,16 +485,21 @@ class ActTodaysJob : AppCompatActivity() {
                     // pending(3) -> new(2) -> completed(4)
                     viewModel.getNewJobs(hashMapPendingJob)
                     delay(250)
+                    viewModel.getNewJobs(hashMapYesterdayDispatchedJob)
+                    delay(250)
                     viewModel.getNewJobs(hashMapNewJob)
                     delay(250)
                     hashMapCompletedJob["date"] = parentDate
                     viewModel.getNewJobs(hashMapCompletedJob)
+                    delay(250)
+                    hashMapInCompletedJob["date"] = parentDate
+                    viewModel.getNewJobs(hashMapInCompletedJob)
                 }
             }
         }
     }
 
-    enum class JobType { COMPLETED, PENDING, ALL }
+    enum class JobType {COMPLETED, PENDING, ALL }
 
     fun showServiceDetails(serviceDetails: List<ServiceModel>) {
 
