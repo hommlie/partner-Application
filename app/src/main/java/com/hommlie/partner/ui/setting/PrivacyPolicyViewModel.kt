@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PrivacyPolicyViewModel @Inject constructor(private val homeRepository: HomeRepository, private val authRepository: AuthRepository) : ViewModel() {
+class PrivacyPolicyViewModel @Inject constructor(private val homeRepository: HomeRepository) : ViewModel() {
 
     private val _cmsDataState = MutableStateFlow<UIState<CmsPageResponse>>(UIState.Idle)
     val cmsDataState: StateFlow<UIState<CmsPageResponse>> = _cmsDataState
