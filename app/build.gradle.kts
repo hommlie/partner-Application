@@ -16,12 +16,16 @@ android {
         applicationId = "com.hommlie.partner"
         minSdk = 26
         targetSdk = 36
-        versionCode = 26
-        versionName = "3.5"
+        versionCode = 28
+        versionName = "3.7"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
+
+//    link = "C:\\Users\\Cintal-Bangalore\\AndroidStudioProjects\\partner-Application\\hmpartner.jks"
+//    key = "key1"
+//    password = "hommlie123@"
 
     buildTypes {
         release {

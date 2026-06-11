@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -23,6 +24,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
@@ -47,6 +49,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.zxing.BarcodeFormat
@@ -55,11 +58,14 @@ import com.hommlie.partner.R
 import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.databinding.ActivityJobDetailsBinding
 import com.hommlie.partner.databinding.BottomsheetFeetbackBinding
+import com.hommlie.partner.databinding.BottomsheetGelPendingBinding
 import com.hommlie.partner.databinding.BottomsheetOtpBinding
 import com.hommlie.partner.databinding.BottomsheetPaymentBinding
 import com.hommlie.partner.databinding.BottomsheetSignatureBinding
 import com.hommlie.partner.databinding.BottomsheetreferBinding
+import com.hommlie.partner.model.GelServicesData
 import com.hommlie.partner.model.NewOrderData
+import com.hommlie.partner.model.ScheduleGelServiceRequest
 import com.hommlie.partner.model.ServiceModel
 import com.hommlie.partner.utils.CommonMethods
 import com.hommlie.partner.utils.KeyboardUtils
@@ -84,6 +90,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import javax.inject.Inject
+import kotlin.collections.orEmpty
 
 @AndroidEntryPoint
 class JobDetails : AppCompatActivity() {
@@ -113,6 +120,7 @@ class JobDetails : AppCompatActivity() {
     private var selectedService: ServiceModel? = null
     private var selectedServicePosition: Int = -1
     private lateinit var uploadJobCardAdapter: UploadJobCardAdapter
+    private lateinit var gelServiceAdapter : GelServiceAdapter
     private lateinit var jobCardImageUri: Uri
     private var pendingJobCardImageUri: Uri? = null
 
@@ -256,6 +264,7 @@ class JobDetails : AppCompatActivity() {
         observeStartTime()
         observeDuration()
         observeJobFinish()
+        observeCheckGelService()
         observeReferal()
 
         isonsiteAnswersubmit.observe(this) { data ->
@@ -1121,7 +1130,12 @@ class JobDetails : AppCompatActivity() {
                                 payment_dialog?.dismiss()
                             }
                             viewModel.resetUIJobFinish()
-                            showReferalBottomsheet(this@JobDetails)
+                            if (jobData.orderMode == 0 ){
+                                viewModel.checkGelService(hashMapOf("visit_id" to jobData.orderId.toString() , "user_id" to sharePreference.getString(PrefKeys.userId)))
+                            }else{
+                               showReferalBottomsheet(this@JobDetails)
+                            }
+
                         }
                         is UIState.Error ->{
                             ProgressDialogUtil.dismiss()
@@ -1598,5 +1612,150 @@ class JobDetails : AppCompatActivity() {
         )
     }
 
+    fun showGelPendingServiceBottomSheet(context: Activity, gelServiceData: GelServicesData): Dialog {
+
+        Log.e(
+            "GEL_TEST",
+            "BottomSheet Size = ${gelServiceData.services?.size}"
+        )
+
+        gelServiceData.services?.forEach {
+            Log.e(
+                "GEL_TEST",
+                "BottomSheet Service = ${it.productName}"
+            )
+        }
+
+        val dialog = BottomSheetDialog(context)
+        val binding = BottomsheetGelPendingBinding.inflate(LayoutInflater.from(context))
+        dialog.setContentView(binding.root)
+
+        setupGelServiceRecyclerViewAdapter(binding.rvServices,gelServiceData)
+
+        binding.tvSkip.setOnClickListener {
+            dialog.dismiss()
+            showReferalBottomsheet(this@JobDetails)
+        }
+        binding.mcvBtnScheduleGel.setOnClickListener {
+            val request = ScheduleGelServiceRequest(
+                services = gelServiceAdapter.getScheduleRequest()
+            )
+            if (request.services.size != gelServiceData.services.orEmpty().size){
+                CommonMethods.alertErrorOrValidationDialog(this@JobDetails,"Please select the date and time for all services")
+            }else{
+                observeScheduleGelService(dialog)
+                viewModel.scheduleGelService(request)
+            }
+
+        }
+
+        dialog.setCancelable(false)
+        dialog.setOnShowListener {
+
+            val bottomSheet = dialog.findViewById<FrameLayout>(
+                com.google.android.material.R.id.design_bottom_sheet
+            )
+
+            bottomSheet?.layoutParams?.height =
+                ViewGroup.LayoutParams.MATCH_PARENT
+
+            bottomSheet?.requestLayout()
+
+            val behavior = BottomSheetBehavior.from(bottomSheet!!)
+
+            behavior.peekHeight =
+                Resources.getSystem().displayMetrics.heightPixels
+
+            behavior.state =
+                BottomSheetBehavior.STATE_EXPANDED
+
+            behavior.skipCollapsed = true
+        }
+        dialog.show()
+        return dialog
+    }
+    private fun setupGelServiceRecyclerViewAdapter(recyclerView: RecyclerView, serviceList: GelServicesData) {
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true)
+            gelServiceAdapter = GelServiceAdapter(serviceList.services.orEmpty() , serviceList.timeslots.orEmpty())
+            adapter = gelServiceAdapter
+            isNestedScrollingEnabled = false
+        }
+    }
+
+
+    private fun observeCheckGelService() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiStateCheckGelService.collect { state ->
+                    when (state) {
+                        is UIState.Idle -> {
+                            ProgressDialogUtil.dismiss()
+                        }
+
+                        is UIState.Loading -> {
+                            ProgressDialogUtil.showAleartLoadingProgress(this@JobDetails,lifecycleScope,"Please wait!...","Please wait we are checking gel service")
+                        }
+
+                        is UIState.Success -> {
+                            ProgressDialogUtil.dismiss()
+                            val data = state.data
+                            Log.e(
+                                "GEL_TEST",
+                                "Observer Size = ${data.services?.size}"
+                            )
+
+                            data.services?.forEach {
+                                Log.e(
+                                    "GEL_TEST",
+                                    "Observer Service = ${it.productName}"
+                                )
+                            }
+                            showGelPendingServiceBottomSheet(this@JobDetails,data)
+                            viewModel.resetUIStateCheckGelService()
+                        }
+
+                        is UIState.Error -> {
+                            ProgressDialogUtil.dismiss()
+                            showReferalBottomsheet(this@JobDetails)
+//                            CommonMethods.alertErrorOrValidationDialog(this@JobDetails,state.message)
+                            viewModel.resetUIStateCheckGelService()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private fun observeScheduleGelService(dialog: BottomSheetDialog) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiStateScheduleGelService.collect { state ->
+                    when (state) {
+                        is UIState.Idle -> {
+                            ProgressDialogUtil.dismiss()
+                        }
+
+                        is UIState.Loading -> {
+                            ProgressDialogUtil.showAleartLoadingProgress(this@JobDetails,lifecycleScope,"Please wait!...","Please wait we are scheduling gel service")
+                        }
+
+                        is UIState.Success -> {
+                            ProgressDialogUtil.dismiss()
+                            viewModel.reset_uiStateScheduleGelService()
+                            dialog.dismiss()
+                            showReferalBottomsheet(this@JobDetails)
+                        }
+
+                        is UIState.Error -> {
+                            ProgressDialogUtil.dismiss()
+                            CommonMethods.alertErrorOrValidationDialog(this@JobDetails,state.message)
+                            viewModel.reset_uiStateScheduleGelService()
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 }

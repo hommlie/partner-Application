@@ -51,6 +51,7 @@
     <color name="select_icon">#2668F4</color>
     <color name="Blackcolor">#263238</color>
     <color name="downblack_color">#56636C</color>
+    <color name="gray_text_color">#99A0AC</color>
     <color name="right_icon_color">#A5ACB8</color>
     <color name="gray_line_color">#F0F0F0</color>
     <color name="circle_bakground">#EBF0FB</color>

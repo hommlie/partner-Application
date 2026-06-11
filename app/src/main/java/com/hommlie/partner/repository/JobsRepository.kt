@@ -1,25 +1,19 @@
 package com.hommlie.partner.repository
 
-import android.util.Log
 import com.hommlie.partner.apiclient.ApiInterface
 import com.hommlie.partner.apiclient.ApiResult
 import com.hommlie.partner.apiclient.safeApiCall
 import com.hommlie.partner.model.DynamicSingleResponseWithData
-import com.hommlie.partner.model.ExpenseHistory
+import com.hommlie.partner.model.GelServicesData
 import com.hommlie.partner.model.NewOrder
 import com.hommlie.partner.model.OrderQuestions
 import com.hommlie.partner.model.PaymentLinkResponse
 import com.hommlie.partner.model.PaymentStatus
+import com.hommlie.partner.model.ScheduleGelServiceRequest
 import com.hommlie.partner.model.SingleResponse
 import com.hommlie.partner.model.SingleResponseForOrderThree
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
-import retrofit2.http.PartMap
 import javax.inject.Inject
 
 class JobsRepository @Inject constructor(private val apiService : ApiInterface) {
@@ -84,6 +78,15 @@ class JobsRepository @Inject constructor(private val apiService : ApiInterface) 
                                    profilePhoto: MultipartBody.Part?) : ApiResult<SingleResponse>{
         return safeApiCall { apiService.uploadJobCardPhoto(user_id,orderNo,srIds,profilePhoto)}
     }
+
+    suspend fun getGelServices(hashMap: HashMap<String, String>): ApiResult<DynamicSingleResponseWithData<GelServicesData>> {
+        return safeApiCall { apiService.getGelServices(hashMap) }
+    }
+
+    suspend fun scheduleGelService(request: ScheduleGelServiceRequest): ApiResult<SingleResponse> {
+        return safeApiCall { apiService.scheduleGelService(request) }
+    }
+
 
 
 }

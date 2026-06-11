@@ -13,11 +13,103 @@
         layout="@layout/common_toolbar"
         />
 
-
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/mcv_side"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_13sdp"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginEnd="@dimen/_13sdp"
+        android:elevation="0dp"
+        app:cardCornerRadius="@dimen/_22sdp"
+        app:cardElevation="@dimen/_2sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/include_toolbar"
+        app:strokeWidth="0dp"
+        android:visibility="visible">
+
+        <FrameLayout
+            android:id="@+id/appointmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_42sdp"
+            android:background="#E1FBE8">
+
+            <!-- Sliding white pill -->
+            <View
+                android:id="@+id/selectionIndicator"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/_4sdp"
+                android:background="@drawable/circular_background"
+                android:backgroundTint="@color/white"
+                android:layout_gravity="start"
+                android:translationX="0dp"/>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+
+
+                <LinearLayout
+                    android:id="@+id/mcv_appointment_type_inperson"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/tvFront"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="0dp"
+                        android:layout_marginTop="0dp"
+                        android:fontFamily="@font/sfprodisplay_bold"
+                        android:text="Front"
+                        android:textColor="@color/green"
+                        android:textSize="@dimen/_12ssp" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/mcv_appointment_type_audiovideo"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvBack"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:layout_marginTop="0dp"
+                        android:fontFamily="@font/sfprodisplay_medium"
+                        android:text="Back"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="@dimen/_12ssp" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/frontCard"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/mcv_side"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/_80sdp"
         android:layout_marginStart="@dimen/_13sdp"
         android:layout_marginEnd="@dimen/_13sdp"
         android:layout_marginTop="@dimen/_25sdp"
@@ -26,6 +118,7 @@
         app:strokeColor="@color/color_primary"
         app:cardCornerRadius="@dimen/_8sdp"
         app:cardBackgroundColor="@null"
+        android:visibility="visible"
         >
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -52,20 +145,8 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/_13ssp"
                 android:fontFamily="@font/kameron_bold"
+                android:scaleType="centerCrop"
                 android:layout_marginTop="@dimen/_10sdp"
-                />
-            <TextView
-                android:id="@+id/tv2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv1"
-                android:layout_marginEnd="@dimen/_30sdp"
-                android:text="Your Hygiene Partner"
-                android:textColor="@color/white"
-                android:fontFamily="@font/inter_regular"
-                android:textSize="@dimen/_8ssp"
-                android:visibility="gone"
                 />
 
             <com.google.android.material.card.MaterialCardView
@@ -263,10 +344,11 @@
                 android:id="@+id/iv_qr"
                 android:layout_width="@dimen/_150sdp"
                 android:layout_height="@dimen/_40sdp"
-                app:layout_constraintTop_toBottomOf="@id/cl_details"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="@dimen/_15sdp"
+                app:layout_constraintBottom_toTopOf="@id/iv_bottom"
+                app:layout_constraintTop_toBottomOf="@id/cl_details"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:src="@drawable/ic_lineqr"/>
 
             <ImageView
@@ -274,7 +356,222 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_50sdp"
                 android:src="@drawable/ic_idcardbottom"
-                app:layout_constraintTop_toBottomOf="@id/iv_qr"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:scaleType="fitXY"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/backCard"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/_80sdp"
+        app:layout_constraintTop_toBottomOf="@id/mcv_side"
+        android:layout_marginStart="@dimen/_13sdp"
+        android:layout_marginEnd="@dimen/_13sdp"
+        android:layout_marginTop="@dimen/_25sdp"
+        app:cardElevation="@dimen/_3sdp"
+        app:strokeWidth="0dp"
+        app:strokeColor="@color/color_primary"
+        app:cardCornerRadius="@dimen/_8sdp"
+        app:cardBackgroundColor="@null"
+        android:visibility="gone"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <ImageView
+                android:id="@+id/tv1back"
+                android:layout_width="@dimen/_140sdp"
+                android:layout_height="@dimen/_50sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:tint="@color/color_90C01F"
+                android:src="@drawable/app_logo_white"
+                android:textColor="@color/color_90C01F"
+                android:textSize="@dimen/_13ssp"
+                android:fontFamily="@font/kameron_bold"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:scaleType="centerCrop"
+                />
+            <TextView
+                android:id="@+id/tv_designationback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/tv1back"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginStart="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_20sdp"
+                android:fontFamily="@font/kameron_bold"
+                android:text="TERMS &amp; CONDITIONS"
+                android:textSize="@dimen/_14ssp"
+                android:textColor="@color/black"
+                android:gravity="center"
+                />
+
+            <TextView
+                android:id="@+id/tv_conditions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/tv_designationback"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginStart="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_20sdp"
+                android:fontFamily="@font/inter_medium"
+                android:text="Hommlie powered by ADML Techno Services Pvt. Ltd. connects customers with trusted, professional, offering essential services at your doorstep, backend by a secure ID Card system for your safety"
+                android:textSize="@dimen/_10ssp"
+                android:justificationMode="inter_word"
+                android:textColor="@color/black"
+                />
+
+
+            <LinearLayout
+                android:id="@+id/l11"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/tv_conditions"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginStart="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_20sdp"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="•"
+                    android:textSize="@dimen/_10ssp"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="This ID Card is property of Hommlie and must be returned upon termination or upon request by the organisation."
+                    android:textSize="@dimen/_10ssp"
+                    android:justificationMode="inter_word"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/l2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/l11"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginStart="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_20sdp"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="•"
+                    android:textSize="@dimen/_10ssp"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="Unauthorised used or duplication of this ID Card is strictly prohibited and may result in disciplinary action."
+                    android:textSize="@dimen/_10ssp"
+                    android:justificationMode="inter_word"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_visit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/ll_social"
+                android:fontFamily="@font/inter_medium"
+                android:text="Visit our website :"
+                android:textSize="@dimen/_12ssp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:textColor="@color/text_black"
+                android:gravity="center"
+                app:layout_constraintStart_toStartOf="@id/tv_conditions"
+                app:layout_constraintBottom_toTopOf="@id/tv_weblink"
+                />
+            <TextView
+                android:id="@+id/tv_weblink"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@id/tv_hommlie_official"
+                android:fontFamily="@font/inter_medium"
+                android:text="@string/www_hommlie_com"
+                android:textSize="@dimen/_11ssp"
+                android:textColor="@color/color_90C01F"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/tv_visit"
+                app:layout_constraintStart_toStartOf="@id/tv_conditions"
+                />
+
+            <LinearLayout
+                android:id="@+id/ll_social"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:weightSum="3"
+                android:orientation="horizontal"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_13sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginBottom="@dimen/_5sdp"
+                app:layout_constraintBottom_toTopOf="@id/tv_hommlie_official"
+                >
+                <ImageView
+                    android:id="@+id/iv_twitter"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_twitter"/>
+                <ImageView
+                    android:id="@+id/iv_insta"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_insta"
+                    android:layout_marginStart="@dimen/_7sdp"/>
+                <ImageView
+                    android:id="@+id/iv_facebook"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_facebook"
+                    android:layout_marginStart="@dimen/_7sdp"/>
+                <ImageView
+                    android:id="@+id/iv_linkedin"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_linkedin"
+                    android:layout_marginStart="@dimen/_7sdp"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_hommlie_official"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/iv_bottomback"
+                android:fontFamily="@font/inter_medium"
+                android:text="hommlie_official"
+                android:textSize="@dimen/_12ssp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:textColor="@color/color_90C01F"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="@id/ll_social"
+                />
+
+            <ImageView
+                android:id="@+id/iv_bottomback"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_50sdp"
+                android:src="@drawable/ic_idcardbottom"
+                app:layout_constraintBottom_toBottomOf="parent"
                 android:scaleType="fitXY"
                 />
 

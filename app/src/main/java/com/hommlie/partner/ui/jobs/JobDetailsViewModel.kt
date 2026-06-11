@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.hommlie.partner.apiclient.ApiResult
 import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.model.DynamicSingleResponseWithData
+import com.hommlie.partner.model.GelServicesData
 import com.hommlie.partner.model.PaymentLinkResponse
 import com.hommlie.partner.model.PaymentStatus
+import com.hommlie.partner.model.ScheduleGelServiceRequest
 import com.hommlie.partner.model.SingleResponse
 import com.hommlie.partner.model.SingleResponseForOrderThree
 import com.hommlie.partner.repository.JobsRepository
@@ -429,6 +431,65 @@ class JobDetailsViewModel @Inject constructor(
     fun reset_uploadJobCardPhoto(){
         _uploadJobCardPhoto.value = UIState.Idle
     }
+
+    private val _uiStateCheckGelService = MutableStateFlow<UIState<GelServicesData>>(UIState.Idle)
+    val uiStateCheckGelService: StateFlow<UIState<GelServicesData>> = _uiStateCheckGelService
+
+    fun resetUIStateCheckGelService(){
+        _uiStateCheckGelService.value = UIState.Idle
+    }
+
+    fun checkGelService(hashMap: HashMap<String, String>) = viewModelScope.launch {
+        _uiStateCheckGelService.value = UIState.Loading
+        delay(1500)
+
+        when (val result = repository.getGelServices(hashMap)) {
+            is ApiResult.Success -> {
+                if (result.data.status == 1 && result.data.data!=null && !result.data.data.services.isNullOrEmpty()) {
+                    val data = result.data.data
+                    _uiStateCheckGelService.value = UIState.Success(data)
+                }else{
+                    _uiStateCheckGelService.value = UIState.Error(result.data.message?:"Unknown Error")
+                }
+            }
+            is ApiResult.NetworkError -> _uiStateCheckGelService.value = UIState.Error("No internet connection")
+            is ApiResult.Error ->{
+                _uiStateCheckGelService.value = UIState.Error(result.message)
+            }
+            is ApiResult.UnknownError -> _uiStateCheckGelService.value = UIState.Error(result.message)
+        }
+    }
+
+
+    private val _uiStateScheduleGelService = MutableStateFlow<UIState<SingleResponse>>(UIState.Idle)
+    val uiStateScheduleGelService: StateFlow<UIState<SingleResponse>> = _uiStateScheduleGelService
+
+    fun reset_uiStateScheduleGelService(){
+        _uiStateScheduleGelService.value = UIState.Idle
+    }
+
+    fun scheduleGelService(scheduleRequest: ScheduleGelServiceRequest) = viewModelScope.launch {
+        _uiStateScheduleGelService.value = UIState.Loading
+        delay(1500)
+
+        when (val result = repository.scheduleGelService(scheduleRequest)) {
+            is ApiResult.Success -> {
+                if (result.data.status == 1 ) {
+                    val data = result.data
+                    _uiStateScheduleGelService.value = UIState.Success(data)
+                }else{
+                    _uiStateScheduleGelService.value = UIState.Error(result.data.message?:"Unknown Error")
+                }
+            }
+            is ApiResult.NetworkError -> _uiStateScheduleGelService.value = UIState.Error("No internet connection")
+            is ApiResult.Error ->{
+                _uiStateScheduleGelService.value = UIState.Error(result.message)
+            }
+            is ApiResult.UnknownError -> _uiStateScheduleGelService.value = UIState.Error(result.message)
+        }
+    }
+
+
 
 
 }

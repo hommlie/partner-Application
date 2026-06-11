@@ -11,6 +11,7 @@ import com.hommlie.partner.model.ContactDetails
 import com.hommlie.partner.model.DailyPunchLogResponse
 import com.hommlie.partner.model.DynamicSingleResponseWithData
 import com.hommlie.partner.model.ExpenseHistory
+import com.hommlie.partner.model.GelServicesData
 import com.hommlie.partner.model.JobSummary
 import com.hommlie.partner.model.LeaderBoardData
 import com.hommlie.partner.model.Leaderboardd
@@ -23,6 +24,7 @@ import com.hommlie.partner.model.PaymentStatus
 import com.hommlie.partner.model.PersonalDetails
 import com.hommlie.partner.model.RewardItem
 import com.hommlie.partner.model.SalaryBreakDown
+import com.hommlie.partner.model.ScheduleGelServiceRequest
 import com.hommlie.partner.model.SigninSignup
 import com.hommlie.partner.model.SingleResponse
 import com.hommlie.partner.model.SingleResponseForOrderThree
@@ -225,5 +227,12 @@ interface ApiInterface {
         @Part("sr_ids") srIds : RequestBody,
         @Part profilePhoto: MultipartBody.Part?
         ) : Response<SingleResponse>
+
+    @POST("partner/getGelServices")
+    suspend fun getGelServices(@Body hashMap: HashMap<String,String>) : Response<DynamicSingleResponseWithData<GelServicesData>>
+
+    @POST("partner/generateGelServices")
+    suspend fun scheduleGelService(@Body request: ScheduleGelServiceRequest) : Response<SingleResponse>
+
 
 }

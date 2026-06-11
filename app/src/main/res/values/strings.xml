@@ -22,6 +22,7 @@
 
     <string name="layout_direction">0</string>
     <string name="let_s_collect_customer_details"><u>Let\'s collect the Customer Details</u></string>
+    <string name="www_hommlie_com"><u>www.hommlie.com</u></string>
 
     <string-array name="service_type_array">
         <item>B2B</item>
