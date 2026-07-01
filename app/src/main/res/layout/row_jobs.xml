@@ -665,7 +665,7 @@
                 <LinearLayout
                     android:id="@+id/cl2"
                     android:layout_width="0dp"
-                    android:layout_height="@dimen/_25sdp"
+                    android:layout_height="@dimen/_30sdp"
                     app:layout_constraintStart_toStartOf="@+id/tv_name"
                     app:layout_constraintTop_toBottomOf="@id/view_nav"
                     app:layout_constraintBottom_toBottomOf="parent"

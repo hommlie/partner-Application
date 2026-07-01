@@ -73,7 +73,7 @@ class NewJobsAdapter(private val onCheckOrders: (NewOrderData) -> Unit,
 //            tvCategory.text=job.categoryName?:"-"
 //            tvSubcategory.text=job.subcategoryName?:"-"
 //            tvUnit.text= "${job.variation}"     //"${job.quantity?.toFloat()?.toInt()?:"-"} ${job.quantityType?:""}"
-            tvServicetime.text="Time : ${job.desiredTime?:"-"} | ${job.desiredDate?:"-"}"
+            tvServicetime.text="Time : ${job.timeSlot?.label?:"-"} | ${job.desiredDate?:"-"}"
             tvOrderno.text=job.orderId.toString()
 
             if (job.orderStatus == "4") {

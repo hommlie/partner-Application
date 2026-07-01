@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.jobs.EntryUsedChemical"
+    android:background="@color/white"
+    >
+
+<!--    HeaderView-->
+    <View
+        android:id="@+id/status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@color/color_primary"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        app:layout_constraintTop_toBottomOf="@id/status_bar"
+        android:background="@color/color_primary"
+        >
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:src="@drawable/ic_back"
+            android:padding="@dimen/_5sdp"
+            android:visibility="gone"
+            android:tint="@color/white"
+            android:layout_marginStart="@dimen/_8sdp"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_back"
+            android:layout_marginStart="@dimen/_12sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_16ssp"
+            android:fontFamily="@font/inter_medium"
+            android:text="Chemical consumption"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+<!--    Center View -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_chemicals"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/cl_toolbar"
+        app:layout_constraintBottom_toTopOf="@id/cl_bottom"
+        android:background="#EEF0EE"
+        android:scrollbars="vertical"
+        android:overScrollMode="never"
+        tools:listitem="@layout/row_chemical_used"/>
+
+
+<!--    Bottom View-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/white"
+        >
+        <View
+            android:id="@+id/v1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/color_e6e6e6"
+            />
+        <TextView
+            android:id="@+id/tv_filled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_13sdp"
+            app:layout_constraintTop_toBottomOf="@id/v1"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="Filled chemicals"
+            android:textSize="@dimen/_12ssp"
+            android:textColor="@color/color_596a5c"
+            android:fontFamily="@font/inter_medium"
+            />
+        <TextView
+            android:id="@+id/tv_filled_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_13sdp"
+            app:layout_constraintTop_toBottomOf="@id/v1"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="0 of 0"
+            android:textSize="@dimen/_12ssp"
+            android:textColor="@color/text_black"
+            android:fontFamily="@font/inter_bold"
+            />
+        
+        <TextView
+            android:id="@+id/btn_submit"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_38sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_14sdp"
+            app:layout_constraintTop_toBottomOf="@id/tv_filled"
+            android:text="Save Chemical Usage"
+            android:fontFamily="@font/inter_medium"
+            android:textSize="@dimen/_13ssp"
+            android:textColor="@color/white"
+            android:background="@drawable/circular_background"
+            android:layout_marginStart="@dimen/_13sdp"
+            android:layout_marginEnd="@dimen/_13sdp"
+            android:gravity="center"
+            android:backgroundTint="@color/disable_btn"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,8 @@
 package com.hommlie.partner.utils
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
@@ -50,9 +52,12 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import android.view.Gravity
+import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.exifinterface.media.ExifInterface
+import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.snackbar.Snackbar
 import com.hommlie.partner.ui.login.Login
 import kotlinx.coroutines.Dispatchers
@@ -223,6 +228,46 @@ object CommonMethods {
             0
         }
     }
+    fun setSystemBarsColor(
+        activity: Activity,
+        statusBarColor: Int,
+        navBarColor: Int,
+        lightStatusIcons: Boolean = true,
+        lightNavIcons: Boolean = true
+    ) {
+        setStatusBarColor(
+            activity,
+            statusBarColor,
+            lightStatusIcons
+        )
+        setNavigationBarColor(
+            activity,
+            navBarColor,
+            lightNavIcons
+        )
+    }
+    fun setNavigationBarColor(activity: Activity, colorRes: Int, lightStatusBar: Boolean = true) {
+        val window = activity.window
+        val color = ContextCompat.getColor(activity, colorRes)
+
+        @Suppress("DEPRECATION")
+        if (Build.VERSION.SDK_INT >= 35) {
+            try {
+                window.setNavigationBarContrastEnforced(false)
+                window.setNavigationBarColor(color)
+            } catch (_: NoSuchMethodError) {
+                window.navigationBarColor = color
+            }
+        } else {
+            window.navigationBarColor = color
+        }
+
+        val controller = WindowInsetsControllerCompat(window, window.decorView)
+        controller.isAppearanceLightNavigationBars = lightStatusBar
+        controller.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+    }
+
 
 
 
@@ -988,6 +1033,43 @@ object CommonMethods {
         } else {
             String.format("%.1f", this)          // 12.5 -> 12.5
         }
+    }
+
+    fun showSuccessDialog(context: Context
+                          , msg: String
+                          ,onAnimationEnd: (() -> Unit)? = null)
+            : Dialog {
+        val dialog = Dialog(context)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dlg_success)
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(false)
+
+        dialog.findViewById<TextView>(R.id.tv_message)?.text = msg
+
+        val lottie = dialog.findViewById<LottieAnimationView>(R.id.lottieSuccess)
+        lottie?.playAnimation()
+
+        lottie?.addAnimatorListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                if (dialog.isShowing) dialog.dismiss()
+                onAnimationEnd?.invoke()
+            }
+        })
+
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val displayMetrics = context.resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels
+        val maxWidth = context.resources.getDimensionPixelSize(R.dimen.dialog_max_width)
+
+        val finalWidth = if (screenWidth > maxWidth) maxWidth else ViewGroup.LayoutParams.MATCH_PARENT
+
+        dialog.window?.setLayout(finalWidth, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog.window?.setGravity(Gravity.CENTER)
+
+        dialog.show()
+        return dialog
     }
 
 }

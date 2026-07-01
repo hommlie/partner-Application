@@ -13,6 +13,7 @@ import com.hommlie.partner.model.PaymentStatus
 import com.hommlie.partner.model.ScheduleGelServiceRequest
 import com.hommlie.partner.model.SingleResponse
 import com.hommlie.partner.model.SingleResponseForOrderThree
+import com.hommlie.partner.model.VisitChemicals
 import com.hommlie.partner.repository.JobsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -490,6 +491,39 @@ class JobDetailsViewModel @Inject constructor(
     }
 
 
+    private val _uiStateCheckVisitChemical = MutableStateFlow<UIState<List<VisitChemicals>>>(UIState.Idle)
+    val uiStateCheckVisitChemical: StateFlow<UIState<List<VisitChemicals>>> = _uiStateCheckVisitChemical
 
+    fun resetUIStateCheckVisitChemical(){
+        _uiStateCheckVisitChemical.value = UIState.Idle
+    }
+
+    fun checkVisitChemical(hashMap: HashMap<String, String>) = viewModelScope.launch {
+        _uiStateCheckVisitChemical.value = UIState.Loading
+        delay(1200)
+
+        when (val result = repository.getVisitChemicals(hashMap)) {
+            is ApiResult.Success -> {
+                if (result.data.status == 1 && result.data.data!=null && result.data.data.isNotEmpty()) {
+                    val data = result.data.data
+                    _uiStateCheckVisitChemical.value = UIState.Success(data)
+                }else{
+                    _uiStateCheckVisitChemical.value = UIState.Error(result.data.message?:"Unknown Error")
+                }
+            }
+            is ApiResult.NetworkError -> _uiStateCheckVisitChemical.value = UIState.Error("No internet connection")
+            is ApiResult.Error ->{
+                _uiStateCheckVisitChemical.value = UIState.Error(result.message)
+            }
+            is ApiResult.UnknownError -> _uiStateCheckVisitChemical.value = UIState.Error(result.message)
+        }
+    }
+
+    private val _enteredNewMobileNo = MutableStateFlow("")
+    val enteredNewMobileNo: StateFlow<String> = _enteredNewMobileNo
+
+    fun onNewMobileNumberChanged(number: String) {
+        _enteredNewMobileNo.value = number
+    }
 
 }

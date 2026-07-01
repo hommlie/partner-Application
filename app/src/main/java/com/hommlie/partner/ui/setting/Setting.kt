@@ -19,6 +19,7 @@ import com.hommlie.partner.ui.addwork.ActAddWork
 import com.hommlie.partner.ui.advance.Advance
 import com.hommlie.partner.ui.chemical.ActMyChemical
 import com.hommlie.partner.ui.chemical.ActNewChemical
+import com.hommlie.partner.ui.jobs.EntryUsedChemical
 import com.hommlie.partner.ui.login.Login
 import com.hommlie.partner.ui.profile.AboutMe
 import com.hommlie.partner.ui.profile.PaySlip

@@ -12,8 +12,6 @@
     <string name="note_nsignature_is_required_if_owner_is_not_there"><b><u>Note:</u></b>\nCustomer Signature is Required after service completion.</string>
 
 
-
-
     <string-array name="gender_array">
         <item>Male</item>
         <item>Female</item>

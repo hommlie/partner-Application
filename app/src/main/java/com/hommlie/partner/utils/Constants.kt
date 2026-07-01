@@ -9,4 +9,7 @@ object Constants {
     val BTN_INIT_RADIUS = dpToPx(2).toFloat()
     val BTN_MORPHED_RADIUS = dpToPx(100).toFloat()
     val MORPH_ANIM_DURATION = 500
+
+    const val EXTRA_CHEMICALS = "extra_chemicals"
+    const val CHEMICAL_UPDATED="chemical_updated"
 }

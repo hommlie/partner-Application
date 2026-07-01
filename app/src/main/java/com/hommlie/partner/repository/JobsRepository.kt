@@ -12,6 +12,9 @@ import com.hommlie.partner.model.PaymentStatus
 import com.hommlie.partner.model.ScheduleGelServiceRequest
 import com.hommlie.partner.model.SingleResponse
 import com.hommlie.partner.model.SingleResponseForOrderThree
+import com.hommlie.partner.model.TimeSlot
+import com.hommlie.partner.model.UpdateFilledChemicalRequestBody
+import com.hommlie.partner.model.VisitChemicals
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import javax.inject.Inject
@@ -87,6 +90,20 @@ class JobsRepository @Inject constructor(private val apiService : ApiInterface) 
         return safeApiCall { apiService.scheduleGelService(request) }
     }
 
+    suspend fun getVisitChemicals(hashMap: HashMap<String, String>): ApiResult<DynamicSingleResponseWithData<List<VisitChemicals>>> {
+        return safeApiCall { apiService.getVisitChemicals(hashMap) }
+    }
 
+    suspend fun updateFilledVisitChemical(request: UpdateFilledChemicalRequestBody): ApiResult<SingleResponse> {
+        return safeApiCall { apiService.updateFilledVisitChemical(request) }
+    }
+
+    suspend fun getTimeSlots(): ApiResult<DynamicSingleResponseWithData<List<TimeSlot>>> {
+        return safeApiCall { apiService.getTimeSlots() }
+    }
+
+    suspend fun rescheduleService(hashMap: HashMap<String, String>): ApiResult<SingleResponse> {
+        return safeApiCall { apiService.rescheduleService(hashMap) }
+    }
 
 }

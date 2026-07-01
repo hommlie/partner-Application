@@ -1,6 +1,7 @@
 package com.hommlie.partner.ui.jobs
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -30,6 +31,7 @@ import com.hommlie.partner.R
 import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.databinding.ActivityRaiseHelpBinding
 import com.hommlie.partner.model.NewOrderData
+import com.hommlie.partner.ui.jobs.reschedule.RescheduleJob
 import com.hommlie.partner.utils.CommonMethods
 import com.hommlie.partner.utils.CommonMethods.showToast
 import com.hommlie.partner.utils.PrefKeys
@@ -102,7 +104,7 @@ class RaiseHelp : AppCompatActivity() {
         binding.tvAddress.text = jobData.address
 
 
-        val helpOptions = listOf("Customer Not Answering", "Address / Location Issue","On-Site OTP issue","Equipment / Tools Problem", "Technical Error", "Service Not Feasible","Other")
+        val helpOptions = listOf("Reschedule Service","Customer Not Answering", "Address / Location Issue","On-Site OTP issue","Equipment / Tools Problem", "Technical Error", "Service Not Feasible","Other")
 
         val adapter = ArrayAdapter(this, R.layout.text_list_item, R.id.tv_text, helpOptions)
         binding.autoCompleteType.setAdapter(adapter)
@@ -132,12 +134,32 @@ class RaiseHelp : AppCompatActivity() {
 
         binding.btnSubmit.setOnClickListener {
             val selectedType = binding.autoCompleteType.text.toString()
-            val message = if (selectedType == "Other")
-                binding.etOtherReason.text.toString().trim()
-            else selectedType
 
-            if (message.isEmpty()) {
-                showToast("Please select or enter a help reason")
+            when {
+                selectedType.isEmpty() -> {
+                    showToast("Please select help type")
+                    return@setOnClickListener
+                }
+
+                selectedType == "Reschedule Service" -> {
+                    startActivity(
+                        Intent(this@RaiseHelp, RescheduleJob::class.java).apply {
+                            putExtra("visit_id", jobData.orderId.toString())
+                        }
+                    )
+                    finish()
+                    return@setOnClickListener
+                }
+            }
+
+            val message = if (selectedType == "Other") {
+                binding.etOtherReason.text.toString().trim()
+            } else {
+                selectedType
+            }
+
+            if (message.isBlank()) {
+                showToast("Please enter the reason")
                 return@setOnClickListener
             }
 

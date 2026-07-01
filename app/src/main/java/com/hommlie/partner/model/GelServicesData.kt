@@ -38,5 +38,9 @@ data class TimeSlot(
     @SerializedName("label")
     val label: String? = "",
 
-    var isSelected: Boolean  = false
+    @SerializedName("start_time")
+    val startHour: String? = null,
+
+    var isSelected: Boolean  = false,
+    var isEnabled: Boolean = true,
 )

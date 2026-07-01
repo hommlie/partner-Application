@@ -22,6 +22,7 @@ data class NewOrderData(
     @SerializedName("amount_to_collect") val price: String,
     @SerializedName("desired_date") val desiredDate: String,
     @SerializedName("desired_time") val desiredTime: String,
+    @SerializedName("timeslot") val timeSlot: TimeSlot ?= null,
     @SerializedName("address") val address: String,
     @SerializedName("address_lat_lng") val address_lat_lng: String,
     @SerializedName("order_status") val orderStatus: String?,
@@ -50,3 +51,4 @@ data class ServiceModel(
     var localImageUri: Uri? = null
 //    @SerializedName("IsQuestionsSubmitted") val isQuestionsSubmitted: Int
 )
+

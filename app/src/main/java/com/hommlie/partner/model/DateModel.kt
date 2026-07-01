@@ -8,3 +8,9 @@ data class DateModel(
     val day : String,
     var isSelected: Boolean = false
 )
+data class SelfGeneratedDateModel(
+    val display: String,
+    val date: LocalDate,
+    val day : String,
+    var isSelected: Boolean = false
+)

@@ -33,10 +33,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Lifecycle
@@ -68,6 +70,8 @@ import com.hommlie.partner.model.NewOrderData
 import com.hommlie.partner.model.ScheduleGelServiceRequest
 import com.hommlie.partner.model.ServiceModel
 import com.hommlie.partner.utils.CommonMethods
+import com.hommlie.partner.utils.Constants.CHEMICAL_UPDATED
+import com.hommlie.partner.utils.Constants.EXTRA_CHEMICALS
 import com.hommlie.partner.utils.KeyboardUtils
 import com.hommlie.partner.utils.PrefKeys
 import com.hommlie.partner.utils.ProgressDialogUtil
@@ -91,6 +95,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import javax.inject.Inject
 import kotlin.collections.orEmpty
+import kotlin.collections.set
 
 @AndroidEntryPoint
 class JobDetails : AppCompatActivity() {
@@ -265,6 +270,7 @@ class JobDetails : AppCompatActivity() {
         observeDuration()
         observeJobFinish()
         observeCheckGelService()
+        observeCheckVisitChemicals()
         observeReferal()
 
         isonsiteAnswersubmit.observe(this) { data ->
@@ -331,8 +337,13 @@ class JobDetails : AppCompatActivity() {
                             binding.swipebtn.text = "Completed"
                             binding.mcvSwipebtn.visibility = View.GONE
 
-//                            showPaymentSheetAfterCheckingPaymentStatus()
-                            showSignatureBottomsheet()
+                            // showSignatureBottomsheet()
+                            viewModel.checkVisitChemical(
+                                hashMapOf(
+                                    "user_id" to sharePreference.getString(PrefKeys.userId),
+                                    "visit_id" to jobData.orderId.toString()
+                                )
+                            )
                         } else {
                             binding.swipebtn.text = "Start Post-Inspection"
                             binding.swipebtn.showResultIcon(false, true)
@@ -342,8 +353,13 @@ class JobDetails : AppCompatActivity() {
                         binding.swipebtn.text = "Completed"
                         binding.mcvSwipebtn.visibility = View.GONE
 
-                       // showPaymentSheetAfterCheckingPaymentStatus()
-                        showSignatureBottomsheet()
+                        // showSignatureBottomsheet()
+                        viewModel.checkVisitChemical(
+                            hashMapOf(
+                                "user_id" to sharePreference.getString(PrefKeys.userId),
+                                "visit_id" to jobData.orderId.toString()
+                            )
+                        )
                     }
                     binding.statusAutocomplete.setText("Complete")
                 }else{
@@ -419,8 +435,13 @@ class JobDetails : AppCompatActivity() {
                         }
                     }
                     if (binding.swipebtn.text == "Finish Job"){
-//                        showPaymentSheetAfterCheckingPaymentStatus()
-                        showSignatureBottomsheet()
+                       // showSignatureBottomsheet()
+                        viewModel.checkVisitChemical(
+                            hashMapOf(
+                                "user_id" to sharePreference.getString(PrefKeys.userId),
+                                "visit_id" to jobData.orderId.toString()
+                            )
+                        )
                     }
 
                 } else {
@@ -504,7 +525,7 @@ class JobDetails : AppCompatActivity() {
         val binding = BottomsheetOtpBinding.inflate(LayoutInflater.from(context))
         dialog.setContentView(binding.root)
 
-        binding.tvNotedesc.text="${binding.tvNotedesc.text.toString()} ${jobData.mobile}."
+        binding.tvNotedesc.text="OTP sent to on customer's provided mobile number ${jobData.mobile}"
 
         observeEnteredOtp(binding)
 
@@ -573,11 +594,50 @@ class JobDetails : AppCompatActivity() {
             dialog.dismiss()
             finish()
         }
+        binding.tvClickHere.setOnClickListener {
+            if(binding.edtNewNumber.isVisible && binding.btnGetNewOTP.isVisible)return@setOnClickListener
+            binding.edtNewNumber.visibility = View.VISIBLE
+            binding.btnGetNewOTP.visibility = View.VISIBLE
+        }
+        binding.edtNewNumber.addTextChangedListener {
+            viewModel.onNewMobileNumberChanged(it.toString())
+        }
+
+        observeBtnGetNewOTpState(binding)
+
+        binding.btnGetNewOTP.setOnClickListener {
+            if (!binding.btnGetNewOTP.isEnabled) return@setOnClickListener
+            hashMap["alternate_mobile"] = viewModel.enteredNewMobileNo.value
+            binding.tvNotedesc.text="OTP sent to on customer's provided mobile number ${viewModel.enteredNewMobileNo.value}"
+            viewModel.sentOnsiteotp(hashMap)
+        }
+
 
         observeTimer(binding.tvTimer)
         setOtpListeners(binding)
         dialog.setCancelable(false)
         dialog.show()
+    }
+    private fun observeBtnGetNewOTpState(binding1: BottomsheetOtpBinding) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.enteredNewMobileNo.collect { mobileNo ->
+                    val isMobileNoValdid = mobileNo.length == 10
+                    binding1.btnGetNewOTP.apply {
+                        isEnabled = isMobileNoValdid
+                        backgroundTintList = ContextCompat.getColorStateList(
+                            this@JobDetails,
+                            if (isMobileNoValdid) R.color.color_primary else R.color.disable_btn
+                        )
+                    }
+                    if (isMobileNoValdid) {
+                        binding1.edtNewNumber.clearFocus()
+                        KeyboardUtils.hideKeyboard(binding1.edtNewNumber)
+                    }
+                    Log.d("Login", "Mobile No: ${mobileNo.length}")
+                }
+            }
+        }
     }
 
 
@@ -1757,5 +1817,60 @@ class JobDetails : AppCompatActivity() {
             }
         }
     }
+
+
+    private fun observeCheckVisitChemicals() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiStateCheckVisitChemical.collect { state ->
+                    when (state) {
+                        is UIState.Idle -> {
+                            ProgressDialogUtil.dismiss()
+                        }
+
+                        is UIState.Loading -> {
+                            ProgressDialogUtil.showAleartLoadingProgress(this@JobDetails,lifecycleScope,"Please wait!...","Please wait we are checking gel service")
+                        }
+
+                        is UIState.Success -> {
+                            ProgressDialogUtil.dismiss()
+                            viewModel.resetUIStateCheckVisitChemical()
+
+                            val json = Gson().toJson(state.data)
+
+                            Intent(this@JobDetails, EntryUsedChemical::class.java).apply {
+                                putExtra("visit_id",jobData.orderId.toString())
+                                putExtra(EXTRA_CHEMICALS, json)
+                            }.also {
+                                chemicalLauncher.launch(it)
+                            }
+
+                        }
+
+                        is UIState.Error -> {
+                            ProgressDialogUtil.dismiss()
+                            showSignatureBottomsheet()
+                            viewModel.resetUIStateCheckVisitChemical()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private val chemicalLauncher =
+
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+
+            if (it.resultCode == RESULT_OK) {
+
+                if (it.resultCode == RESULT_OK &&
+                    it.data?.getBooleanExtra(CHEMICAL_UPDATED, false) == true
+                ) {
+                    showSignatureBottomsheet()
+                }
+            }
+        }
 
 }

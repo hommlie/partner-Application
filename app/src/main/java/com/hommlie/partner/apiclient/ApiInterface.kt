@@ -28,9 +28,12 @@ import com.hommlie.partner.model.ScheduleGelServiceRequest
 import com.hommlie.partner.model.SigninSignup
 import com.hommlie.partner.model.SingleResponse
 import com.hommlie.partner.model.SingleResponseForOrderThree
+import com.hommlie.partner.model.TimeSlot
 import com.hommlie.partner.model.TravelLogResponse
+import com.hommlie.partner.model.UpdateFilledChemicalRequestBody
 import com.hommlie.partner.model.UserAboutDetailsData
 import com.hommlie.partner.model.VerifyOtp
+import com.hommlie.partner.model.VisitChemicals
 import com.hommlie.partner.model.WorkZones
 import com.hommlie.partner.model.WorkZonesData
 import com.hommlie.partner.ui.leaderboard.Leaderboard
@@ -234,5 +237,16 @@ interface ApiInterface {
     @POST("partner/generateGelServices")
     suspend fun scheduleGelService(@Body request: ScheduleGelServiceRequest) : Response<SingleResponse>
 
+    @POST("partner/getVisitChemicals")
+    suspend fun getVisitChemicals(@Body hashMap: HashMap<String,String>) : Response<DynamicSingleResponseWithData<List<VisitChemicals>>>
+
+    @POST("partner/consumeChemicals")
+    suspend fun updateFilledVisitChemical(@Body request: UpdateFilledChemicalRequestBody) : Response<SingleResponse>
+
+    @POST("partner/getTimeslots")
+    suspend fun getTimeSlots() : Response<DynamicSingleResponseWithData<List<TimeSlot>>>
+
+    @POST("partner/rescheduleVisit")
+    suspend fun rescheduleService(@Body hashMap: HashMap<String, String>) : Response<SingleResponse>
 
 }

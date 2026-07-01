@@ -4,10 +4,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="color_primary">#31975C</color>
     <color name="purple">#8A6FC5</color>
-    <color name="color_primary_light">#DAEBE1</color>
-    <color name="color_primary_dark">#31975C</color>
-    <color name="colorPrimaryDark">#31975C</color>
-    <color name="disable_btn">#BAE6CD</color>
+    <color name="color_primary_light">#D6EBE0</color>
+    <color name="color_primary_dark">#005135</color>
+    <color name="colorPrimaryDark">#005135</color>
+    <color name="disable_btn">#B7C7BD</color>
     <color name="nav_selector">#31975C</color>
     <color name="color_90C01F">#90C01F</color>
     <color name="red">#E61F4E</color>
@@ -69,7 +69,16 @@
     <color name="swipebtn_disabled_grey">#939393</color>
 
     <color name="progress_indicator_color">#FF6200EE</color>
-    <color name="progress_track_color">#33000000</color> <!-- 20% black -->
+    <color name="progress_track_color">#33000000</color>
+    <color name="color_e6e6e6">#E6E6E6</color>
+    <color name="color_d6ebe0">#D6EBE0</color> <!-- 20% black -->
+
+    <color name="stroke_unfocused">#C8D2CB</color>
+    <color name="stroke_focused">#2E7D5B</color>
+    <color name="text_available_blue">#3B6FA0</color>
+    <color name="text_unit_grey">#5A6B5D</color>
+    <color name="text_value_dark">#1A1C1A</color>
+    <color name="color_596a5c">#596A5C</color>
 
 
 </resources>

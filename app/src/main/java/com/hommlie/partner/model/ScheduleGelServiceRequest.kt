@@ -17,3 +17,24 @@ data class ScheduleService(
     @SerializedName("desired_timeslot")
     val desiredTimeslot: Int
 )
+
+data class UpdateFilledChemicalRequestBody(
+
+    @SerializedName("visit_id")
+    val visitId: Int = 0,
+
+    @SerializedName("user_id")
+    val userId: Int = 0,
+
+    @SerializedName("chemicals")
+    val filledList: List<UpdateFilledChemical>
+)
+
+data class UpdateFilledChemical(
+    @SerializedName("assigned_inventory_id")
+    val assignedInventoryId: Int,
+
+    @SerializedName("used_qty")
+    val usedQty: Double,
+
+)

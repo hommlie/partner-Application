@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:text="Date"
                 android:textSize="@dimen/_11ssp"
-                android:textColor="@color/Blackcolor"
+                android:textColor="@color/color_primary_dark"
                 android:gravity="center"
                 android:paddingBottom="@dimen/_2sdp"
                 android:fontFamily="@font/plusjakartasans_semi_bold"
