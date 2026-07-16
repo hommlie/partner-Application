@@ -78,7 +78,7 @@ interface ApiInterface {
     suspend fun getCmsData(): CmsPageResponse
 
     @POST("partner/newOrders")
-    suspend fun getOrderByOrderStatus(@Body map: HashMap<String, String>): NewOrder
+    suspend fun getOrderByOrderStatus(@Body map: HashMap<String, String>): Response<NewOrder>
 
     @POST("partner/dailyPuchLog")
     suspend fun dailyPucchLog(@Body map: HashMap<String, String>): DailyPunchLogResponse

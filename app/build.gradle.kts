@@ -16,8 +16,8 @@ android {
         applicationId = "com.hommlie.partner"
         minSdk = 26
         targetSdk = 36
-        versionCode = 28
-        versionName = "3.7"
+        versionCode = 29
+        versionName = "3.8"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

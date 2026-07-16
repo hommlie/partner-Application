@@ -53,8 +53,6 @@
                 android:orientation="horizontal"
                 android:weightSum="2">
 
-
-
                 <LinearLayout
                     android:id="@+id/mcv_appointment_type_inperson"
                     android:layout_width="0dp"

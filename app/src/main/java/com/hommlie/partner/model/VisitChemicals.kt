@@ -4,10 +4,10 @@ import com.google.gson.annotations.SerializedName
 
 data class VisitChemicals(
 
-    @SerializedName("id")
+    @SerializedName("inventory_id")
     val id: Int,
 
-    @SerializedName("inventory_id")
+    @SerializedName("id")
     val inventoryId: Int,
 
     @SerializedName("chemical_name")

@@ -153,17 +153,30 @@ class HomeViewModel  @Inject constructor(
             hashMap["user_id"] = userId
             hashMap["order_status"] = "3"
 
-            try {
-                val response = repository.getOrderByOrderStatus(hashMap)
-                    val restResponse = response.data
-                    if (restResponse != null && response.status == 1 && restResponse.isNotEmpty() && restResponse.size>=1) {
-                        _isOnsiteService.value = true //UIState.Success(true)
+            when (val response = repository.getOrderByOrderStatus(hashMap)) {
+
+                is ApiResult.Success -> {
+
+                    val result = response.data
+
+                    if (result.status == 1 && !result.data.isNullOrEmpty()) {
+                        _isOnsiteService.value = true
                     } else {
-                        _isOnsiteService.value = false //UIState.Success(false)
+                        _isOnsiteService.value = false
                     }
-            } catch (e: Exception) {
-                _isOnsiteService.value = false  //UIState.Success(false)
-//                _isOnsiteState.value = UIState.Error(e.localizedMessage ?: "Unexpected error")
+                }
+
+                is ApiResult.Error -> {
+                    _isOnsiteService.value = false
+                }
+
+                is ApiResult.NetworkError -> {
+                    _isOnsiteService.value = false
+                }
+
+                is ApiResult.UnknownError -> {
+                    _isOnsiteService.value = false
+                }
             }
         }
     }
@@ -174,7 +187,7 @@ class HomeViewModel  @Inject constructor(
             HomeOptionModel(
                 id = "1",
                 name = "Travel\nLogs",
-                iconUrl = R.drawable.ic_travel  //"https://example.com/icons/bike_service.png"
+                iconUrl = R.drawable.ic_travel
             ),
             HomeOptionModel(
                 id = "2",

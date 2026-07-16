@@ -48,7 +48,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:textSize="@dimen/_10ssp"
                 android:fontFamily="@font/inter_bold"
-                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginStart="@dimen/_1sdp"
                 />
 
             <ImageView

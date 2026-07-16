@@ -17,6 +17,9 @@ data class Chemical(
     @SerializedName("id")
     val id: Int,
 
+    @SerializedName("chemicalName")
+    val chemicalName: String,
+
     @SerializedName("category")
     val category: String,
 

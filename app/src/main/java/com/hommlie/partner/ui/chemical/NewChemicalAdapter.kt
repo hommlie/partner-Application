@@ -42,7 +42,7 @@ class NewChemicalAdapter(
 
             binding.tvSno.text = "${position + 1}."
             binding.tvCategory.text = item.category
-            binding.tvChemicalName.text = item.subCategory
+            binding.tvChemicalName.text = item.chemicalName
             binding.tvQuantity.text = "${item.quantity} ${item.type}"
             binding.tvBatchno.text = "${item.batch_number?:"-"}"
             binding.tvGiven.text = item.createdAt.toFormattedDate()

@@ -1,8 +1,10 @@
 package com.hommlie.partner.repository
 
+import com.google.android.gms.common.api.Api
 import com.hommlie.partner.apiclient.ApiInterface
 import com.hommlie.partner.apiclient.ApiResult
 import com.hommlie.partner.apiclient.safeApiCall
+import com.hommlie.partner.model.AdvanceRequests
 import com.hommlie.partner.model.DynamicSingleResponseWithData
 import com.hommlie.partner.model.GelServicesData
 import com.hommlie.partner.model.NewOrder
@@ -21,8 +23,8 @@ import javax.inject.Inject
 
 class JobsRepository @Inject constructor(private val apiService : ApiInterface) {
 
-    suspend fun getNewJobs(map : HashMap<String,String>) : NewOrder{
-        return apiService.getOrderByOrderStatus(map)
+    suspend fun getNewJobs(map : HashMap<String,String>) : ApiResult<NewOrder>{
+        return safeApiCall { apiService.getOrderByOrderStatus(map) }
     }
 
     suspend fun getQuestions( map: HashMap<String, String>): OrderQuestions {

@@ -73,15 +73,6 @@ class ActTodaysJob : AppCompatActivity() {
     private var title = ""
     private var parentDate = ""
 
-    // Flags & temp storage used for merging multi-call results
-    private var newJobLoaded = false
-    private var pendingLoaded = false
-    private var yesterdayJobLoaded = false
-    private var completedLoaded = false
-    private var incompletedLoaded = false
-    private val tempAllList = mutableListOf<NewOrderData>()
-
-    private var currentType = JobType.PENDING
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -190,173 +181,36 @@ class ActTodaysJob : AppCompatActivity() {
 
                         is UIState.Success -> {
                             ProgressDialogUtil.dismiss()
-                            handleJobResponse(state.data.data ?: emptyList())
                             binding.swipeRefresh.isRefreshing = false
-                            viewModel.resetGetNewJobs()
+
+                            allJobsList.clear()
+                            allJobsList.addAll(state.data)
+
+                            updateUI()
                         }
 
                         is UIState.Error -> {
                             ProgressDialogUtil.dismiss()
-                            handleJobError(state.message)
                             binding.swipeRefresh.isRefreshing = false
-                            viewModel.resetGetNewJobs()
+
+                            if (CommonMethods.handleSessionExpired(state.message,this@ActTodaysJob,sharePreference)) {
+                                return@collectLatest
+                            }
+
+                            Toast.makeText(
+                                this@ActTodaysJob,
+                                state.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            allJobsList.clear()
+                            updateUI()
                         }
 
                         is UIState.Idle -> Unit
                     }
                 }
             }
-        }
-    }
-
-    // --- Job response handling ---
-    private fun handleJobResponse(newList: List<NewOrderData>) {
-        when (currentType) {
-            JobType.COMPLETED -> {
-                allJobsList.apply {
-                    clear()
-                    addAll(newList)
-                }
-                updateUI()
-            }
-
-            JobType.PENDING -> handlePendingSequence(newList)
-
-            JobType.ALL -> handleAllSequence(newList)
-        }
-    }
-
-    private fun handlePendingSequence(newList: List<NewOrderData>) {
-        // Sequence: pending (order_status=3) first then new (order_status=2)
-        if (!pendingLoaded) {
-            pendingLoaded = true
-            tempAllList.addAll(newList)
-            // not final yet — wait for new jobs
-            return
-        }
-
-        if (!newJobLoaded) {
-            newJobLoaded = true
-            tempAllList.addAll(newList)
-        }
-
-        if (!yesterdayJobLoaded){
-            yesterdayJobLoaded = true
-            tempAllList.addAll(newList)
-        }
-
-        // both arrived → finalize
-        if (pendingLoaded && yesterdayJobLoaded && newJobLoaded) {
-            allJobsList.apply {
-                clear()
-                addAll(tempAllList.distinctBy { it.orderId })
-            }
-            updateUI()
-            // reset for next time
-            resetFlags(JobType.PENDING)
-        }
-    }
-
-    private fun handleAllSequence(newList: List<NewOrderData>) {
-        // Sequence:  pending -> yesterday -> new -> completed
-        when {
-            !pendingLoaded -> {
-                pendingLoaded = true
-                tempAllList.addAll(newList)
-                return
-            }
-
-            !newJobLoaded -> {
-                newJobLoaded = true
-                tempAllList.addAll(newList)
-                return
-            }
-
-            !yesterdayJobLoaded -> {
-                yesterdayJobLoaded = true
-                tempAllList.addAll(newList)
-                return
-            }
-
-            !completedLoaded -> {
-                completedLoaded = true
-                tempAllList.addAll(newList)
-            }
-            !incompletedLoaded ->{
-                incompletedLoaded = true
-                tempAllList.addAll(newList)
-            }
-
-        }
-
-        if (pendingLoaded && yesterdayJobLoaded && newJobLoaded && completedLoaded && incompletedLoaded) {
-            allJobsList.apply {
-                clear()
-                addAll(tempAllList.distinctBy { it.orderId })
-            }
-            updateUI()
-            resetFlags(JobType.ALL)
-        }
-    }
-
-    private fun handleJobError(message: String) {
-        if (message.equals("User Not Found", true) || message.equals("Employee Not Found", true)) {
-            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
-            CommonMethods.logOut(sharePreference, this)
-            return
-        }
-
-        Log.w("ActTodaysJob", "Error: $message")
-
-        when (currentType) {
-            JobType.COMPLETED -> {
-                allJobsList.clear()
-                updateUI()
-            }
-
-            JobType.PENDING -> {
-                if (!pendingLoaded) pendingLoaded = true
-                else if (!yesterdayJobLoaded) yesterdayJobLoaded = true
-                else if (!newJobLoaded) newJobLoaded = true
-                // finalize if both marked
-                if (pendingLoaded && yesterdayJobLoaded && newJobLoaded) {
-                    allJobsList.apply {
-                        clear()
-                        addAll(tempAllList.distinctBy { it.orderId })
-                    }
-                    updateUI()
-                    resetFlags(JobType.PENDING)
-                }
-            }
-
-            JobType.ALL -> {
-                if (!pendingLoaded) pendingLoaded = true
-                else if (!yesterdayJobLoaded) yesterdayJobLoaded = true
-                else if (!newJobLoaded) newJobLoaded = true
-                else if (!completedLoaded) completedLoaded = true
-                else if (!incompletedLoaded) incompletedLoaded = true
-
-                if (pendingLoaded && yesterdayJobLoaded && newJobLoaded && completedLoaded && incompletedLoaded) {
-                    allJobsList.apply {
-                        clear()
-                        addAll(tempAllList.distinctBy { it.orderId })
-                    }
-                    updateUI()
-                    resetFlags(JobType.ALL)
-                }
-            }
-        }
-    }
-
-    // --- Utilities ---
-    private fun resetFlags(type: JobType) {
-        newJobLoaded = false
-        yesterdayJobLoaded = false
-        pendingLoaded = false
-        tempAllList.clear()
-        if (type == JobType.ALL){
-            completedLoaded = false
-            incompletedLoaded = false
         }
     }
 
@@ -462,38 +316,32 @@ class ActTodaysJob : AppCompatActivity() {
 
     // Main loader: we intentionally call the sequence with small delays so ViewModel emissions are easier to merge.
     private fun loadJobs(type: JobType) {
-        currentType = type
-        resetFlags(type)
 
         lifecycleScope.launch {
             when (type) {
                 JobType.COMPLETED -> {
                     hashMapCompletedJob["date"] = parentDate
-                    viewModel.getNewJobs(hashMapCompletedJob)
+                    viewModel.loadCompletedJobs(completedMap = hashMapCompletedJob)
                 }
 
                 JobType.PENDING -> {
-                    // pending(3) then new(2)
-                    viewModel.getNewJobs(hashMapPendingJob)
-                    delay(250)
-                    viewModel.getNewJobs(hashMapYesterdayDispatchedJob)
-                    delay(250)
-                    viewModel.getNewJobs(hashMapNewJob)
+                    viewModel.loadPendingJobs(
+                        pendingMap = hashMapPendingJob,
+                        yesterdayMap = hashMapYesterdayDispatchedJob,
+                        todayMap = hashMapNewJob
+                    )
                 }
 
                 JobType.ALL -> {
-                    // pending(3) -> new(2) -> completed(4)
-                    viewModel.getNewJobs(hashMapPendingJob)
-                    delay(250)
-                    viewModel.getNewJobs(hashMapYesterdayDispatchedJob)
-                    delay(250)
-                    viewModel.getNewJobs(hashMapNewJob)
-                    delay(250)
                     hashMapCompletedJob["date"] = parentDate
-                    viewModel.getNewJobs(hashMapCompletedJob)
-                    delay(250)
                     hashMapInCompletedJob["date"] = parentDate
-                    viewModel.getNewJobs(hashMapInCompletedJob)
+                    viewModel.loadAllJobs(
+                        pendingMap = hashMapPendingJob,
+                        yesterdayMap = hashMapYesterdayDispatchedJob,
+                        todayMap = hashMapNewJob,
+                        completedMap = hashMapCompletedJob,
+                        incompletedMap = hashMapInCompletedJob
+                    )
                 }
             }
         }

@@ -1072,4 +1072,29 @@ object CommonMethods {
         return dialog
     }
 
+    fun handleSessionExpired(message: String,context: Context,sharePreference : SharePreference): Boolean {
+
+        return if (
+            message.equals("User Not Found", true) ||
+            message.equals("Employee Not Found", true)
+        ) {
+
+            Toast.makeText(
+                context,
+                "Session expired. Please log in again.",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            logOut(
+                sharePreference,
+                context
+            )
+
+            true
+
+        } else {
+            false
+        }
+    }
+
 }

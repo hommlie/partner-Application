@@ -37,8 +37,8 @@ class HomeRepository @Inject constructor( private val apiService: ApiInterface, 
         return apiService.goOnlineOfflineEmp(map)
     }
 
-    suspend fun getOrderByOrderStatus( map: HashMap<String, String>): NewOrder{
-        return apiService.getOrderByOrderStatus(map)
+    suspend fun getOrderByOrderStatus( map: HashMap<String, String>): ApiResult<NewOrder>{
+        return safeApiCall { apiService.getOrderByOrderStatus(map)}
     }
 
     suspend fun dailyPuchLog( map: HashMap<String, String>): DailyPunchLogResponse{

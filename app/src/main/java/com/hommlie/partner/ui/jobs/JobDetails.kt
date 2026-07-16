@@ -527,6 +527,17 @@ class JobDetails : AppCompatActivity() {
 
         binding.tvNotedesc.text="OTP sent to on customer's provided mobile number ${jobData.mobile}"
 
+        /**
+         * Send otp to alternate mobile number only for B2B Visits
+         */
+        if (jobData.orderMode == 1){
+            binding.tvClickHere.visibility = View.VISIBLE
+            binding.tvClickhereDesc.visibility = View.VISIBLE
+        }else{
+            binding.tvClickHere.visibility = View.GONE
+            binding.tvClickhereDesc.visibility = View.GONE
+        }
+
         observeEnteredOtp(binding)
 
         val swipeBtn = binding.swipebtn
