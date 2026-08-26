@@ -853,20 +853,24 @@ class Home : Fragment() {
             binding.tv2.text = sharePreference.getString(PrefKeys.lastSwipe).substringBefore(" ")+"\n"+sharePreference.getString(PrefKeys.lastSwipe).substringAfter(" ")
 
 
-            viewModel.getDailyPuchLog(requireContext())
+            if (isInternetAvailable(requireContext())){
+                viewModel.getDailyPuchLog(requireContext())
 
-            lifecycleScope.launch {
-                delay(500)
-                viewModel.getUserJobData(requireContext())
+                lifecycleScope.launch {
+                    delay(500)
+                    viewModel.getUserJobData(requireContext())
+                }
+            }else{
+                CommonMethods.showConfirmationDialog(
+                    requireContext(),
+                    "Alert!",
+                    "No internet connection",
+                    false,
+                    false,
+                    "Retry",
+                    "Cancel"
+                ) {}
             }
-
-//            if (sharePreference.getString(PrefKeys.Punch_Status) == "1") {
-//                lifecycleScope.launch {
-//                    delay(500)
-//                    viewModel.getOnsiteJob(requireContext(),sharePreference.getString(PrefKeys.userId))
-//                }
-//            }
-
         }
 
 
@@ -1273,9 +1277,11 @@ class Home : Fragment() {
                             }
                             viewModel.reset_jobDataUiState()
                         }
-                        is UIState.Error ->{
+                        is UIState.Error -> {
                             ProgressDialogUtil.dismiss()
+
                             if (state.message == "No internet connection") {
+
                                 CommonMethods.showConfirmationDialog(
                                     requireContext(),
                                     "Alert!",
@@ -1285,12 +1291,20 @@ class Home : Fragment() {
                                     "Retry",
                                     "Cancel"
                                 ) {
-                                    it.dismiss()
-                                    lifecycleScope.launch {
-                                        delay(500)
-                                        viewModel.getUserJobData(requireContext())
-                                    }
+                                   it.dismiss()
+
+//                                    lifecycleScope.launch {
+//                                        delay(500)
+//
+//                                        if (isAdded && viewLifecycleOwner.lifecycle.currentState.isAtLeast(
+//                                                Lifecycle.State.STARTED
+//                                            )
+//                                        ) {
+//                                            viewModel.getUserJobData(requireContext())
+//                                        }
+//                                    }
                                 }
+
                             }
                             viewModel.reset_jobDataUiState()
                         }

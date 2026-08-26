@@ -176,14 +176,14 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""
+                            android:text="Type"
                             android:textColor="#66000000"
                             android:singleLine="true"
                             android:textSize="@dimen/_9ssp"
                             android:layout_marginTop="@dimen/_2sdp"
                             />
                         <TextView
-                            android:id="@+id/tv_unit"
+                            android:id="@+id/tv_order_mode"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text=""
@@ -311,7 +311,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:text="View Details"
-                        android:textColor="@color/select_icon"
+                        android:textColor="@color/purple"
                         android:textSize="@dimen/_11ssp"
                         android:layout_marginTop="@dimen/_2sdp"
                         android:fontFamily="@font/sfprodisplay_medium"

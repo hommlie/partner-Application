@@ -454,6 +454,9 @@ object CommonMethods {
         show_no_btn : Boolean,
         positiveText: String?="Yes",
         negativeText: String?="No",
+        onNegativeClick: (DialogInterface) -> Unit = { dialog ->
+            dialog.dismiss()
+        },
         onConfirm: (DialogInterface) -> Unit
     ) {
         val builder = AlertDialog.Builder(context)
@@ -466,7 +469,7 @@ object CommonMethods {
 
         if (show_no_btn) {
             builder.setNegativeButton(negativeText) { dialog, _ ->
-                dialog.dismiss()
+                onNegativeClick(dialog)
             }
         }
 

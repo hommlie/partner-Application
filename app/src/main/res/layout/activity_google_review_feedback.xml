@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.GoogleReviewFeedback"
+    android:background="#0A0814">
+
+    <View
+        android:id="@+id/view_status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/color_primary"
+        />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        app:layout_constraintTop_toBottomOf="@id/view_status_bar"
+        android:background="@color/color_primary"
+        >
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/_12sdp"
+            android:layout_marginBottom="@dimen/_12sdp"
+            app:layout_constraintDimensionRatio="1:1"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:clickable="true"
+            android:padding="@dimen/_3sdp"
+            android:src="@drawable/ic_back"
+            app:tint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:fontFamily="@font/plusjakartasans_semi_bold"
+            android:paddingBottom="@dimen/_5sdp"
+            android:text="Google Review"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_15ssp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_back"
+            android:layout_marginStart="@dimen/_12sdp"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/cl_toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/_30sdp">
+
+
+    <TextView
+        android:id="@+id/thankyou"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/mcv_feedback_qr_code"
+        app:layout_constraintEnd_toEndOf="@id/mcv_feedback_qr_code"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="Thank You!"
+        android:textSize="@dimen/_40ssp"
+        android:textColor="@color/white"
+        android:fontFamily="@font/kameron_bold"
+        />
+    <TextView
+        android:id="@+id/ask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/thankyou"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_1sdp"
+        android:textSize="@dimen/_12ssp"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:text="Your feedback helps us serve you better."/>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/mcv_feedback_qr_code"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ask"
+        android:layout_marginTop="@dimen/_15sdp"
+        app:layout_constraintWidth_percent="0.5"
+        app:layout_constraintDimensionRatio="1:1"
+        app:cardElevation="@dimen/_5sdp"
+        android:layout_marginStart="@dimen/_2sdp"
+        app:cardCornerRadius="@dimen/_10sdp"
+        app:cardBackgroundColor="@color/ub__transparent"
+        app:strokeWidth="0dp"
+        >
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/google_review_qr_code"
+            />
+    </com.google.android.material.card.MaterialCardView>
+    <ImageView
+        android:layout_width="@dimen/_70sdp"
+        android:layout_height="@dimen/_70sdp"
+        app:layout_constraintTop_toTopOf="@id/mcv_feedback_qr_code"
+        app:layout_constraintBottom_toBottomOf="@id/mcv_feedback_qr_code"
+        app:layout_constraintStart_toStartOf="@id/mcv_feedback_qr_code"
+        app:layout_constraintEnd_toEndOf="@id/mcv_feedback_qr_code"
+        android:src="@drawable/ic_google_g"/>
+    <TextView
+        android:id="@+id/scan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/mcv_feedback_qr_code"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="@dimen/_17ssp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:fontFamily="@font/kameron_bold"
+        android:text="Scan the QR code and\nLeave a review on"/>
+
+
+    <ImageView
+        android:id="@+id/iv_google"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_60sdp"
+        app:layout_constraintTop_toBottomOf="@id/scan"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/ic_google"
+        app:layout_constraintWidth_percent="0.6"
+        android:scaleType="centerCrop"
+        android:layout_marginTop="@dimen/_20sdp"
+        />
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_30sdp"
+            app:layout_constraintTop_toBottomOf="@id/iv_google"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:src="@drawable/ic_stars"
+            app:layout_constraintWidth_percent="0.36"
+            android:layout_marginTop="@dimen/_10sdp"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -67,11 +67,14 @@ import com.hommlie.partner.databinding.BottomsheetSignatureBinding
 import com.hommlie.partner.databinding.BottomsheetreferBinding
 import com.hommlie.partner.model.GelServicesData
 import com.hommlie.partner.model.NewOrderData
+import com.hommlie.partner.model.RatingOption
 import com.hommlie.partner.model.ScheduleGelServiceRequest
 import com.hommlie.partner.model.ServiceModel
+import com.hommlie.partner.ui.capturephoto.CaptureImage
 import com.hommlie.partner.utils.CommonMethods
 import com.hommlie.partner.utils.Constants.CHEMICAL_UPDATED
 import com.hommlie.partner.utils.Constants.EXTRA_CHEMICALS
+import com.hommlie.partner.utils.ExtentionMethods.finishSlideActivity
 import com.hommlie.partner.utils.KeyboardUtils
 import com.hommlie.partner.utils.PrefKeys
 import com.hommlie.partner.utils.ProgressDialogUtil
@@ -132,6 +135,15 @@ class JobDetails : AppCompatActivity() {
     val hashMap =  HashMap<String,String>()
 
     var isComeFromHome : Int = 0
+    private lateinit var selfieImageUri: Uri
+
+    // One entry per rating option, in order 1..5
+    private lateinit var ratingOptions: List<RatingOption>
+    private var selectedIndex: Int = -1   // -1 = nothing selected yet
+
+    private var feedbackPhotoUri: Uri? = null
+
+    private var feedbackBottomSheetBinding: BottomsheetFeetbackBinding? = null
 
     companion object{
         var isonsiteAnswersubmit = MutableLiveData<Int?>()
@@ -302,7 +314,11 @@ class JobDetails : AppCompatActivity() {
 
         btnSubmit.setOnClickListener {
             alertDialog.dismiss()
-            takeSelfie()
+            binding.root.postDelayed({
+                if (!isFinishing && !isDestroyed) {
+                    takeSelfie()
+                }
+            }, 300)
         }
 
 //        orderLastUpdated_at = intent.getStringExtra("updated_at").toString()
@@ -887,7 +903,12 @@ class JobDetails : AppCompatActivity() {
 
         binding.tvSkip.setOnClickListener {
             dialog.dismiss()
-            showFeedbackBottomsheet(this@JobDetails)
+            if (jobData.orderMode == 0){
+                showFeedbackBottomsheet(this@JobDetails)
+            }else{
+                finish()
+                finishSlideActivity()
+            }
         }
         binding.mcvSwipebtn.setOnClickListener {
             val selectedId = binding.radioGroup.checkedRadioButtonId
@@ -918,17 +939,175 @@ class JobDetails : AppCompatActivity() {
         val binding = BottomsheetFeetbackBinding.inflate(LayoutInflater.from(context))
         dialog.setContentView(binding.root)
 
+        feedbackBottomSheetBinding = binding
+
         binding.tvSkip.setOnClickListener {
             dialog.dismiss()
             finish()
+            finishSlideActivity()
         }
-        binding.mcvSwipebtn.setOnClickListener {
+        binding.btnSubmitFeedback.setOnClickListener {
+            if (selectedIndex == -1) return@setOnClickListener
+
+            val chosen = ratingOptions[selectedIndex]
+
+            // TODO: replace with your real submit call, e.g.:
+            // viewModel.submitCustomerFeedback(orderId = orderId, rating = chosen.ratingValue, key = chosen.ratingKey)
+
+            Toast.makeText(
+                this,
+                "Feedback submitted: ${chosen.ratingValue} - ${chosen.ratingKey}",
+                Toast.LENGTH_SHORT
+            ).show()
+
             dialog.dismiss()
             finish()
+            finishSlideActivity()
+        }
+        binding.mcvFeedbackPhoto.setOnClickListener {
+            takeFeedbackPhoto()
         }
         setupRatingSelector(binding)
         dialog.setCancelable(false)
+        dialog.setOnDismissListener {
+            feedbackBottomSheetBinding = null
+        }
         dialog.show()
+    }
+    private fun takeFeedbackPhoto() {
+        showImageSourceDialogForFeedbackPhoto()
+    }
+    private fun showImageSourceDialogForFeedbackPhoto() {
+
+        val options = arrayOf("Take Photo", "Choose from Gallery", "Cancel")
+
+        AlertDialog.Builder(this)
+            .setTitle("Select Option")
+            .setItems(options) { dialog, which ->
+                when (which) {
+                    0 -> {
+                        dialog.dismiss()
+                        if (!CommonMethods.isCameraPermissionGranted(this)) {
+                            CommonMethods.requestCameraPermission(this)
+                        } else if (CommonMethods.isCameraPermissionDinead(this)) {
+                            showCameraPermissionDialog(this)
+                        } else {
+                            openOurCameraForFeedbackPhoto()
+                        }
+                    }
+                    1 -> {
+                        dialog.dismiss()
+                        openGalleryForFeedBackPhoto()
+                    }
+                    else -> dialog.dismiss()
+                }
+            }
+            .setOnDismissListener{
+
+            }
+            .show()
+    }
+    private fun openOurCameraForFeedbackPhoto() {
+
+        val intent = Intent(this, CaptureImage::class.java).apply {
+            putExtra(
+                CaptureImage.EXTRA_CAPTURE_MODE,
+                CaptureImage.IS_TAKE_PHOTO
+            )
+        }
+        feedbackPhotoLauncher.launch(intent)
+    }
+    private val feedbackPhotoLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+
+            if (result.resultCode != Activity.RESULT_OK) {
+                return@registerForActivityResult
+            }
+
+            val uriString =
+                result.data?.getStringExtra(
+                    CaptureImage.EXTRA_RESULT_URI
+                )
+
+            if (uriString.isNullOrEmpty()) {
+                Log.e(
+                    "Feedback Camera",
+                    "CaptureImage returned empty URI"
+                )
+                return@registerForActivityResult
+            }
+
+            try {
+
+                val uri = Uri.parse(uriString)
+
+                feedbackPhotoUri = uri
+
+                feedbackBottomSheetBinding?.let { binding ->
+                    showFeedbackPhoto(binding, uri)
+                }
+                /*
+                 * Temporary file was created by CaptureImage.
+                 * We don't need it anymore after decoding.
+                 */
+//                contentResolver.delete(uri, null, null)
+
+            } catch (e: Exception) {
+
+                Log.e(
+                    "Feedback Camera",
+                    "Failed to read Feedback image",
+                    e
+                )
+            }
+        }
+    private fun openGalleryForFeedBackPhoto() {
+        galleryPickerLauncherForFeedbackPhoto.launch("image/*")
+    }
+
+    private val galleryPickerLauncherForFeedbackPhoto =
+        registerForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) { uri ->
+
+            uri ?: return@registerForActivityResult
+
+            try {
+                feedbackPhotoUri = uri
+
+                feedbackBottomSheetBinding?.let { binding ->
+                    showFeedbackPhoto(binding, uri)
+                }
+
+            } catch (e: Exception) {
+
+                Log.e(
+                    "Feedback Gallery",
+                    "Failed to load Feedback image",
+                    e
+                )
+
+                Toast.makeText(
+                    this,
+                    "Unable to load image",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    private fun showFeedbackPhoto(
+        feedbackBinding: BottomsheetFeetbackBinding,
+        uri: Uri
+    ) {
+        if (feedbackBinding.llPlaceHolder.isVisible){
+            feedbackBinding.llPlaceHolder.visibility = View.GONE
+            feedbackBinding.ivFeedbackImage.visibility = View.VISIBLE
+        }
+//        feedbackBinding.ivFeedbackImage.setImageBitmap(bitmap)
+        Glide.with(this@JobDetails)
+            .load(uri)
+            .into(feedbackBinding.ivFeedbackImage)
     }
 
     private fun observeTimer(tvTimer: TextView) {
@@ -1114,7 +1293,8 @@ class JobDetails : AppCompatActivity() {
         } else if (CommonMethods.isCameraPermissionDinead(this@JobDetails)) {
             showCameraPermissionDialog(this@JobDetails)
         } else {
-            openCamera()
+//            openCamera()
+            openSelfieCamera()
         }
     }
     fun takeChequeImage() {
@@ -1133,6 +1313,163 @@ class JobDetails : AppCompatActivity() {
             cameraLauncher.launch(intent)
         }
     }
+//    private fun openSelfieCamera() {
+//
+//        try {
+//            val file = File.createTempFile(
+//                "selfie_",
+//                ".jpg",
+//                cacheDir
+//            )
+//
+//            selfieImageUri = FileProvider.getUriForFile(
+//                this,
+//                "${packageName}.fileprovider",
+//                file
+//            )
+//
+//            selfieCameraLauncher.launch(selfieImageUri)
+//
+//        } catch (e: Exception) {
+//            Log.e(
+//                "SelfieCamera",
+//                "Unable to launch camera",
+//                e
+//            )
+//
+//            Toast.makeText(
+//                this,
+//                "Unable to open camera",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }
+//    }
+//
+//    private val selfieCameraLauncher =
+//        registerForActivityResult(
+//            ActivityResultContracts.TakePicture()
+//        ) { success ->
+//
+//            if (success) {
+//                try {
+//                    val bitmap = contentResolver.openInputStream(selfieImageUri)?.use {
+//                        BitmapFactory.decodeStream(it)
+//                    }
+//
+//                    if (bitmap != null) {
+//                        imagewhenStart = bitmap
+//
+//                        Glide.with(this@JobDetails)
+//                            .load(bitmap)
+//                            .placeholder(R.drawable.ic_placeholder_profile)
+//                            .error(R.drawable.ic_placeholder_profile)
+//                            .into(binding.ivCaptureImagebeforejobstart)
+//
+//                    } else {
+//                        Log.e(
+//                            "SelfieCamera",
+//                            "Camera returned success but bitmap is null"
+//                        )
+//                    }
+//
+//                } catch (e: Exception) {
+//                    Log.e(
+//                        "SelfieCamera",
+//                        "Failed to read captured image",
+//                        e
+//                    )
+//                }
+//            } else {
+//                Log.e(
+//                    "SelfieCamera",
+//                    "Camera capture cancelled/failed"
+//                )
+//            }
+//        }
+
+    private fun openSelfieCamera() {
+
+        val intent = Intent(this, CaptureImage::class.java).apply {
+            putExtra(
+                CaptureImage.EXTRA_CAPTURE_MODE,
+                CaptureImage.MODE_SELFIE
+            )
+        }
+        selfieCaptureLauncher.launch(intent)
+    }
+    private val selfieCaptureLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+
+            if (result.resultCode != Activity.RESULT_OK) {
+                return@registerForActivityResult
+            }
+
+            val uriString =
+                result.data?.getStringExtra(
+                    CaptureImage.EXTRA_RESULT_URI
+                )
+
+            if (uriString.isNullOrEmpty()) {
+                Log.e(
+                    "SelfieCamera",
+                    "CaptureImage returned empty URI"
+                )
+                return@registerForActivityResult
+            }
+
+            try {
+
+                val uri = Uri.parse(uriString)
+
+                val bitmap =
+                    contentResolver
+                        .openInputStream(uri)
+                        ?.use { inputStream ->
+                            BitmapFactory.decodeStream(inputStream)
+                        }
+
+                if (bitmap == null) {
+
+                    Log.e(
+                        "SelfieCamera",
+                        "Unable to decode selfie image"
+                    )
+
+                    return@registerForActivityResult
+                }
+
+                imagewhenStart = bitmap
+
+                Glide.with(this@JobDetails)
+                    .load(bitmap)
+                    .placeholder(
+                        R.drawable.ic_placeholder_profile
+                    )
+                    .error(
+                        R.drawable.ic_placeholder_profile
+                    )
+                    .into(
+                        binding.ivCaptureImagebeforejobstart
+                    )
+
+                /*
+                 * Temporary file was created by CaptureImage.
+                 * We don't need it anymore after decoding.
+                 */
+                contentResolver.delete(uri, null, null)
+
+            } catch (e: Exception) {
+
+                Log.e(
+                    "SelfieCamera",
+                    "Failed to read captured selfie",
+                    e
+                )
+            }
+        }
+
     fun openCameraforCheque() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (intent.resolveActivity(packageManager) != null) {
@@ -1234,7 +1571,12 @@ class JobDetails : AppCompatActivity() {
                                 referral_bottomsheet?.dismiss()
                             }
                             viewModel.reset_submitRefferal()
-                            showFeedbackBottomsheet(this@JobDetails)
+                            if (jobData.orderMode == 0) {
+                                showFeedbackBottomsheet(this@JobDetails)
+                            }else{
+                                finish()
+                                finishSlideActivity()
+                            }
                         }
                         is UIState.Error ->{
                             ProgressDialogUtil.dismiss()
@@ -1382,8 +1724,8 @@ class JobDetails : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         stopCheckingPaymentStatus()
+        super.onDestroy()
     }
 
     // Lambda to pass callback from BottomSheet
@@ -1430,13 +1772,37 @@ class JobDetails : AppCompatActivity() {
         recyclerView.adapter = uploadJobCardAdapter
     }
     private fun takeJobCardPhoto() {
-        if (!CommonMethods.isCameraPermissionGranted(this)) {
-            CommonMethods.requestCameraPermission(this)
-        } else if (CommonMethods.isCameraPermissionDinead(this)) {
-            showCameraPermissionDialog(this)
-        } else {
-            openCameraForJobCard()
-        }
+        showImageSourceDialogForJobCard()
+    }
+    private fun showImageSourceDialogForJobCard() {
+
+        val options = arrayOf("Take Photo", "Choose from Gallery", "Cancel")
+
+        AlertDialog.Builder(this)
+            .setTitle("Select Option")
+            .setItems(options) { dialog, which ->
+                when (which) {
+                    0 -> {
+                        dialog.dismiss()
+                        if (!CommonMethods.isCameraPermissionGranted(this)) {
+                            CommonMethods.requestCameraPermission(this)
+                        } else if (CommonMethods.isCameraPermissionDinead(this)) {
+                            showCameraPermissionDialog(this)
+                        } else {
+                            openCameraForJobCard()
+                        }
+                    }
+                    1 -> {
+                        dialog.dismiss()
+                        openGalleryForJobCard()
+                    }
+                    else -> dialog.dismiss()
+                }
+            }
+            .setOnDismissListener{
+
+            }
+            .show()
     }
     private fun openCameraForJobCard() {
         val file = File.createTempFile("jobcard_", ".jpg", cacheDir)
@@ -1446,106 +1812,8 @@ class JobDetails : AppCompatActivity() {
             "${packageName}.fileprovider",
             file
         )
-
         jobCardCameraLauncher.launch(jobCardImageUri)
     }
-
-
-
-    private fun setupRatingSelector(binding: BottomsheetFeetbackBinding) {
-
-        val emojiViews = listOf(
-            binding.otpDigit1,
-            binding.otpDigit2,
-            binding.otpDigit3,
-            binding.otpDigit4,
-            binding.otpDigit5
-        )
-
-        // Initially hide selector
-        binding.selectionView.visibility = View.INVISIBLE
-
-        emojiViews.forEachIndexed { index, textView ->
-            textView.setOnClickListener {
-                selectedRating = index + 1
-
-                // First time click → make selector visible
-                if (binding.selectionView.visibility != View.VISIBLE) {
-                    binding.selectionView.visibility = View.VISIBLE
-                }
-
-                moveSelector(binding.selectionView, textView)
-            }
-        }
-    }
-
-    private fun moveSelector(selector: View, target: View) {
-        // Match selector width to clicked emoji
-        selector.layoutParams = selector.layoutParams.apply {
-            width = target.width
-        }
-        selector.requestLayout()
-
-        // Animate X using translation (better than raw x)
-        selector.animate()
-            .translationX(target.left.toFloat())
-            .setDuration(250)
-            .setInterpolator(AccelerateDecelerateInterpolator())
-            .start()
-    }
-
-    private fun observeUploadJobCardImage(btnConfirmJobcardUploaded: TextView) {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uploadJobCardPhoto.collect { state ->
-                    when(state){
-
-                        is UIState.Loading -> {
-                            ProgressDialogUtil.showLoadingProgress(
-                                this@JobDetails,
-                                lifecycleScope
-                            )
-                        }
-
-                        is UIState.Success -> {
-                            ProgressDialogUtil.dismiss()
-
-                            // ✅ API SUCCESS → ab image dikhao
-                            selectedService?.localImageUri = pendingJobCardImageUri
-                            uploadJobCardAdapter.notifyItemChanged(selectedServicePosition)
-
-                            if (uploadJobCardAdapter.isEverythingUploaded()) {
-                                // Agar sab ho gaya toh button dikhao
-                                btnConfirmJobcardUploaded.visibility = View.VISIBLE
-                            }
-
-                            // cleanup
-                            pendingJobCardImageUri = null
-                            viewModel.reset_uploadJobCardPhoto()
-                        }
-
-                        is UIState.Error -> {
-                            ProgressDialogUtil.dismiss()
-
-                            // ❌ API FAIL → image nahi dikhegi
-                            pendingJobCardImageUri = null
-
-                            Toast.makeText(
-                                this@JobDetails,
-                                "Image upload failed. Please upload again.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                            viewModel.reset_uploadJobCardPhoto()
-                        }
-
-                        is UIState.Idle -> Unit
-                    }
-                }
-            }
-        }
-    }
-
     private val jobCardCameraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
             if (success && selectedService != null) {
@@ -1682,6 +1950,190 @@ class JobDetails : AppCompatActivity() {
             requestBody
         )
     }
+    private fun openGalleryForJobCard() {
+        galleryPickerLauncherForJobCard.launch("image/*")
+    }
+
+    private val galleryPickerLauncherForJobCard =
+        registerForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) { uri ->
+
+            uri ?: return@registerForActivityResult
+
+            pendingJobCardImageUri = uri
+
+            uploadJobCardPhoto(uri)
+        }
+
+
+
+    private fun setupRatingSelector(binding: BottomsheetFeetbackBinding) {
+
+        updateSubmitButtonState(binding.btnSubmitFeedback)
+        
+        ratingOptions = listOf(
+            RatingOption(
+                container = binding.item1,
+                card = binding.badge1,
+                numberText = binding.num1,
+                icon = binding.icon1,
+                label = binding.label1,
+                accentColor = ContextCompat.getColor(this,R.color.rate_rude),
+                tintColor = ContextCompat.getColor(this,R.color.rate_rude_tint),
+                ratingValue = 1,
+                ratingKey = "rude"
+            ),
+            RatingOption(
+                container = binding.item2,
+                card = binding.badge2,
+                numberText = binding.num2,
+                icon = binding.icon2,
+                label = binding.label2,
+                accentColor = ContextCompat.getColor(this,R.color.rate_uncooperative),
+                tintColor = ContextCompat.getColor(this,R.color.rate_uncooperative_tint),
+                ratingValue = 2,
+                ratingKey = "uncooperative"
+            ),
+            RatingOption(
+                container = binding.item3,
+                card = binding.badge3,
+                numberText = binding.num3,
+                icon = binding.icon3,
+                label = binding.label3,
+                accentColor = ContextCompat.getColor(this,R.color.rate_okay),
+                tintColor = ContextCompat.getColor(this,R.color.rate_okay_tint),
+                ratingValue = 3,
+                ratingKey = "okay"
+            ),
+            RatingOption(
+                container = binding.item4,
+                card = binding.badge4,
+                numberText = binding.num4,
+                icon = binding.icon4,
+                label = binding.label4,
+                accentColor = ContextCompat.getColor(this,R.color.rate_friendly),
+                tintColor = ContextCompat.getColor(this,R.color.rate_friendly_tint),
+                ratingValue = 4,
+                ratingKey = "friendly"
+            ),
+            RatingOption(
+                container = binding.item5,
+                card = binding.badge5,
+                numberText = binding.num5,
+                icon = binding.icon5,
+                label = binding.label5,
+                accentColor = ContextCompat.getColor(this,R.color.rate_cooperative),
+                tintColor = ContextCompat.getColor(this,R.color.rate_cooperative_tint),
+                ratingValue = 5,
+                ratingKey = "cooperative"
+            )
+        )
+        ratingOptions.forEachIndexed { index, option ->
+            option.container.setOnClickListener { selectRating(index, binding.btnSubmitFeedback)}
+        }
+        // Render initial (unselected) state
+        renderAll()
+
+    }
+    private fun selectRating(index: Int, btnSubmitFeedback: TextView) {
+        selectedIndex = index
+        renderAll()
+        updateSubmitButtonState(btnSubmitFeedback)
+    }
+    private fun updateSubmitButtonState(btnSubmitFeedback: TextView) {
+        val hasSelection = selectedIndex != -1
+        btnSubmitFeedback.isEnabled = hasSelection
+        btnSubmitFeedback.alpha = if (hasSelection) 1f else 0.5f
+    }
+
+    private fun renderAll() {
+        ratingOptions.forEachIndexed { index, option ->
+            val isSelected = index == selectedIndex
+            if (isSelected) {
+                option.card.strokeColor = option.accentColor
+                option.card.setCardBackgroundColor(option.tintColor)
+                option.numberText.setTextColor(option.accentColor)
+                option.label.setTextColor(color(R.color.ink))
+                option.card.cardElevation = 6f
+            } else {
+                option.card.strokeColor = color(R.color.line_default)
+                option.card.setCardBackgroundColor(color(R.color.card_white))
+                option.numberText.setTextColor(color(R.color.muted))
+                option.label.setTextColor(color(R.color.muted))
+                option.card.cardElevation = 0f
+            }
+        }
+    }
+    private fun color(resId: Int): Int = ContextCompat.getColor(this, resId)
+
+    private fun moveSelector(selector: View, target: View) {
+        // Match selector width to clicked emoji
+        selector.layoutParams = selector.layoutParams.apply {
+            width = target.width
+        }
+        selector.requestLayout()
+
+        // Animate X using translation (better than raw x)
+        selector.animate()
+            .translationX(target.left.toFloat())
+            .setDuration(250)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .start()
+    }
+
+    private fun observeUploadJobCardImage(btnConfirmJobcardUploaded: TextView) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uploadJobCardPhoto.collect { state ->
+                    when(state){
+
+                        is UIState.Loading -> {
+                            ProgressDialogUtil.showLoadingProgress(
+                                this@JobDetails,
+                                lifecycleScope
+                            )
+                        }
+
+                        is UIState.Success -> {
+                            ProgressDialogUtil.dismiss()
+
+                            // ✅ API SUCCESS → ab image dikhao
+                            selectedService?.localImageUri = pendingJobCardImageUri
+                            uploadJobCardAdapter.notifyItemChanged(selectedServicePosition)
+
+                            if (uploadJobCardAdapter.isEverythingUploaded()) {
+                                // Agar sab ho gaya toh button dikhao
+                                btnConfirmJobcardUploaded.visibility = View.VISIBLE
+                            }
+
+                            // cleanup
+                            pendingJobCardImageUri = null
+                            viewModel.reset_uploadJobCardPhoto()
+                        }
+
+                        is UIState.Error -> {
+                            ProgressDialogUtil.dismiss()
+
+                            // ❌ API FAIL → image nahi dikhegi
+                            pendingJobCardImageUri = null
+
+                            Toast.makeText(
+                                this@JobDetails,
+                                "Image upload failed. Please upload again.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            viewModel.reset_uploadJobCardPhoto()
+                        }
+
+                        is UIState.Idle -> Unit
+                    }
+                }
+            }
+        }
+    }
+
 
     fun showGelPendingServiceBottomSheet(context: Activity, gelServiceData: GelServicesData): Dialog {
 
@@ -1883,5 +2335,6 @@ class JobDetails : AppCompatActivity() {
                 }
             }
         }
+
 
 }

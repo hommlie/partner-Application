@@ -1,17 +1,27 @@
 package com.hommlie.partner.ui.jobs
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -27,6 +37,7 @@ import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.databinding.ActivityActQuestionaryBinding
 import com.hommlie.partner.model.Questions
 import com.hommlie.partner.utils.CommonMethods
+import com.hommlie.partner.utils.ExtentionMethods.finishSlideActivity
 import com.hommlie.partner.utils.PrefKeys
 import com.hommlie.partner.utils.ProgressDialogUtil
 import com.hommlie.partner.utils.SharePreference
@@ -38,6 +49,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
+import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -48,6 +60,7 @@ class ActQuestionary : AppCompatActivity() {
     lateinit var sharePreference : SharePreference
 
     private val viewModel : QuestionViewModel by viewModels()
+    private var cameraImageUri: Uri? = null
 
 
     private lateinit var recyclerView: RecyclerView
@@ -56,6 +69,7 @@ class ActQuestionary : AppCompatActivity() {
     private var currentImageView: ImageView? = null
 
     private var currentQuestionIdForImage: Int? = null
+    private var isAttachmentDialogShowing = false
 
     var orderId:String=""
     var questionfor:String=""
@@ -86,8 +100,10 @@ class ActQuestionary : AppCompatActivity() {
         val toolbarView = binding.root.findViewById<View>(R.id.include_toolbar)
         setupToolbar(toolbarView, "Inspection", this, R.color.transparent, R.color.black)
 
-
-
+        onBackPressedDispatcher.addCallback(this){
+            finish()
+            finishSlideActivity()
+        }
 
 
         recyclerView = binding.rvQuestion
@@ -315,32 +331,29 @@ class ActQuestionary : AppCompatActivity() {
         adaptor.submitList(data) // submit data here
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
-        overridePendingTransition(R.anim.no_animation,R.anim.slide_out)
-    }
-
 
     fun pickImageForQuestion(questionId: Int, image: ImageView) {
         currentQuestionIdForImage = questionId
         currentImageView = image
 
-        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (cameraIntent.resolveActivity(packageManager) != null) {
-            imagePickerLauncher.launch(cameraIntent)
-        }
+        showImageSourceDialog()
+
+//        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//        if (cameraIntent.resolveActivity(packageManager) != null) {
+//            imagePickerLauncher.launch(cameraIntent)
+//        }
     }
 
-    private val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val imageBitmap = result.data?.extras?.get("data") as? Bitmap ?: return@registerForActivityResult
-            currentQuestionIdForImage?.let { id ->
-                adaptor.setImageAnswer(id, imageBitmap)
-            }
-            currentImageView?.setImageBitmap(imageBitmap)
-        }
-    }
+//    private val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+//        if (result.resultCode == Activity.RESULT_OK) {
+//            val imageBitmap = result.data?.extras?.get("data") as? Bitmap ?: return@registerForActivityResult
+//            currentQuestionIdForImage?.let { id ->
+//                adaptor.setImageAnswer(id, imageBitmap)
+//            }
+//            currentImageView?.setImageBitmap(imageBitmap)
+//        }
+//    }
+
 
 
     private fun prepareImagePart(bitmap: Bitmap, name: String): MultipartBody.Part {
@@ -350,4 +363,322 @@ class ActQuestionary : AppCompatActivity() {
         return MultipartBody.Part.createFormData("images[]", "$name.jpg", requestFile)
     }
 
+    private fun showImageSourceDialog() {
+        if (isAttachmentDialogShowing) return
+
+        val options = arrayOf("Take Photo", "Choose from Gallery", "Cancel")
+
+        isAttachmentDialogShowing = true
+        AlertDialog.Builder(this)
+            .setTitle("Select Option")
+            .setItems(options) { dialog, which ->
+                when (which) {
+                    0 -> {
+                        dialog.dismiss()
+                        handleCameraPermission()
+                    }
+                    1 -> {
+                        dialog.dismiss()
+                        openGallery()
+                    }
+                    else -> dialog.dismiss()
+                }
+            }
+            .setOnDismissListener{
+                isAttachmentDialogShowing = false
+            }
+            .show()
+    }
+    private fun handleCameraPermission() {
+
+        when {
+
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED -> {
+
+                openCamera()
+            }
+            shouldShowRequestPermissionRationale(
+                Manifest.permission.CAMERA
+            ) -> {
+                showCameraPermissionRationale()
+            }
+            else -> {
+                requestCameraPermission()
+            }
+        }
+    }
+    private val cameraPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { granted ->
+
+            if (granted) {
+                openCamera()
+            } else {
+                handleCameraPermissionDenied()
+            }
+        }
+    private fun requestCameraPermission() {
+
+        cameraPermissionLauncher.launch(
+            Manifest.permission.CAMERA
+        )
+    }
+    private fun handleCameraPermissionDenied() {
+
+        if (
+            shouldShowRequestPermissionRationale(
+                Manifest.permission.CAMERA
+            )
+        ) {
+            showCameraPermissionRationale()
+        } else {
+            showCameraPermissionSettingsDialog()
+        }
+    }
+    private fun showCameraPermissionRationale() {
+
+        CommonMethods.showConfirmationDialog(
+            context = this,
+            title = "Camera Permission Required",
+            message = """
+            Camera permission is required to take a photo.
+
+            Please allow camera permission to continue.
+        """.trimIndent(),
+            isCancelable = false,
+            show_no_btn = true,
+            positiveText = "Allow",
+            negativeText = "Cancel",
+
+            onNegativeClick = {
+                it.dismiss()
+            },
+
+            onConfirm = {
+                it.dismiss()
+                requestCameraPermission()
+            }
+        )
+    }
+    private fun showCameraPermissionSettingsDialog() {
+
+        CommonMethods.showConfirmationDialog(
+            context = this,
+            title = "Camera Permission Required",
+            message = """
+            Camera permission is disabled for this app.
+
+            To enable it:
+            1. Tap "Open Settings".
+            2. Open "Permissions".
+            3. Select "Camera".
+            4. Choose "Allow" or "Allow only while using the app".
+            5. Return to the app and try again.
+        """.trimIndent(),
+            isCancelable = false,
+            show_no_btn = true,
+            positiveText = "Open Settings",
+            negativeText = "Cancel",
+
+            onNegativeClick = {
+                it.dismiss()
+            },
+
+            onConfirm = {
+                it.dismiss()
+                openAppSettings()
+            }
+        )
+    }
+    private fun openAppSettings() {
+
+        val intent = Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+        ).apply {
+
+            data = Uri.fromParts(
+                "package",
+                packageName,
+                null
+            )
+        }
+        startActivity(intent)
+    }
+
+    private fun openCamera() {
+
+        try {
+
+            val file = File.createTempFile(
+                "question_image_",
+                ".jpg",
+                cacheDir
+            )
+
+            val uri = FileProvider.getUriForFile(
+                this,
+                "${packageName}.fileprovider",
+                file
+            )
+            cameraImageUri = uri
+            cameraLauncher.launch(uri)
+
+        } catch (e: Exception) {
+
+            Log.e(
+                "ImagePicker",
+                "Unable to launch camera",
+                e
+            )
+
+            Toast.makeText(
+                this,
+                "Unable to open camera",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private val cameraLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.TakePicture()
+        ) { success ->
+
+            if (!success) {
+
+                Log.e(
+                    "ImagePicker",
+                    "Camera capture cancelled/failed"
+                )
+
+                return@registerForActivityResult
+            }
+
+            val uri = cameraImageUri
+
+            if (uri == null) {
+
+                Log.e(
+                    "ImagePicker",
+                    "Camera returned success but URI is null"
+                )
+
+                return@registerForActivityResult
+            }
+
+            try {
+
+                val imageBitmap =
+                    contentResolver
+                        .openInputStream(uri)
+                        ?.use { inputStream ->
+                            BitmapFactory.decodeStream(
+                                inputStream
+                            )
+                        }
+
+                if (imageBitmap == null) {
+
+                    Log.e(
+                        "ImagePicker",
+                        "Camera returned success but bitmap is null"
+                    )
+
+                    Toast.makeText(
+                        this,
+                        "Unable to load captured image",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    return@registerForActivityResult
+                }
+
+                currentQuestionIdForImage?.let { id ->
+
+                    adaptor.setImageAnswer(
+                        id,
+                        imageBitmap
+                    )
+                }
+
+                currentImageView?.setImageBitmap(
+                    imageBitmap
+                )
+
+            } catch (e: Exception) {
+
+                Log.e(
+                    "ImagePicker",
+                    "Failed to read captured image",
+                    e
+                )
+
+                Toast.makeText(
+                    this,
+                    "Unable to load captured image",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+    private fun openGallery() {
+        galleryPickerLauncher.launch(
+            "image/*"
+        )
+    }
+    private val galleryPickerLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) { uri ->
+
+            uri ?: return@registerForActivityResult
+
+            try {
+
+                val imageBitmap = contentResolver
+                    .openInputStream(uri)
+                    ?.use { inputStream ->
+                        BitmapFactory.decodeStream(inputStream)
+                    }
+
+                if (imageBitmap == null) {
+                    Toast.makeText(
+                        this,
+                        "Unable to load image",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    return@registerForActivityResult
+                }
+
+                currentQuestionIdForImage?.let { id ->
+                    adaptor.setImageAnswer(
+                        id,
+                        imageBitmap
+                    )
+                }
+
+                currentImageView?.setImageBitmap(
+                    imageBitmap
+                )
+
+            } catch (e: Exception) {
+
+                Log.e(
+                    "ImagePicker",
+                    "Failed to load gallery image",
+                    e
+                )
+
+                Toast.makeText(
+                    this,
+                    "Unable to load image",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
 }

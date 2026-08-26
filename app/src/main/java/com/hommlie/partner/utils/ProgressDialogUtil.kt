@@ -5,7 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.util.TypedValue
+import android.util.Log
 import android.view.Window
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -114,8 +114,19 @@ object ProgressDialogUtil {
     fun dismiss() {
         colorJob?.cancel()
         colorJob = null
-        dialog?.dismiss()
-        dialog = null
+
+        try {
+            dialog?.dismiss()
+        } catch (e: IllegalArgumentException) {
+            Log.e(
+                "ProgressDialogUtil",
+                "Dialog was already detached",
+                e
+            )
+        } finally {
+            dialog = null
+            drawable = null
+        }
     }
 
     private fun getColors(context: Context): List<Int> {

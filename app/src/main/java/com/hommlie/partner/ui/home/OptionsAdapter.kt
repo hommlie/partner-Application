@@ -12,6 +12,7 @@ import com.hommlie.partner.R
 import com.hommlie.partner.databinding.RowHomeOptionsBinding
 import com.hommlie.partner.model.HomeOptionModel
 import com.hommlie.partner.ui.attendence.ActAttendance
+import com.hommlie.partner.ui.capturephoto.CaptureImage
 import com.hommlie.partner.ui.leaderboard.Leaderboard
 import com.hommlie.partner.ui.refer.ReferEarn
 import com.hommlie.partner.ui.travellog.ActTravelLogs
@@ -70,6 +71,14 @@ class OptionsAdapter(
                         }
                         "6" -> {
                             val intent = Intent(context, ReferEarn::class.java)
+                            context.startActivity(intent)
+                        }
+                        "7" -> {
+                            val intent = Intent(context, CaptureImage::class.java)
+                            context.startActivity(intent)
+                        }
+                        "8" -> {
+                            val intent = Intent(context, GoogleReviewFeedback::class.java)
                             context.startActivity(intent)
                         }
                         else -> {

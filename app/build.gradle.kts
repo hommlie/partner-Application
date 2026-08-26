@@ -16,8 +16,8 @@ android {
         applicationId = "com.hommlie.partner"
         minSdk = 26
         targetSdk = 36
-        versionCode = 29
-        versionName = "3.8"
+        versionCode = 33
+        versionName = "4.3"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -147,4 +147,10 @@ dependencies {
 //    implementation(libs.android.pdf.viewer)
 //    implementation("com.github.barteksc:android-pdf-viewer:2.8.2")
     implementation(libs.slf4j.nop)
+
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.androidx.exifinterface)
 }

@@ -73,6 +73,8 @@ class ActTodaysJob : AppCompatActivity() {
     private var title = ""
     private var parentDate = ""
 
+    private var pendingJobToOpen: NewOrderData? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,6 +99,7 @@ class ActTodaysJob : AppCompatActivity() {
         userId = sharePreference.getString(PrefKeys.userId)
         prepareHashMaps()
         observeNewJobsData()
+        observeHasOrder() // this will navigate on success=false
         setupDatePicker()
     }
 
@@ -117,8 +120,8 @@ class ActTodaysJob : AppCompatActivity() {
                     startJobDetails(clickedJobData)
                 } else {
                     // check if technician has other orders
+                    pendingJobToOpen = clickedJobData
                     viewModel.checkOrders(hashMapPendingJob)
-                    observeHasOrder(clickedJobData) // this will navigate on success=false
                 }
             },
             onClick_raiseHelp = { clickedJobData ->
@@ -227,31 +230,43 @@ class ActTodaysJob : AppCompatActivity() {
         val json = Gson().toJson(item)
         startActivity(Intent(this@ActTodaysJob, JobDetails::class.java).apply {
             putExtra("job_data", json)
-            if (item.orderStatus == "3"){
-            putExtra("isComeFromHome",1)
-                }
+            if (item.orderStatus == "3") {
+                putExtra("isComeFromHome", 1)
+            }
         })
     }
 
     // Called when adapter item triggers checkOrders; kept separate so navigation happens from here
-    private fun observeHasOrder(clickedJobData: NewOrderData) {
+    private fun observeHasOrder() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.hasOrdersUiState.collect { state ->
                     when (state) {
                         is UIState.Loading -> ProgressDialogUtil.showLoadingProgress(this@ActTodaysJob, lifecycleScope)
                         is UIState.Success -> {
-                            viewModel.resetCheckOrder()
                             ProgressDialogUtil.dismiss()
+
+                            val job = pendingJobToOpen
+
+                            viewModel.resetCheckOrder()
+
+                            pendingJobToOpen = null
+
+                            if (job == null) {
+                                return@collect
+                            }
+
                             if (state.data) {
                                 Toast.makeText(this@ActTodaysJob, "Please finish the current job", Toast.LENGTH_SHORT).show()
                             } else {
-                                startJobDetails(clickedJobData)
+                                startJobDetails(job)
                             }
                         }
                         is UIState.Error -> {
-                            viewModel.resetCheckOrder()
                             ProgressDialogUtil.dismiss()
+                            viewModel.resetCheckOrder()
+                            pendingJobToOpen = null
+
                             Toast.makeText(this@ActTodaysJob, state.message, Toast.LENGTH_SHORT).show()
                         }
                         is UIState.Idle -> Unit

@@ -274,8 +274,7 @@ class ActSplash : AppCompatActivity() {
                             }
                             is UIState.Success ->{
                                 ProgressDialogUtil.dismiss()
-
-
+                                viewModel.reset_checkversionUIState()
                                 if (state.data.status == 1) {
                                     val versionCode = CommonMethods.getAppVersionCode(this@ActSplash)
                                     System.out.println("app version : "+versionCode)
@@ -288,12 +287,11 @@ class ActSplash : AppCompatActivity() {
                                 }else{
                                     moveToNextScreen()
                                 }
-                                viewModel.reset_checkversionUIState()
                             }
                             is UIState.Error ->{
                                 ProgressDialogUtil.dismiss()
-                                moveToNextScreen()
                                 viewModel.reset_checkversionUIState()
+                                moveToNextScreen()
                             }
                         }
                     }

@@ -21,6 +21,7 @@
     <string name="layout_direction">0</string>
     <string name="let_s_collect_customer_details"><u>Let\'s collect the Customer Details</u></string>
     <string name="www_hommlie_com"><u>www.hommlie.com</u></string>
+    <string name="ask_the_customer_to_scan_this_code_to_give_feedback_and_rate_our_service">Ask the customer to scan this code to give <b>feedback</b> and <b>rate</b> our service.</string>
 
     <string-array name="service_type_array">
         <item>B2B</item>

@@ -527,7 +527,6 @@
                         android:layout_height="@dimen/_45sdp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        android:visibility="gone"
                         >
 
                         <ImageView

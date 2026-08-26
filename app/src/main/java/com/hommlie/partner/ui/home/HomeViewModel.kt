@@ -213,6 +213,16 @@ class HomeViewModel  @Inject constructor(
                 id = "6",
                 name = "Refer\n& Earn",
                 iconUrl = R.drawable.ic_refer
+            ),
+            HomeOptionModel(
+                id = "7",
+                name = "Capture\nPhoto",
+                iconUrl = R.drawable.ic_camera
+            ),
+            HomeOptionModel(
+                id = "8",
+                name = "Google\nReview",
+                iconUrl = R.drawable.ic_google_review
             )
         )
     }

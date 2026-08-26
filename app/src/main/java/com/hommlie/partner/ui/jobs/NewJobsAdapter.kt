@@ -68,6 +68,19 @@ class NewJobsAdapter(private val onCheckOrders: (NewOrderData) -> Unit,
 
             tvAddress.text=job.address?:"-"
             tvName.text=job.name?:"-"
+            when (job.orderMode) {
+                1 -> {
+                    tvOrderMode.text="B2B"
+                    tvOrderMode.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.color_2563EB))
+                }
+                0 -> {
+                    tvOrderMode.text="B2C"
+                    tvOrderMode.setTextColor(ContextCompat.getColor(holder.itemView.context,R.color.color_primary))
+                }
+                else -> {
+                    tvOrderMode.text="-"
+                }
+            }
 //            tvJobinfo.text=job.serviceName?:"-"
 //            tvServiceType.text=job.attribute?:"-"
 //            tvCategory.text=job.categoryName?:"-"
@@ -260,6 +273,4 @@ class NewJobsAdapter(private val onCheckOrders: (NewOrderData) -> Unit,
             context.startActivity(Intent(Intent.ACTION_VIEW, webUri))
         }
     }
-
-
 }

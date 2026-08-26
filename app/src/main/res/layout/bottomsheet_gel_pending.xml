@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottomsheet_otp"
@@ -48,6 +48,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:textSize="@dimen/_12ssp"
             android:textColor="@color/dark_gray"
+            android:visibility="gone"
             android:fontFamily="@font/inter_medium"/>
 
         <View
@@ -131,8 +132,6 @@
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
-
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

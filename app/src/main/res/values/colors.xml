@@ -4,6 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="color_primary">#31975C</color>
     <color name="purple">#8A6FC5</color>
+    <color name="color_2563EB">#2563EB</color>
     <color name="color_primary_light">#D6EBE0</color>
     <color name="color_primary_dark">#005135</color>
     <color name="colorPrimaryDark">#005135</color>
@@ -79,6 +80,24 @@
     <color name="text_unit_grey">#5A6B5D</color>
     <color name="text_value_dark">#1A1C1A</color>
     <color name="color_596a5c">#596A5C</color>
+
+    <color name="bg_screen">#F7F8FB</color>
+    <color name="card_white">#FFFFFF</color>
+    <color name="ink">#171923</color>
+    <color name="muted">#8A8FA3</color>
+    <color name="line_default">#EDEEF3</color>
+    <color name="brand">#0F9D74</color>
+    <color name="brand_dark">#0C7F5D</color>
+    <color name="rate_rude">#FF5C5C</color>
+    <color name="rate_rude_tint">#FFF0F0</color>
+    <color name="rate_uncooperative">#FF9F45</color>
+    <color name="rate_uncooperative_tint">#FFF5EA</color>
+    <color name="rate_okay">#9AA0B0</color>
+    <color name="rate_okay_tint">#F4F5F8</color>
+    <color name="rate_friendly">#33C97A</color>
+    <color name="rate_friendly_tint">#EAFBF3</color>
+    <color name="rate_cooperative">#17B0A6</color>
+    <color name="rate_cooperative_tint">#E8FAF8</color>
 
 
 </resources>
