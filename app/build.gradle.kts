@@ -16,8 +16,8 @@ android {
         applicationId = "com.hommlie.partner"
         minSdk = 26
         targetSdk = 36
-        versionCode = 33
-        versionName = "4.3"
+        versionCode = 37
+        versionName = "4.7"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -80,6 +80,7 @@ kapt {
 }    //  for ignore the error or compile time of hilt
 
 dependencies {
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -87,6 +88,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.play.services.auth)
     implementation(libs.play.services.location)
     implementation(libs.firebase.database.ktx)
     implementation(libs.androidx.work.runtime.ktx)
@@ -127,13 +129,10 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
     implementation(libs.material.calendarview)
-//    implementation("com.kizitonwose.calendar:view:2.3.0")
-//    implementation("com.applandeo:material-calendar-view:1.5.0")
     //CircelImageView
     implementation(libs.roundedimageview)
     //Image round
     implementation (libs.circleimageview)
-    implementation (libs.ucrop)
     implementation (libs.imagepicker)
     implementation (libs.mpandroidchart)
     implementation (libs.checkout)
@@ -144,8 +143,6 @@ dependencies {
         exclude(group = "org.bouncycastle")
         exclude(group = "com.fasterxml.jackson")
     }
-//    implementation(libs.android.pdf.viewer)
-//    implementation("com.github.barteksc:android-pdf-viewer:2.8.2")
     implementation(libs.slf4j.nop)
 
     implementation(libs.androidx.camera.core)

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+        xmlns:tools="http://schemas.android.com/tools">
+
     <!-- Location permissions -->
     <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature
-        android:name="android.hardware.camera.any"
-        android:required="false" />
+            android:name="android.hardware.camera.any"
+            android:required="false" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -25,120 +26,121 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" />
+            android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+            android:maxSdkVersion="28" />
 
     <application
-        android:name=".BaseClass"
-        android:allowBackup="false"
-        android:enableOnBackInvokedCallback="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsPictureInPicture="true"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.MyApplication"
-        tools:targetApi="31">
+            android:name=".BaseClass"
+            android:allowBackup="false"
+            android:enableOnBackInvokedCallback="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:supportsPictureInPicture="true"
+            android:supportsRtl="true"
+            android:hardwareAccelerated="true"
+            android:theme="@style/Theme.MyApplication"
+            >
         <activity
-            android:name=".ui.home.GoogleReviewFeedback"
-            android:exported="false" />
+                android:name=".ui.home.GoogleReviewFeedback"
+                android:exported="false" />
         <activity
-            android:name=".ui.capturephoto.CaptureImage"
-            android:exported="false" />
+                android:name=".ui.capturephoto.CaptureImage"
+                android:exported="false" />
         <activity
-            android:name=".ui.jobs.reschedule.RescheduleJob"
-            android:exported="false" />
+                android:name=".ui.jobs.reschedule.RescheduleJob"
+                android:exported="false" />
         <activity
-            android:name=".ui.jobs.EntryUsedChemical"
-            android:exported="false" />
+                android:name=".ui.jobs.EntryUsedChemical"
+                android:exported="false" />
         <activity
-            android:name=".ui.advance.AddAdvanceRequest"
-            android:exported="false" />
+                android:name=".ui.advance.AddAdvanceRequest"
+                android:exported="false" />
         <activity
-            android:name=".ui.advance.Advance"
-            android:exported="false" />
+                android:name=".ui.advance.Advance"
+                android:exported="false" />
         <activity
-            android:name=".ui.jobs.RaiseHelp"
-            android:exported="false" />
+                android:name=".ui.jobs.RaiseHelp"
+                android:exported="false" />
         <activity
-            android:name=".ui.setting.IDCard"
-            android:exported="false" />
+                android:name=".ui.setting.IDCard"
+                android:exported="false" />
         <activity
-            android:name=".ui.setting.PrivacyPolicy"
-            android:exported="false" />
+                android:name=".ui.setting.PrivacyPolicy"
+                android:exported="false" />
         <activity
-            android:name=".ui.wallet.Wallet"
-            android:exported="false" />
+                android:name=".ui.wallet.Wallet"
+                android:exported="false" />
         <activity
-            android:name=".ui.leaderboard.Leaderboard"
-            android:exported="false" />
+                android:name=".ui.leaderboard.Leaderboard"
+                android:exported="false" />
         <activity
-            android:name=".ui.refer.ReferEarn"
-            android:exported="false" />
+                android:name=".ui.refer.ReferEarn"
+                android:exported="false" />
         <activity
-            android:name=".ui.profile.PaySlip"
-            android:exported="false" />
+                android:name=".ui.profile.PaySlip"
+                android:exported="false" />
         <activity
-            android:name=".ui.profile.AboutMe"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
+                android:name=".ui.profile.AboutMe"
+                android:exported="false"
+                android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name=".ui.profile.ProfileDetails"
-            android:exported="false" />
+                android:name=".ui.profile.ProfileDetails"
+                android:exported="false" />
         <activity
-            android:name=".ui.jobs.ActQuestionary"
-            android:exported="false" />
+                android:name=".ui.jobs.ActQuestionary"
+                android:exported="false" />
         <activity
-            android:name=".ui.jobs.JobDetails"
-            android:exported="false" />
+                android:name=".ui.jobs.JobDetails"
+                android:exported="false" />
         <activity
-            android:name=".ui.addwork.ActAddWork"
-            android:exported="false" />
+                android:name=".ui.addwork.ActAddWork"
+                android:exported="false" />
         <activity
-            android:name=".ui.apppermissions.ActGetLocation"
-            android:exported="false" />
+                android:name=".ui.apppermissions.ActGetLocation"
+                android:exported="false" />
         <activity
-            android:name=".ui.apppermissions.ActPermissions"
-            android:exported="false" />
+                android:name=".ui.apppermissions.ActPermissions"
+                android:exported="false" />
         <activity
-            android:name=".ui.jobs.ActTodaysJob"
-            android:exported="false" />
+                android:name=".ui.jobs.ActTodaysJob"
+                android:exported="false" />
 
         <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBmaR3DSseRPUCCvGT0Ru8aK-Jrm39NlTE" />
+                android:name="com.google.android.geo.API_KEY"
+                android:value="AIzaSyBmaR3DSseRPUCCvGT0Ru8aK-Jrm39NlTE" />
 
         <activity
-            android:name=".ui.travellog.ActTravelLogs"
-            android:exported="false" />
+                android:name=".ui.travellog.ActTravelLogs"
+                android:exported="false" />
         <activity
-            android:name=".ui.chemical.ActNewChemical"
-            android:exported="false" />
+                android:name=".ui.chemical.ActNewChemical"
+                android:exported="false" />
         <activity
-            android:name=".ui.chemical.ActMyChemical"
-            android:exported="false" />
+                android:name=".ui.chemical.ActMyChemical"
+                android:exported="false" />
         <activity
-            android:name=".ui.registration.ActKycPending"
-            android:exported="false" />
+                android:name=".ui.registration.ActKycPending"
+                android:exported="false" />
         <activity
-            android:name=".ui.registration.ActRegistration"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
+                android:name=".ui.registration.ActRegistration"
+                android:exported="false"
+                android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name=".ui.login.ActOTP"
-            android:exported="false" />
+                android:name=".ui.login.ActOTP"
+                android:exported="false" />
         <activity
-            android:name=".ui.login.Login"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+                android:name=".ui.login.Login"
+                android:exported="false"
+                android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.attendence.ActAttendance"
-            android:exported="false"
-            android:theme="@style/Theme.MyApplication" />
+                android:name=".ui.attendence.ActAttendance"
+                android:exported="false"
+                android:theme="@style/Theme.MyApplication" />
         <activity
-            android:name=".view.ActSplash"
-            android:exported="true"
-            android:theme="@style/Theme.Splash">
+                android:name=".view.ActSplash"
+                android:exported="true"
+                android:theme="@style/Theme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -146,49 +148,50 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.MainActivity"
-            android:exported="false"
-            android:theme="@style/Theme.MyCustomTheme" />
+                android:name=".view.MainActivity"
+                android:exported="false"
+                android:theme="@style/Theme.MyCustomTheme" />
 
         <receiver
-            android:name=".utils.BootReceiver"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+                android:name=".utils.BootReceiver"
+                android:enabled="true"
+                android:exported="true"
+                android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".utils.SmsBroadcastReceiver"
-            android:exported="true"
-            android:permission="com.google.android.gms.auth.api.phone.permission.SMS_RETRIEVED">
+                android:name=".utils.SmsBroadcastReceiver"
+                android:exported="true"
+                android:permission="com.google.android.gms.auth.api.phone.permission.SMS_RETRIEVED">
             <intent-filter>
                 <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
             </intent-filter>
         </receiver>
 
         <service
-            android:name=".utils.LocationService"
-            android:exported="true"
-            android:foregroundServiceType="location" />
+                android:name=".utils.LocationService"
+                android:exported="true"
+                android:foregroundServiceType="location" />
         <service
-            android:name=".fcmnotification.MyFirebaseMessagingService"
-            android:exported="false">
+                android:name=".fcmnotification.MyFirebaseMessagingService"
+                android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
         <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
+                android:name="androidx.core.content.FileProvider"
+                android:authorities="${applicationId}.fileprovider"
+                android:exported="false"
+                android:grantUriPermissions="true">
             <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths" />
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/filepaths" />
         </provider>
+
     </application>
 
 </manifest>

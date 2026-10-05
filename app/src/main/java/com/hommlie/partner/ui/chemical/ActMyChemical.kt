@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.View
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +24,7 @@ import com.hommlie.partner.R
 import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.databinding.ActivityActMyChemicalBinding
 import com.hommlie.partner.utils.CommonMethods
+import com.hommlie.partner.utils.ExtentionMethods.finishSlideActivity
 import com.hommlie.partner.utils.PrefKeys
 import com.hommlie.partner.utils.ProgressDialogUtil
 import com.hommlie.partner.utils.SharePreference
@@ -72,6 +74,10 @@ class ActMyChemical : AppCompatActivity() {
         val toolbarView = binding.root.findViewById<View>(R.id.include_toolbar)
         setupToolbar(toolbarView, "My Chemicals", this, R.color.activity_bg, R.color.black)
 
+        onBackPressedDispatcher.addCallback(this){
+            finish()
+            finishSlideActivity()
+        }
 
         adapter = MyChemicalAdapter()
         binding.rvChemicals.layoutManager = LinearLayoutManager(this)
@@ -158,10 +164,6 @@ class ActMyChemical : AppCompatActivity() {
             binding.tvSeachText.requestFocus()
             binding.tvSeachText.setSelection(recognizedText.length)
         }
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
     }
 
 

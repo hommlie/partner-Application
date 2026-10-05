@@ -223,6 +223,11 @@ class HomeViewModel  @Inject constructor(
                 id = "8",
                 name = "Google\nReview",
                 iconUrl = R.drawable.ic_google_review
+            ),
+            HomeOptionModel(
+                id = "9",
+                name = "Start\nAudit",
+                iconUrl = R.drawable.logo
             )
         )
     }

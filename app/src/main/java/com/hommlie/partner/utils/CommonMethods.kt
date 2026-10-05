@@ -445,7 +445,6 @@ object CommonMethods {
     }
 
 
-
     fun showConfirmationDialog(
         context: Context,
         title: String,

@@ -9,5 +9,13 @@ data class SingleResponse(
 
     @SerializedName("message")
     val message : String?
+)
 
+data class UploadPhoto(
+
+    @SerializedName("image_name")
+    val imageName : String,
+
+    @SerializedName("image_url")
+    val imageUrl : String
 )

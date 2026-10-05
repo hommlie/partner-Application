@@ -1,5 +1,6 @@
 package com.hommlie.partner.ui.home
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -81,6 +82,9 @@ class OptionsAdapter(
                             val intent = Intent(context, GoogleReviewFeedback::class.java)
                             context.startActivity(intent)
                         }
+                        "9" -> {
+                            openAuditApp()
+                        }
                         else -> {
                             // Optionally show a toast or log unhandled ID
                         }
@@ -92,4 +96,34 @@ class OptionsAdapter(
         }
 
         override fun getItemCount(): Int = items.size
+
+    private fun openAuditApp() {
+        val packageName = "com.hommlie.auditer"
+
+        val launchIntent = context.packageManager
+            .getLaunchIntentForPackage(packageName)
+
+        if (launchIntent != null) {
+            context.startActivity(launchIntent)
+            return
+        }
+
+        val playStoreIntent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("market://details?id=$packageName")
+        )
+
+        try {
+            context.startActivity(playStoreIntent)
+        } catch (e: ActivityNotFoundException) {
+            val browserIntent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(
+                    "https://play.google.com/store/apps/details?id=$packageName"
+                )
+            )
+            context.startActivity(browserIntent)
+        }
     }
+    }
+

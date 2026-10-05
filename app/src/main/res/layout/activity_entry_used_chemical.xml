@@ -33,7 +33,7 @@
             android:src="@drawable/ic_back"
             android:padding="@dimen/_5sdp"
             android:visibility="gone"
-            android:tint="@color/white"
+            app:tint="@color/white"
             android:layout_marginStart="@dimen/_8sdp"/>
         <TextView
             android:layout_width="0dp"

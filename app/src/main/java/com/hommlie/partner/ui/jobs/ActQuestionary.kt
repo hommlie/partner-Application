@@ -1,7 +1,6 @@
 package com.hommlie.partner.ui.jobs
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -9,13 +8,13 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -35,7 +34,8 @@ import com.hommlie.partner.R
 import com.hommlie.partner.adapter.QuestionAdaptor
 import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.databinding.ActivityActQuestionaryBinding
-import com.hommlie.partner.model.Questions
+import com.hommlie.partner.model.DaoCollectAllQuestionsOfAllServices
+import com.hommlie.partner.sharedviewmodel.UploadImageViewModel
 import com.hommlie.partner.utils.CommonMethods
 import com.hommlie.partner.utils.ExtentionMethods.finishSlideActivity
 import com.hommlie.partner.utils.PrefKeys
@@ -60,6 +60,8 @@ class ActQuestionary : AppCompatActivity() {
     lateinit var sharePreference : SharePreference
 
     private val viewModel : QuestionViewModel by viewModels()
+    private val imageViewModel : UploadImageViewModel by viewModels()
+
     private var cameraImageUri: Uri? = null
 
 
@@ -68,7 +70,10 @@ class ActQuestionary : AppCompatActivity() {
 
     private var currentImageView: ImageView? = null
 
+    private var currentServiceIdForImage: Int? = null
     private var currentQuestionIdForImage: Int? = null
+    private var currentImageSlot: Int = 0
+
     private var isAttachmentDialogShowing = false
 
     var orderId:String=""
@@ -76,14 +81,25 @@ class ActQuestionary : AppCompatActivity() {
     var orderStatus:String=""
     val hashMap=HashMap<String,String>()
 
+    private var inspection_type : Int = 2
+
+    enum class QuestionFor {
+        Onsite,
+        OnCompleted
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
+        enableEdgeToEdge()
         binding = ActivityActQuestionaryBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+            v.setPadding(
+                systemBars.left, systemBars.top, systemBars.right,
+                maxOf(systemBars.bottom, ime.bottom)
+            )
             insets
         }
 
@@ -100,7 +116,7 @@ class ActQuestionary : AppCompatActivity() {
         val toolbarView = binding.root.findViewById<View>(R.id.include_toolbar)
         setupToolbar(toolbarView, "Inspection", this, R.color.transparent, R.color.black)
 
-        onBackPressedDispatcher.addCallback(this){
+        onBackPressedDispatcher.addCallback(this) {
             finish()
             finishSlideActivity()
         }
@@ -111,6 +127,24 @@ class ActQuestionary : AppCompatActivity() {
         orderId = intent.getStringExtra("orderId").toString()
         questionfor = intent.getStringExtra("questionfor").toString()
         orderStatus = intent.getStringExtra("order_status").toString()
+
+        observeSubmitImage()
+
+        setupRecyclerView()
+
+        inspection_type = when (questionfor) {
+            QuestionFor.Onsite.name -> {
+                0
+            }
+
+            QuestionFor.OnCompleted.name -> {
+                1
+            }
+
+            else -> {
+                2
+            }
+        }
 
 
         if (orderStatus == "2") {
@@ -123,91 +157,54 @@ class ActQuestionary : AppCompatActivity() {
 
 
         hashMap["user_id"] = sharePreference.getString(PrefKeys.userId)
-        hashMap["order_status"] = orderStatus
         hashMap["visit_id"] = orderId
+        hashMap["inspection_type"] = inspection_type.toString()
 
 
-        viewModel.callApiforQuestions(hashMap, questionfor)
+        viewModel.callApiforQuestions(hashMap)
 
-        observeGetQuestion(questionfor)
+        observeGetQuestion()
         observeSubmitQuestionAnwer()
 
-
-        /*binding.btnSubmit.setOnClickListener {
-            val answers = adaptor.getAnswers()
-            if (answers != null && answers.isNotEmpty()) {
-                val gson = Gson()
-                val answersJson = gson.toJson(answers)
-
-                hashMap["answers"] = answersJson
-
-                // Handle images
-                val imageParts = mutableListOf<MultipartBody.Part>()
-                for ((questionId, bitmap) in adaptor.getImageAnswers()) {
-                    bitmap?.let {
-                        val imagePart = prepareImagePart(bitmap, "question_image_$questionId")
-                        imageParts.add(imagePart)
-                    }
-                }
-                val requestMap = hashMap.mapValues {
-                    it.value.toRequestBody("text/plain".toMediaTypeOrNull())
-                }
-                viewModel.submitAnswers(requestMap, imageParts)
-            } else {
-                CommonMethods.getToast(this@ActQuestionary, "Attempt required questions")
-            }
-        } */
         binding.btnSubmit.setOnClickListener {
+
+            // First validate all required questions
+            if (!adaptor.validateRequiredQuestions()) {
+
+                CommonMethods.getToast(
+                    this@ActQuestionary,
+                    "Please attempt all required questions"
+                )
+                return@setOnClickListener
+            }
 
             val services = adaptor.getServiceWiseAnswers()
 
             if (services.isNotEmpty()) {
 
-                //  FINAL BODY (backend expectation)
-                val body = mapOf(
-                    "visit_id" to orderId,
-                    "order_status" to orderStatus,
-                    "user_id" to sharePreference.getString(PrefKeys.userId),
+                val payload = hashMapOf<String, Any>(
+                    "visit_id" to orderId.toInt(),
+                    "inspection_type" to inspection_type,
+                    "user_id" to (
+                            sharePreference.getString(PrefKeys.userId)?.toIntOrNull()
+                                ?: 0
+                            ),
                     "services" to services
                 )
 
-                val json = Gson().toJson(body)
+                val body = hashMapOf<String, Any>(
+                    "payload" to payload
+                )
 
-                //  POSTMAN / API LOG
-                Log.d("POSTMAN_BODY", json)
+                Log.d(
+                    "POSTMAN_BODY",
+                    Gson().toJson(body)
+                )
 
-                // ---------------- IMAGE PART ----------------
-                val imageParts = mutableListOf<MultipartBody.Part>()
-
-                Log.d("API_SEND", "------ IMAGE PARAMS ------")
-                for ((questionId, bitmaps) in adaptor.getImageAnswers()) {
-                    bitmaps.forEachIndexed { index, bitmap ->
-                        val imagePart = prepareImagePart(
-                            bitmap,
-                            "question_${questionId}_image_$index"
-                        )
-                        imageParts.add(imagePart)
-
-                        Log.d(
-                            "API_SEND",
-                            "Sending image → questionId=$questionId index=$index"
-                        )
-                    }
-                }
-
-                Log.d("API_SEND", "Total images = ${imageParts.size}")
-
-                //  TEXT BODY AS REQUEST MAP (agar multipart chahiye)
-                val requestMap = mapOf(
-                    "payload" to json
-                ).mapValues {
-                    it.value.toRequestBody("text/plain".toMediaTypeOrNull())
-                }
-
-                //  FINAL API CALL
-                 viewModel.submitAnswers(requestMap, imageParts)
+                viewModel.submitAnswers(body)
 
             } else {
+
                 CommonMethods.getToast(
                     this@ActQuestionary,
                     "Attempt required questions"
@@ -215,14 +212,19 @@ class ActQuestionary : AppCompatActivity() {
             }
         }
     }
-        private fun observeGetQuestion(questionfor: String) {
+
+    private fun observeGetQuestion() {
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.uiState.collect{ state->
-                    when(state){
-                        is UIState.Loading->{
-                            ProgressDialogUtil.showLoadingProgress(this@ActQuestionary,lifecycleScope)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    when (state) {
+                        is UIState.Loading -> {
+                            ProgressDialogUtil.showLoadingProgress(
+                                this@ActQuestionary,
+                                lifecycleScope
+                            )
                         }
+
                         is UIState.Success -> {
                             ProgressDialogUtil.dismiss()
                             viewModel.resetUIState()
@@ -231,55 +233,108 @@ class ActQuestionary : AppCompatActivity() {
 
                             if (serviceData.orderCount > 0 && !serviceData.orderQuestions.isNullOrEmpty()) {
 
-                                val filteredQuestions = mutableListOf<Questions>()
+                                val filteredQuestions =
+                                    mutableListOf<DaoCollectAllQuestionsOfAllServices>()
 
                                 serviceData.orderQuestions.forEach { service ->
-                                    service.questions
-                                        .find { it.state == questionfor }   // 🔥 STATE FILTER
-                                        ?.questions
-                                        ?.let { filteredQuestions.addAll(it) }
+
+                                    service.questions.forEach { question ->
+
+                                        filteredQuestions.add(
+                                            DaoCollectAllQuestionsOfAllServices(
+                                                service_id = service.service_id,
+                                                service_name = service.service_name,
+                                                id = question.id,
+                                                label = question.label,
+                                                type = question.type,
+                                                options = question.options,
+                                                required = question.required,
+                                                status = question.status
+                                            )
+                                        )
+                                    }
                                 }
 
                                 if (filteredQuestions.isNotEmpty()) {
-                                    setRecylerView(filteredQuestions)
+                                    adaptor.submitList(filteredQuestions)
                                     binding.btnSubmit.visibility = View.VISIBLE
                                 } else {
                                     binding.btnSubmit.visibility = View.GONE
-                                    CommonMethods.alertErrorOrValidationDialog(
-                                        this@ActQuestionary,
-                                        "No $questionfor questions found"
+                                    CommonMethods.showConfirmationDialog(
+                                        context = this@ActQuestionary,
+                                        title = "Error !",
+                                        message = "No questions found for these services\n\n    1. Press 'Continue' for next step",
+                                        isCancelable = false,
+                                        show_no_btn = false,
+                                        positiveText = "Continue",
+                                        negativeText = "Cancel",
+                                        onNegativeClick = {},
+                                        onConfirm = {
+                                            if (orderStatus == "3") {
+                                                JobDetails.isonsiteAnswersubmit.value = 1
+                                            }
+                                            if (orderStatus == "4") {
+                                                JobDetails.isOnCompleteAnswersubmit.value = "1"
+                                            }
+                                            finish()
+                                            finishSlideActivity()
+                                        },
                                     )
                                 }
 
                             } else {
                                 binding.btnSubmit.visibility = View.GONE
-                                CommonMethods.alertErrorOrValidationDialog(
-                                    this@ActQuestionary,
-                                    "No questions found"
+
+                                CommonMethods.showConfirmationDialog(
+                                    context = this@ActQuestionary,
+                                    title = "Error !",
+                                    message = "No questions found for these services\n\n    1. Press 'Continue' for next step",
+                                    isCancelable = false,
+                                    show_no_btn = false,
+                                    positiveText = "Continue",
+                                    negativeText = "Cancel",
+                                    onNegativeClick = {},
+                                    onConfirm = {
+                                        if (orderStatus == "3") {
+                                            JobDetails.isonsiteAnswersubmit.value = 1
+                                        }
+                                        if (orderStatus == "4") {
+                                            JobDetails.isOnCompleteAnswersubmit.value = "1"
+                                        }
+                                        finish()
+                                        finishSlideActivity()
+                                    },
                                 )
                             }
                         }
-                        is UIState.Error->{
+
+                        is UIState.Error -> {
                             ProgressDialogUtil.dismiss()
                             viewModel.resetUIState()
 
                             // IF no question found to skipping the current task
-                            if (orderStatus=="3"){
-                                JobDetails.isonsiteAnswersubmit.value= 1
+                            if (orderStatus == "3") {
+                                JobDetails.isonsiteAnswersubmit.value = 1
                             }
-                            if (orderStatus=="4"){
-                                JobDetails.isOnCompleteAnswersubmit.value="1"
+                            if (orderStatus == "4") {
+                                JobDetails.isOnCompleteAnswersubmit.value = "1"
                             }
 
                             lifecycleScope.launch {
-                                ProgressDialogUtil.showAleartLoadingProgress(this@ActQuestionary,lifecycleScope,"Loading...","")
+                                ProgressDialogUtil.showAleartLoadingProgress(
+                                    this@ActQuestionary,
+                                    lifecycleScope,
+                                    "Loading...",
+                                    ""
+                                )
                                 delay(2000)
                                 ProgressDialogUtil.dismiss()
                                 finish()
                             }
 
                         }
-                        is UIState.Idle->{
+
+                        is UIState.Idle -> {
 
                         }
 
@@ -299,7 +354,6 @@ class ActQuestionary : AppCompatActivity() {
                         }
                         is UIState.Success->{
                             ProgressDialogUtil.dismiss()
-                            viewModel.resetUISubmitAnswer()
                             if (orderStatus=="3"){
                                 JobDetails.isonsiteAnswersubmit.value= 1
                                 CommonMethods.getToast(this@ActQuestionary,"Answers submitted successfully.")
@@ -308,59 +362,62 @@ class ActQuestionary : AppCompatActivity() {
                                 JobDetails.isOnCompleteAnswersubmit.value="1"
                                 CommonMethods.getToast(this@ActQuestionary,"Answers submitted successfully.")
                             }
+                            viewModel.resetUISubmitAnswer()
                             finish()
                             overridePendingTransition(R.anim.slide_out,R.anim.no_animation)
                         }
                         is UIState.Error->{
                             ProgressDialogUtil.dismiss()
+                            CommonMethods.showConfirmationDialog(
+                                context = this@ActQuestionary,
+                                title = "Error",
+                                message = state.message,
+                                isCancelable = false,
+                                show_no_btn = false,
+                                positiveText = "Ok",
+                                onConfirm = {}
+                            )
                             viewModel.resetUISubmitAnswer()
-                        }is UIState.Idle->{
-
-                    }
-
+                        }is UIState.Idle->{}
                     }
                 }
             }
         }
     }
+    private fun setupRecyclerView() {
 
-    private fun setRecylerView(data: List<Questions>) {
-        adaptor = QuestionAdaptor(this) // only context
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adaptor
-        adaptor.submitList(data) // submit data here
+        adaptor = QuestionAdaptor(this)
+
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(this@ActQuestionary)
+            adapter = adaptor
+            isNestedScrollingEnabled = true
+            setItemViewCacheSize(10)
+            itemAnimator = null
+        }
     }
 
 
-    fun pickImageForQuestion(questionId: Int, image: ImageView) {
+    fun pickImageForQuestion(
+        serviceId: Int,
+        questionId: Int,
+        imageSlot: Int,
+        imageView: ImageView
+    ) {
+        currentServiceIdForImage = serviceId
         currentQuestionIdForImage = questionId
-        currentImageView = image
+        currentImageSlot = imageSlot
+        currentImageView = imageView
 
         showImageSourceDialog()
-
-//        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-//        if (cameraIntent.resolveActivity(packageManager) != null) {
-//            imagePickerLauncher.launch(cameraIntent)
-//        }
     }
-
-//    private val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-//        if (result.resultCode == Activity.RESULT_OK) {
-//            val imageBitmap = result.data?.extras?.get("data") as? Bitmap ?: return@registerForActivityResult
-//            currentQuestionIdForImage?.let { id ->
-//                adaptor.setImageAnswer(id, imageBitmap)
-//            }
-//            currentImageView?.setImageBitmap(imageBitmap)
-//        }
-//    }
-
 
 
     private fun prepareImagePart(bitmap: Bitmap, name: String): MultipartBody.Part {
         val bos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos)
         val requestFile = bos.toByteArray().toRequestBody("image/jpeg".toMediaTypeOrNull())
-        return MultipartBody.Part.createFormData("images[]", "$name.jpg", requestFile)
+        return MultipartBody.Part.createFormData("image", "$name.jpg", requestFile)
     }
 
     private fun showImageSourceDialog() {
@@ -597,17 +654,21 @@ class ActQuestionary : AppCompatActivity() {
                     return@registerForActivityResult
                 }
 
-                currentQuestionIdForImage?.let { id ->
+                val serviceId = currentServiceIdForImage
+                val questionId = currentQuestionIdForImage
+                val imageSlot = currentImageSlot
 
-                    adaptor.setImageAnswer(
-                        id,
-                        imageBitmap
+                if (serviceId != null && questionId != null) {
+
+                    currentImageView?.setImageBitmap(imageBitmap)
+
+                    uploadQuestionImage(
+                        serviceId = serviceId,
+                        questionId = questionId,
+                        imageSlot = imageSlot,
+                        bitmap = imageBitmap
                     )
                 }
-
-                currentImageView?.setImageBitmap(
-                    imageBitmap
-                )
 
             } catch (e: Exception) {
 
@@ -655,16 +716,21 @@ class ActQuestionary : AppCompatActivity() {
                     return@registerForActivityResult
                 }
 
-                currentQuestionIdForImage?.let { id ->
-                    adaptor.setImageAnswer(
-                        id,
-                        imageBitmap
+                val serviceId = currentServiceIdForImage
+                val questionId = currentQuestionIdForImage
+                val imageSlot = currentImageSlot
+
+                if (serviceId != null && questionId != null) {
+
+                    currentImageView?.setImageBitmap(imageBitmap)
+
+                    uploadQuestionImage(
+                        serviceId = serviceId,
+                        questionId = questionId,
+                        imageSlot = imageSlot,
+                        bitmap = imageBitmap
                     )
                 }
-
-                currentImageView?.setImageBitmap(
-                    imageBitmap
-                )
 
             } catch (e: Exception) {
 
@@ -681,4 +747,74 @@ class ActQuestionary : AppCompatActivity() {
                 ).show()
             }
         }
+
+    private fun observeSubmitImage() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                imageViewModel.uploadImageUiState.collect { state ->
+                    when(state){
+                       is UIState.Idle->{}
+
+                        is UIState.Loading->{
+                            ProgressDialogUtil.showLoadingProgress(this@ActQuestionary,lifecycleScope)
+                        }
+
+                        is UIState.Success-> {
+                            ProgressDialogUtil.dismiss()
+
+                            val imageName = state.data.imageName
+                            val serviceId = currentServiceIdForImage
+                            val questionId = currentQuestionIdForImage
+
+                            if (
+                                serviceId != null &&
+                                questionId != null &&
+                                !imageName.isNullOrBlank()
+                            ) {
+
+                                adaptor.setImageAnswer(
+                                    serviceId = serviceId,
+                                    questionId = questionId,
+                                    imageSlot = currentImageSlot,
+                                    imageName = imageName
+                                )
+                            }
+                            imageViewModel.resetUploadImageUiState()
+                        }
+
+                        is UIState.Error->{
+                            ProgressDialogUtil.dismiss()
+                            CommonMethods.showConfirmationDialog(
+                                context = this@ActQuestionary,
+                                title = "Error",
+                                message = state.message,
+                                isCancelable = false,
+                                show_no_btn = false,
+                                positiveText = "Ok",
+                                onConfirm = {}
+                            )
+                            imageViewModel.resetUploadImageUiState()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private fun uploadQuestionImage(
+        serviceId: Int,
+        questionId: Int,
+        imageSlot: Int,
+        bitmap: Bitmap
+    ) {
+        currentServiceIdForImage = serviceId
+        currentQuestionIdForImage = questionId
+        currentImageSlot = imageSlot
+
+        val imagePart = prepareImagePart(
+            bitmap = bitmap,
+            name = "question_${questionId}_${System.currentTimeMillis()}"
+        )
+
+        imageViewModel.uploadImage(imagePart)
+    }
 }

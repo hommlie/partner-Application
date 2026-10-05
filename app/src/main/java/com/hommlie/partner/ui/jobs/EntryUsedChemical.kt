@@ -73,6 +73,10 @@ class EntryUsedChemical : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this){
 //            Do Nothing mean Block backpress
         }
+        binding.ivBack.setOnClickListener {
+            finish()
+            finishSlideActivity()
+        }
 
         observeUpdateFilledChemical()
 
@@ -160,7 +164,7 @@ class EntryUsedChemical : AppCompatActivity() {
                         }
 
                         is UIState.Loading -> {
-                            ProgressDialogUtil.showAleartLoadingProgress(this@EntryUsedChemical,lifecycleScope,"Please wait!...","Please wait we are scheduling gel service")
+                            ProgressDialogUtil.showAleartLoadingProgress(this@EntryUsedChemical,lifecycleScope,"Please wait!...","Please wait we are updating the chemical usage")
                         }
 
                         is UIState.Success -> {

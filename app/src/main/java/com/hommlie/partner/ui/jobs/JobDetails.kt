@@ -28,6 +28,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
+import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -173,17 +174,6 @@ class JobDetails : AppCompatActivity() {
         }
 
 
-        // For Android 13+ (API 33+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            onBackInvokedDispatcher.registerOnBackInvokedCallback(
-                OnBackInvokedDispatcher.PRIORITY_DEFAULT
-            ) {
-                CommonMethods.getToast(this@JobDetails, "Back is disabled on this screen")
-            }
-        }
-
-
-
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             // This is Android 15 or above
             WindowCompat.getInsetsController(window, window.decorView)?.apply {
@@ -196,6 +186,10 @@ class JobDetails : AppCompatActivity() {
 
         val toolbarView = binding.root.findViewById<View>(R.id.include_toolbar)
         setupToolbar(toolbarView, "Job Details", this, R.color.transparent, R.color.black)
+
+        onBackPressedDispatcher.addCallback(this){
+            CommonMethods.getToast(this@JobDetails, "Back is disabled on this screen")
+        }
 
         isonsiteAnswersubmit.value = 0
         isOnCompleteAnswersubmit.value = "0"
@@ -233,9 +227,10 @@ class JobDetails : AppCompatActivity() {
             showOTPBottomsheet(this)
         }
 
-        isonsiteAnswersubmit.value =  jobData.IsOniteQuestionsSubmitted
         OnSiteQuestions = jobData.OnSiteQuestions.toString()
         OnCompletedQuestions = jobData.OnCompletedQuestions.toString()
+        isonsiteAnswersubmit.value =  jobData.IsOniteQuestionsSubmitted
+        isOnCompleteAnswersubmit.value = jobData.isoncompletedQuestionSubmtted.toString()
 
 
         cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -1510,17 +1505,6 @@ class JobDetails : AppCompatActivity() {
     }
 
 
-    @Suppress("DEPRECATION")
-    override fun onBackPressed() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            CommonMethods.getToast(this@JobDetails, "Back is disabled on this screen")
-        } else {
-            // For API 33+, handled by OnBackInvokedDispatcher
-        }
-    }
-
-
-
     fun observeJobFinish(){
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
@@ -2292,7 +2276,7 @@ class JobDetails : AppCompatActivity() {
                         }
 
                         is UIState.Loading -> {
-                            ProgressDialogUtil.showAleartLoadingProgress(this@JobDetails,lifecycleScope,"Please wait!...","Please wait we are checking gel service")
+                            ProgressDialogUtil.showAleartLoadingProgress(this@JobDetails,lifecycleScope,"Please wait!...","Please wait we are checking chemical details")
                         }
 
                         is UIState.Success -> {

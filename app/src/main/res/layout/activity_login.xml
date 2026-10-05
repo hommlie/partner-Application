@@ -125,7 +125,6 @@
             android:layout_marginTop="@dimen/_1sdp"
             android:layout_marginBottom="@dimen/_1sdp"
             android:inputType="number"
-            android:clickable="true"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

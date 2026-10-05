@@ -32,10 +32,9 @@ class JobsRepository @Inject constructor(private val apiService : ApiInterface) 
     }
 
     suspend fun submitAnswer(
-        params: Map<String, @JvmSuppressWildcards RequestBody>,
-        images: List<MultipartBody.Part>
+        params: HashMap<String, Any>
     ): SingleResponse {
-        return apiService.submitAnswer(params, images)
+        return apiService.submitAnswer(params)
     }
 
     suspend fun changeorderStatus(

@@ -1,46 +1,32 @@
 package com.hommlie.partner.ui.login
 
-import android.Manifest
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Color
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
-import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import com.google.android.gms.auth.api.identity.GetPhoneNumberHintIntentRequest
+import com.google.android.gms.auth.api.identity.Identity
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.gms.common.api.ApiException
 import com.hommlie.partner.R
-import com.hommlie.partner.adapter.SimNumberAdapter
 import com.hommlie.partner.apiclient.UIState
 import com.hommlie.partner.databinding.ActivityLoginBinding
-import com.hommlie.partner.model.SimInfo
 import com.hommlie.partner.utils.CommonMethods
-import com.hommlie.partner.utils.CommonMethods.fetchSimNumbersWithLabels
 import com.hommlie.partner.utils.KeyboardUtils
 import com.hommlie.partner.utils.ProgressDialogUtil
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -49,6 +35,9 @@ class Login : AppCompatActivity() {
     private lateinit var binding : ActivityLoginBinding
 
     private val viewModel : LoginViewModel by viewModels()
+
+    private var isPhoneHintShowing = false
+    private var phoneHintAlreadyShown = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,12 +53,6 @@ class Login : AppCompatActivity() {
 
         CommonMethods.setStatusBarColor(this, R.color.white, lightStatusBar = true)
 
-//        WindowCompat.setDecorFitsSystemWindows(window, false)
-//        window.statusBarColor = Color.TRANSPARENT
-//        window.navigationBarColor = Color.TRANSPARENT
-//        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
-
-
         binding.btnGetotp.setOnClickListener {
             if (CommonMethods.isInternetAvailable(this)){
                 val hashMap = HashMap<String, String>()
@@ -83,33 +66,33 @@ class Login : AppCompatActivity() {
                 }
             }
         }
+        binding.edtMobileno.setOnTouchListener { view, event ->
+
+            if (event.action == MotionEvent.ACTION_UP) {
+
+                val isEmpty = binding.edtMobileno.text.isNullOrBlank()
+
+                if (isEmpty && !phoneHintAlreadyShown && !isPhoneHintShowing) {
+
+                    phoneHintAlreadyShown = true
+
+                    // Prevent keyboard from opening
+                    view.clearFocus()
+
+                    KeyboardUtils.hideKeyboard(view)
+
+                    showPhoneNumberHint()
+
+                    return@setOnTouchListener true
+                }
+            }
+
+            false
+        }
+
         binding.edtMobileno.addTextChangedListener {
             viewModel.onMobileNumberChanged(it.toString())
         }
-
-        requestSimPermissions()
-
-//        binding.edtMobileno.setText("9179518784")
-
-
-//        binding.edtMobileno.setOnClickListener {
-//            val permission = Manifest.permission.READ_PHONE_NUMBERS
-//
-//            if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
-//                showSimSelectionIfAvailable()
-//            } else {
-//                // Check if permanently denied
-//                if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-//                    // Show permission normally
-//                    ActivityCompat.requestPermissions(this, arrayOf(permission), 1001)
-//                } else {
-//                    // Permission permanently denied → show settings dialog
-//                    showPermissionSettingsDialog()
-//                }
-//            }
-//        }
-
-
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
@@ -173,111 +156,94 @@ class Login : AppCompatActivity() {
             }
         }
 
-
     }
 
 
-    private fun requestSimPermissions() {
-        val permissions = arrayOf(
-            Manifest.permission.READ_PHONE_NUMBERS,
-            Manifest.permission.READ_PHONE_STATE
-        )
+    private val phoneNumberHintLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult()
+        ) { result ->
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val notGranted = permissions.filter {
-                ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+            isPhoneHintShowing = false
+
+            if (result.resultCode == RESULT_OK) {
+
+                try {
+
+                    val phoneNumber =
+                        Identity
+                            .getSignInClient(this)
+                            .getPhoneNumberFromIntent(result.data)
+
+                    val formattedNumber = phoneNumber
+                        .replace("+91", "")
+                        .replace(" ", "")
+                        .takeLast(10)
+
+                    binding.edtMobileno.setText(formattedNumber)
+
+                    binding.edtMobileno.setSelection(
+                        binding.edtMobileno.text.length
+                    )
+
+                } catch (e: ApiException) {
+
+                    Log.e(
+                        "PhoneNumberHint",
+                        "Failed to get phone number",
+                        e
+                    )
+                }
             }
-
-            if (notGranted.isNotEmpty()) {
-                ActivityCompat.requestPermissions(this, notGranted.toTypedArray(), 1001)
-            } else {
-                // Permissions already granted
-//                CommonMethods.fetchSimNumbers(this)
-                showSimSelectionIfAvailable()
-            }
-        } else {
-            // Permissions not needed below Android 6.0
-            showSimSelectionIfAvailable()
-        }
-    }
-
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == 1002) {
-            val permission = Manifest.permission.READ_PHONE_NUMBERS
-            if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
-                showSimSelectionIfAvailable()
-            } else {
-                showPermissionSettingsDialog() // Show again if still denied
-            }
-        }
-    }
-
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1001 && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-            showSimSelectionIfAvailable()
-        } else {
-            Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    fun showSimSelectorBottomSheet(context: Context, simList: List<SimInfo>, onSelected: (SimInfo) -> Unit) {
-        val dialog = BottomSheetDialog(context)
-        val view = LayoutInflater.from(context).inflate(R.layout.bottomsheet_select_number, null)
-
-        val recyclerView = view.findViewById<RecyclerView>(R.id.rvNumbers)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = SimNumberAdapter(simList) {
-            dialog.dismiss()
-            onSelected(it)
         }
 
-        dialog.setContentView(view)
-        dialog.setCancelable(true)
-        dialog.show()
-    }
+    private fun showPhoneNumberHint() {
 
-    private fun showPermissionSettingsDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("📱 SIM Permission Required")
-            .setMessage(
-                "To auto-fill your mobile number from your SIM card, we need permission to access SIM info. ✨\n\n" +
-                        "You’ve previously denied this permission. Please enable it manually:\n\n" +
-                        "👉 Step 1: Tap on 'Open Settings' below\n" +
-                        "👉 Step 2: In the App Info screen, tap 'Permissions'\n" +
-                        "👉 Step 3: Tap on 'Phone' or 'SIM access'\n" +
-                        "👉 Step 4: Select 'Allow' or 'Allow while using the app'\n\n" +
-                        "✅ After that, come back and tap the mobile number field again to continue!"
-            )
-            .setPositiveButton("Open Settings") { _, _ ->
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                val uri = Uri.fromParts("package", packageName, null)
-                intent.data = uri
-                startActivityForResult(intent, 1002)
+        if (isPhoneHintShowing) return
+
+        isPhoneHintShowing = true
+
+        val request =
+            GetPhoneNumberHintIntentRequest
+                .builder()
+                .build()
+
+        Identity
+            .getSignInClient(this)
+            .getPhoneNumberHintIntent(request)
+            .addOnSuccessListener { pendingIntent ->
+
+                try {
+
+                    phoneNumberHintLauncher.launch(
+                        IntentSenderRequest.Builder(
+                            pendingIntent
+                        ).build()
+                    )
+
+                } catch (e: Exception) {
+
+                    isPhoneHintShowing = false
+
+                    Log.e(
+                        "PhoneNumberHint",
+                        "Unable to launch phone number hint",
+                        e
+                    )
+                }
             }
-            .setCancelable(false)
-            .show()
-    }
+            .addOnFailureListener { exception ->
 
+                isPhoneHintShowing = false
 
-    private fun showSimSelectionIfAvailable() {
-        val simList = fetchSimNumbersWithLabels(this)
-        if (simList.isNotEmpty()) {
-            showSimSelectorBottomSheet(this, simList) { selected ->
-                binding.edtMobileno.setText(selected.number.replace("+91", "").trim().takeLast(10))
+                Log.e(
+                    "PhoneNumberHint",
+                    "Phone number hint unavailable",
+                    exception
+                )
             }
-        } else {
-            Toast.makeText(this, "No SIM number found", Toast.LENGTH_SHORT).show()
-        }
     }
+
 
 
 }

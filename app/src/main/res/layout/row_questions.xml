@@ -6,13 +6,25 @@
     android:background="@color/activity_bg"
     android:layout_marginTop="@dimen/_10sdp">
 
-
+    <TextView
+        android:id="@+id/tv_service_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Service Name"
+        android:textSize="@dimen/_12ssp"
+        android:fontFamily="@font/plusjakartasans_semi_bold"
+        android:textColor="@color/color_primary"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
+        />
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardElevation="0dp"
         app:cardCornerRadius="@dimen/_10sdp"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_marginTop="@dimen/_5sdp"
+        app:layout_constraintTop_toBottomOf="@id/tv_service_name">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -51,7 +63,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/edt_answer"
+                app:layout_constraintTop_toBottomOf="@id/tv_question"
+                    android:layout_marginTop="@dimen/_5sdp"
                 android:text="Ans :"
                 android:fontFamily="@font/plusjakartasans_semi_bold"
                 android:textColor="@color/black"
@@ -67,17 +80,51 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_question"
                 android:text=""
                 android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/bg_roundwhite5"
-                android:hint="Give Complete Report"
-                android:paddingStart="@dimen/_7sdp"
-                android:paddingEnd="@dimen/_5sdp"
+                android:background="@drawable/transparent_back_5sdp"
+                android:hint="Write answer"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_10sdp"
                 android:paddingBottom="@dimen/_12sdp"
                 android:paddingTop="@dimen/_7sdp"
                 android:fontFamily="@font/plusjakartasans_semi_bold"
                 android:textColor="@color/downblack_color"
                 android:textSize="@dimen/_9ssp"
                 android:visibility="gone"
+                android:textCursorDrawable="@drawable/custom_cursor"
+                android:layout_marginBottom="@dimen/_10sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:cursorVisible="true"
+                android:backgroundTint="@color/gray_border"
                 />
+            <EditText
+                    android:id="@+id/edt_number_answer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@+id/tv_answerno"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_question"
+                    android:text=""
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/transparent_back_5sdp"
+                    android:hint="Write number"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:paddingEnd="@dimen/_10sdp"
+                    android:paddingBottom="@dimen/_12sdp"
+                    android:paddingTop="@dimen/_7sdp"
+                    android:fontFamily="@font/plusjakartasans_semi_bold"
+                    android:textColor="@color/downblack_color"
+                    android:textSize="@dimen/_9ssp"
+                    android:visibility="gone"
+                    android:textCursorDrawable="@drawable/custom_cursor"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:cursorVisible="true"
+                    android:backgroundTint="@color/gray_border"
+                    android:inputType="number"
+                    android:singleLine="true"
+                    android:maxLength="8"
+                    />
             
             <RadioGroup
                 android:id="@+id/radiogroup"
@@ -195,7 +242,7 @@
                 android:layout_marginBottom="@dimen/_8sdp"
                 app:cardElevation="@dimen/_1sdp"
                 android:elevation="0dp"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"

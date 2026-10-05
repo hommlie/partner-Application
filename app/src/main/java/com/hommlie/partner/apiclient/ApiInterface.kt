@@ -31,6 +31,7 @@ import com.hommlie.partner.model.SingleResponseForOrderThree
 import com.hommlie.partner.model.TimeSlot
 import com.hommlie.partner.model.TravelLogResponse
 import com.hommlie.partner.model.UpdateFilledChemicalRequestBody
+import com.hommlie.partner.model.UploadPhoto
 import com.hommlie.partner.model.UserAboutDetailsData
 import com.hommlie.partner.model.VerifyOtp
 import com.hommlie.partner.model.VisitChemicals
@@ -92,14 +93,12 @@ interface ApiInterface {
     @POST("partner/get_monthly_attendance")
     suspend fun getAttendance(@Body map : HashMap<String,String>): AttendanceResponse
 
-    @POST("partner/newQuestions")
+    @POST("partner/newQuestionsV2")
     suspend fun getQuestions(@Body map: HashMap<String, String>): OrderQuestions
 
-    @Multipart
-    @POST("partner/newQuestionAnswer")
+    @POST("partner/newQuestionAnswerV2")
     suspend fun submitAnswer(
-        @PartMap params: Map<String, @JvmSuppressWildcards RequestBody>,
-        @Part images: List<MultipartBody.Part>
+        @Body params: HashMap<String, Any>
     ): SingleResponse
 
     @Multipart
@@ -230,6 +229,12 @@ interface ApiInterface {
         @Part("sr_ids") srIds : RequestBody,
         @Part profilePhoto: MultipartBody.Part?
         ) : Response<SingleResponse>
+
+    @Multipart
+    @POST("partner/uploadImage")
+    suspend fun uploadPhoto(
+        @Part photo: MultipartBody.Part?
+    ) : Response<DynamicSingleResponseWithData<UploadPhoto>>
 
     @POST("partner/getGelServices")
     suspend fun getGelServices(@Body hashMap: HashMap<String,String>) : Response<DynamicSingleResponseWithData<GelServicesData>>

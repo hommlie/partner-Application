@@ -18,7 +18,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuestionViewModel @Inject constructor(
-    private val sharePreference: SharePreference,
     private val repository: JobsRepository
 )  : ViewModel(){
 
@@ -30,7 +29,7 @@ class QuestionViewModel @Inject constructor(
 
 
 
-    fun callApiforQuestions(hashMap: HashMap<String, String>, questionfor: String) {
+    fun callApiforQuestions(hashMap: HashMap<String, String>) {
         viewModelScope.launch {
             _uiState.value = UIState.Loading
             delay(800)
@@ -50,14 +49,12 @@ class QuestionViewModel @Inject constructor(
     }
 
     fun submitAnswers(
-        params: Map<String, RequestBody>,
-        images: List<MultipartBody.Part>
+        params: HashMap<String, Any>
     ) {
         viewModelScope.launch {
             _uiStateSubmitAnswr.value = UIState.Loading
-            delay(800)
             try {
-                val response = repository.submitAnswer(params, images)
+                val response = repository.submitAnswer(params)
                 if (response.status ==1){
                     _uiStateSubmitAnswr.value = UIState.Success(response)
                 }else{

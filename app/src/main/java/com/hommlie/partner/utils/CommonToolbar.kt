@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.card.MaterialCardView
 import com.hommlie.partner.R
+import com.hommlie.partner.utils.ExtentionMethods.finishSlideActivity
 
 fun setupToolbar(
     view: View,
@@ -23,7 +24,8 @@ fun setupToolbar(
 
     tvTitle.text = title
     ivBack.setOnClickListener {
-        activity.onBackPressedDispatcher.onBackPressed()
+        activity.finish()
+        activity.finishSlideActivity()
     }
     view.setBackgroundColor(ContextCompat.getColor(activity, backgroundColor))
     backArrowTint?.let {
